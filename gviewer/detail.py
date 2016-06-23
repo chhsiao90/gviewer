@@ -1,12 +1,24 @@
 import urwid
 
 
-class Detail(urwid.WidgetWrap):
-    def __init__(self, data_store, message):
-        super(Detail, self).__init__(self._make_widget(data_store, message))
+""" Detail Widget Related Component
 
-    def _make_widget(self, data_store, message):
-        detail_groups = data_store.to_detail_groups(message)
+Contents:
+
+* `Detail`: ListBox to display detail
+* `Prop`: Each line of the detail
+* `PropSeparator`: Seperator between properties group
+* `EmptyLine`: Empty Line
+
+"""
+
+
+class Detail(urwid.WidgetWrap):
+    def __init__(self, displayer, message):
+        super(Detail, self).__init__(self._make_widget(displayer, message))
+
+    def _make_widget(self, displayer, message):
+        detail_groups = displayer.to_detail_groups(message)
         widgets = []
         for gk, gv in detail_groups:
             widgets.append(PropSeparator(gk))

@@ -3,18 +3,23 @@ from summary import SummaryList, SummaryListWalker
 from detail import Detail
 
 
+""" Parent Frame to control the which widget to display
+"""
+
+
 class ParentFrame(urwid.Frame):
-    def __init__(self, data_store, header):
+    def __init__(self, data_store, displayer, header):
         header_widget = urwid.AttrMap(urwid.Text(header), "header")
         self.data_store = data_store
-        self.walker = SummaryListWalker(self, data_store)
-        self.summary = SummaryList(self, data_store, self.walker)
+        self.displayer = displayer
+        self.walker = SummaryListWalker(self, data_store, displayer)
+        self.summary = SummaryList(self.walker)
         super(ParentFrame, self).__init__(
             body=self.summary,
             header=header_widget)
 
     def open_detail(self, message):
-        self.set_body(Detail(self.data_store, message))
+        self.set_body(Detail(self.displayer, message))
 
     def close_detail(self):
         self.set_body(self.summary)

@@ -1,10 +1,9 @@
-
-
 """Data Store
 
 Contents:
 
-* `BaseStaticDataStore`: abstract class
+* `StaticDataStore`: abstract class for data store
+* `BaseStaticDataStore`: basic data store for static fixed list
 """
 
 
@@ -22,23 +21,11 @@ class BaseDataStore(object):
         """
         raise NotImplementedError
 
-    def to_summary(self, message):
-        """ to_summary
-        """
-        raise NotImplementedError
-
-    def to_detail_groups(self, message):
-        """ to_detail_groups
-        """
-        raise NotImplementedError
-
 
 class BaseStaticDataStore(BaseDataStore):
     """ BaseStaticDataStore
     """
     def __init__(self, messages):
-        """
-        """
         self.messages = messages
         super(BaseDataStore, self).__init__()
 

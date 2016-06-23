@@ -1,15 +1,12 @@
 import json
-from gviewer import BaseStaticDataStore, GViewer
+from gviewer import BaseStaticDataStore, GViewer, BaseDisplayer
 
 
 with open("examples/panama-taiwan.json", "r") as data_file:
     data = json.load(data_file)
 
 
-class PanamaDataStore(BaseStaticDataStore):
-    def __init__(self, data):
-        super(PanamaDataStore, self).__init__(data)
-
+class PanamaDisplayer(BaseDisplayer):
     def to_summary(self, message):
         return u"[{0}][{1}] {2}".format(
             message["node_id"],
@@ -32,8 +29,8 @@ class PanamaDataStore(BaseStaticDataStore):
 
 
 def main():
-    data_store = PanamaDataStore(data)
-    viewer = GViewer(data_store)
+    data_store = BaseStaticDataStore(data)
+    viewer = GViewer(data_store, PanamaDisplayer())
     viewer.start()
 
 if __name__ == "__main__":
