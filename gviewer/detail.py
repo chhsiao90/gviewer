@@ -22,7 +22,7 @@ class Detail(urwid.WidgetWrap):
         widgets = []
         for gk, gv in detail_groups:
             widgets.append(PropSeparator(gk))
-            widgets += [Prop(k, v) for k, v in gv]
+            widgets += [Prop(t) for t in gv]
             widgets.append(EmptyLine())
 
         walker = urwid.SimpleFocusListWalker(widgets)
@@ -30,9 +30,14 @@ class Detail(urwid.WidgetWrap):
 
 
 class Prop(urwid.WidgetWrap):
-    def __init__(self, key, value):
+    def __init__(self, content):
+        if isinstance(content, tuple):
+            key, value = content
+            text = u"{0}: {1}".format(key, value)
+        else:
+            text = content
         w = urwid.AttrMap(
-            urwid.Text("{0}: {1}".format(key, value)), "prop", "prop focus")
+            urwid.Text(text), "prop", "prop focus")
         super(Prop, self).__init__(w)
 
     def selectable(self):
