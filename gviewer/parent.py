@@ -3,11 +3,21 @@ from summary import SummaryList, SummaryListWalker
 from detail import Detail
 
 
-""" Parent Frame to control the which widget to display
-"""
+""" Parent Frame to control the which widget to display """
 
 
 class ParentFrame(urwid.Frame):
+    """
+    Parent Frame to control the which widget to display
+    :param data_store:
+    :type data_store: BaseDataStore Implementation
+
+    :param displayer:
+    :type displayer: BaseDisplayer implmementation
+
+    :param header: header title
+    :type header: str
+    """
     def __init__(self, data_store, displayer, header):
         header_widget = urwid.AttrMap(urwid.Text(header), "header")
         self.data_store = data_store

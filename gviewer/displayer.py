@@ -1,18 +1,27 @@
-""" Displayer
-
-Contents:
-
-* `BaseDisplayer`: absctract class for displayer
-"""
+""" Displayer """
 
 
 class BaseDisplayer(object):
+    """ absctract class for displayer """
     def to_summary(self, message):
-        """ to_summary
+        """
+        define how message display in summary widget
+        :param message: message that defined at DataStore implementation
+        :type message: depend on DataStore
+
+        Return str
         """
         raise NotImplementedError
 
     def to_detail_groups(self, message):
-        """ to_detail_groups
+        """
+        define how message display in detail
+        :param message: message that defined at DataStore implementation
+        :type message: depend on DataStore
+
+        Return a list of tuple (groupName, gruopContent)
+        groupContent is a list of tuple (key, value)
+        example: [("block1", [("prop1", "value1"), ("prop2", "value2)],
+                  ("block2", [("prop3", "value3")])]
         """
         raise NotImplementedError

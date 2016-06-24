@@ -8,6 +8,20 @@ from styles import default
 
 class GViewer(object):
     """
+    General Viewer Main Class
+    :param data_store:
+    :type data_store: BaseDataStore Implementation
+
+    :param displayer:
+    :type displayer: BaseDisplayer implmementation
+
+    :param palette:
+    :type palette: iterable for patette entries
+
+    :param header: header title
+    :type header: str
+
+    :param **kwargs: other urwid.MainLoop supported parameters
     """
     def __init__(self, data_store, displayer, palette=default,
                  header="GViewer", **kwargs):
