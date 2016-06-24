@@ -25,3 +25,17 @@ class BaseDisplayer(object):
                   ("block2", [("prop3", "value3")])]
         """
         raise NotImplementedError
+
+    def match(self, search, message, summary):
+        """
+        define is that the message match the search pattern
+
+        :param search: search keyword
+        :type search: str
+
+        :param message: message that defined at DataStore implementation
+        :type message: depend on DataStore
+
+        Return Ture or False
+        """
+        return search in summary
