@@ -18,12 +18,13 @@ class ParentFrame(urwid.Frame):
     :param header: header title
     :type header: str
     """
-    def __init__(self, data_store, displayer, header):
-        header_widget = urwid.AttrMap(urwid.Text(header), "header")
+    def __init__(self, data_store, displayer, config):
+        header_widget = urwid.AttrMap(urwid.Text(config.header), "header")
+        self.config = config
         self.data_store = data_store
         self.displayer = displayer
         self.walker = SummaryListWalker(self, data_store, displayer)
-        self.summary = SummaryList(self.walker)
+        self.summary = SummaryList(self, self.walker)
         super(ParentFrame, self).__init__(
             body=self.summary,
             header=header_widget)

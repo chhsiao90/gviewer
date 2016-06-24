@@ -1,6 +1,7 @@
 import urwid
 
 from search import SearchWidget
+from basic import BasicWidget
 
 """ Summary Widget Related Component
 
@@ -61,14 +62,14 @@ class FilterSummaryListWalker(SummaryListWalker):
             self.append(SummaryItem(self.parent, self.displayer, message))
 
 
-class SummaryList(urwid.WidgetWrap):
-    def __init__(self, walker):
+class SummaryList(BasicWidget):
+    def __init__(self, parent, walker):
         self.base_walker = walker
         self.current_walker = walker
         self.list_box = urwid.ListBox(walker)
         self.search = SearchWidget(self)
         widget = urwid.Pile([self.list_box, ("pack", self.search)])
-        super(SummaryList, self).__init__(widget)
+        super(SummaryList, self).__init__(parent, widget)
 
     def filter(self, search):
         new_walker = FilterSummaryListWalker(self.base_walker, search) if search else self.base_walker
