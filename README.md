@@ -3,6 +3,12 @@
 GViewer is a tui(Terminal UI) library that simplified writing a tui based reporting system.
 
 
+## Installation
+```
+pip install git+https://github.com/chhsiao90/gviewer.git
+```
+
+
 ## Usage
 #### Data Store
 - BaseStaticDataStore
