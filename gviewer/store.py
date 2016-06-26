@@ -2,8 +2,9 @@
 
 Contents:
 
-* `StaticDataStore`: abstract class for data store
-* `BaseStaticDataStore`: basic data store for static fixed list
+* `BaseDataStore`: abstract class for data store
+* `StaticDataStore`: basic data store for static fixed list
+* `AsyncDataStore`: async data store, like zmq, asyncio, etc...
 """
 
 
@@ -23,7 +24,7 @@ class BaseDataStore(object):
         raise NotImplementedError
 
 
-class BaseStaticDataStore(BaseDataStore):
+class StaticDataStore(BaseDataStore):
     """
     Used for static unmodified data that load data at first time
 
@@ -37,3 +38,18 @@ class BaseStaticDataStore(BaseDataStore):
     def set_up(self):
         for message in self.messages:
             self.walker.recv(message)
+
+
+class AsyncDataStore(BaseDataStore):
+    """
+    Used for async data
+
+    :param register_func: register function that would be called while set_up
+    :type register_func: function accept one parameter with function(message)
+    """
+    def __init__(self, register_func):
+        self.register_func = register_func
+        super(BaseDataStore, self).__init__()
+
+    def set_up(self):
+        self.register_func(self.walker.recv)

@@ -1,5 +1,5 @@
 import json
-from gviewer import BaseStaticDataStore, GViewer, BaseDisplayer
+from gviewer import StaticDataStore, GViewer, BaseDisplayer
 
 
 with open("examples/panama-taiwan.json", "r") as data_file:
@@ -29,7 +29,7 @@ class PanamaDisplayer(BaseDisplayer):
 
 
 def main():
-    data_store = BaseStaticDataStore(data)
+    data_store = StaticDataStore(data)
     viewer = GViewer(data_store, PanamaDisplayer())
     viewer.start()
 
