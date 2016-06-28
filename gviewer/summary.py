@@ -14,13 +14,11 @@ Contents:
 """
 
 
-class SummaryItem(urwid.WidgetWrap):
-    def __init__(self, parent, displayer, message):
-        self.parent = parent
-        self.displayer = displayer
+class SummaryItem(BasicWidget):
+    def __init__(self, message, parent):
         self.message = message
-        self.title = self.displayer.to_summary(message)
-        super(SummaryItem, self).__init__(self._make_widget())
+        self.title = parent.displayer.to_summary(message)
+        super(SummaryItem, self).__init__(self._make_widget(), parent=parent)
 
     def _make_widget(self):
         return urwid.AttrMap(
@@ -37,24 +35,20 @@ class SummaryItem(urwid.WidgetWrap):
 
 
 class SummaryListWalker(urwid.SimpleFocusListWalker):
-    def __init__(self, parent, data_store, displayer, content=None):
+    def __init__(self, parent, content=None):
         super(SummaryListWalker, self).__init__(content or [])
         self.parent = parent
-        self.data_store = data_store
-        self.displayer = displayer
-        data_store.register_walker(self)
+        parent.data_store.register_walker(self)
 
     def recv(self, message):
-        self.append(SummaryItem(self.parent, self.displayer, message))
+        self.append(SummaryItem(message, parent=self.parent))
 
 
 class FilterSummaryListWalker(SummaryListWalker):
     def __init__(self, origin_walker, search):
         parent = origin_walker.parent
-        data_store = origin_walker.data_store
-        displayer = origin_walker.displayer
-        content = [m for m in origin_walker if displayer.match(search, m.message, m.title)]
-        super(FilterSummaryListWalker, self).__init__(parent, data_store, displayer, content=content)
+        content = [m for m in origin_walker if parent.displayer.match(search, m.message, m.title)]
+        super(FilterSummaryListWalker, self).__init__(parent, content=content)
         self.search = search
 
     def recv(self, message):
@@ -63,13 +57,13 @@ class FilterSummaryListWalker(SummaryListWalker):
 
 
 class SummaryListWidget(BasicWidget):
-    def __init__(self, parent, walker):
+    def __init__(self, walker, **kwargs):
         self.base_walker = walker
         self.current_walker = walker
         self.list_box = urwid.ListBox(walker)
         self.search = SearchWidget(self)
         widget = urwid.Pile([self.list_box, ("pack", self.search)])
-        super(SummaryListWidget, self).__init__(parent, widget)
+        super(SummaryListWidget, self).__init__(widget, **kwargs)
 
     def filter(self, search):
         new_walker = FilterSummaryListWalker(self.base_walker, search) if search else self.base_walker

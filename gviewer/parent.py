@@ -23,14 +23,14 @@ class ParentFrame(urwid.Frame):
         self.config = config
         self.data_store = data_store
         self.displayer = displayer
-        self.walker = SummaryListWalker(self, data_store, displayer)
-        self.summary = SummaryListWidget(self, self.walker)
+        self.walker = SummaryListWalker(parent=self)
+        self.summary = SummaryListWidget(self.walker, parent=self)
         super(ParentFrame, self).__init__(
             body=self.summary,
             header=header_widget)
 
     def open_detail(self, message):
-        self.set_body(DetailWidget(self.displayer, message))
+        self.set_body(DetailWidget(message, parent=self))
 
     def close_detail(self):
         self.set_body(self.summary)

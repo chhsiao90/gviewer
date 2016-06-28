@@ -1,5 +1,6 @@
 import urwid
 
+from basic import BasicWidget
 
 """ Detail Widget Related Component
 
@@ -16,9 +17,10 @@ Contents:
 """
 
 
-class DetailWidget(urwid.WidgetWrap):
-    def __init__(self, displayer, message):
-        super(DetailWidget, self).__init__(self._make_widget(displayer, message))
+class DetailWidget(BasicWidget):
+    def __init__(self, message, **kwargs):
+        displayer = kwargs["parent"].displayer
+        super(DetailWidget, self).__init__(self._make_widget(displayer, message), **kwargs)
 
     def _make_widget(self, displayer, message):
         detail_groups = displayer.to_detail_groups(message)
@@ -76,7 +78,7 @@ class DetailGroup(object):
         self.items = items
 
 
-class DetailItemWidget(urwid.WidgetWrap):
+class DetailItemWidget(BasicWidget):
     def __init__(self, item):
         w = urwid.AttrMap(
             urwid.Text(item.content), item.style or "detailitem")
@@ -86,7 +88,7 @@ class DetailItemWidget(urwid.WidgetWrap):
         return key
 
 
-class DetailItemSeparator(urwid.WidgetWrap):
+class DetailItemSeparator(BasicWidget):
     def __init__(self, content):
         super(DetailItemSeparator, self).__init__(
             urwid.AttrMap(urwid.Text(content), "detailitem separator"))

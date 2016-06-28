@@ -2,7 +2,7 @@ import urwid
 
 
 class BasicWidget(urwid.WidgetWrap):
-    def __init__(self, parent, widget):
+    def __init__(self, widget, parent=None):
         self.parent = parent
         super(BasicWidget, self).__init__(widget)
 
