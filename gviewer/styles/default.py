@@ -3,7 +3,6 @@ palette = [
     ("footer", "white", "dark blue", "bold"),
     ("summary", "white", "black"),
     ("summary focus", "black", "light gray"),
-    ("prop", "white", "black"),
-    ("prop focus", "black", "light gray"),
-    ("prop separator", "white", "dark red", "bold")
+    ("detailitem", "white", "black"),
+    ("detailitem separator", "white", "dark red", "bold")
 ]

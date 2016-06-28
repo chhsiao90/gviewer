@@ -1,6 +1,6 @@
 import urwid
-from summary import SummaryList, SummaryListWalker
-from detail import Detail
+from summary import SummaryListWidget, SummaryListWalker
+from detail import DetailWidget
 
 
 """ Parent Frame to control the which widget to display """
@@ -24,20 +24,20 @@ class ParentFrame(urwid.Frame):
         self.data_store = data_store
         self.displayer = displayer
         self.walker = SummaryListWalker(self, data_store, displayer)
-        self.summary = SummaryList(self, self.walker)
+        self.summary = SummaryListWidget(self, self.walker)
         super(ParentFrame, self).__init__(
             body=self.summary,
             header=header_widget)
 
     def open_detail(self, message):
-        self.set_body(Detail(self.displayer, message))
+        self.set_body(DetailWidget(self.displayer, message))
 
     def close_detail(self):
         self.set_body(self.summary)
 
     def keypress(self, size, key):
         if key in ("q", "Q"):
-            if isinstance(self.get_body(), Detail):
+            if isinstance(self.get_body(), DetailWidget):
                 self.close_detail()
                 return None
         return super(ParentFrame, self).keypress(size, key)

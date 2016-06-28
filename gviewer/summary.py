@@ -9,7 +9,7 @@ Contents:
 
 * `SummaryItem`: One line of the SummaryList
 * `SummaryListWalker`: The urwid Walker to iterate over the data_store*
-* `SummaryList`: urwid ListBox to display Summary
+* `SummaryListWidget`: urwid ListBox to display Summary
 
 """
 
@@ -62,14 +62,14 @@ class FilterSummaryListWalker(SummaryListWalker):
             self.append(SummaryItem(self.parent, self.displayer, message))
 
 
-class SummaryList(BasicWidget):
+class SummaryListWidget(BasicWidget):
     def __init__(self, parent, walker):
         self.base_walker = walker
         self.current_walker = walker
         self.list_box = urwid.ListBox(walker)
         self.search = SearchWidget(self)
         widget = urwid.Pile([self.list_box, ("pack", self.search)])
-        super(SummaryList, self).__init__(parent, widget)
+        super(SummaryListWidget, self).__init__(parent, widget)
 
     def filter(self, search):
         new_walker = FilterSummaryListWalker(self.base_walker, search) if search else self.base_walker
@@ -90,4 +90,4 @@ class SummaryList(BasicWidget):
             self.search.clear()
             self.filter(None)
             return None
-        return super(SummaryList, self).keypress(size, key)
+        return super(SummaryListWidget, self).keypress(size, key)

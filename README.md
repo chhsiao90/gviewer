@@ -27,9 +27,12 @@ class CustomDataStore(BasicDataStore):
 class MyDisplayer(BaseDisplayer):
     def to_summary(self, message):
         # your implementation
+        # return a str
 
     def to_detail_groups(self, message):
         # your implementation
+        # return an array of DetailGroup
+        # return [DetailGroup("title", [DetailProp(k, v)...]), ...]
 ```
 
 #### GViewer

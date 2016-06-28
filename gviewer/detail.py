@@ -5,49 +5,91 @@ import urwid
 
 Contents:
 
-* `Detail`: ListBox to display detail
-* `Prop`: Each line of the detail
-* `PropSeparator`: Seperator between properties group
+* `DetailWidget`: ListBox to display detail
+* `DetailItemWidget`: Each line of the detail
+* `DetailItemSeparator`: Seperator between properties group
 * `EmptyLine`: Empty Line
+* `DetailLine`: detail line
+* `DetailProp`: detail properties
+* `DetailGroup`: detail group
 
 """
 
 
-class Detail(urwid.WidgetWrap):
+class DetailWidget(urwid.WidgetWrap):
     def __init__(self, displayer, message):
-        super(Detail, self).__init__(self._make_widget(displayer, message))
+        super(DetailWidget, self).__init__(self._make_widget(displayer, message))
 
     def _make_widget(self, displayer, message):
         detail_groups = displayer.to_detail_groups(message)
         widgets = []
-        for gk, gv in detail_groups:
-            widgets.append(PropSeparator(gk))
-            widgets += [Prop(t) for t in gv]
+        for group in detail_groups:
+            widgets.append(DetailItemSeparator(group.title))
+            widgets += [DetailItemWidget(i) for i in group.items]
             widgets.append(EmptyLine())
 
         walker = urwid.SimpleFocusListWalker(widgets)
         return urwid.ListBox(walker)
 
 
-class Prop(urwid.WidgetWrap):
-    def __init__(self, content, style="prop"):
-        if isinstance(content, tuple):
-            key, value = content
-            text = u"{0}: {1}".format(key, value)
-        else:
-            text = content
+class DetailLine(object):
+    """
+    One line detail content
+    :param content: content
+    :type content: str or unicode
+
+    :param style: style name
+    :type style: str
+    """
+    def __init__(self, content, style=None):
+        self.content = content
+        self.style = style
+
+
+class DetailProp(DetailLine):
+    """
+    One line detail content
+    :param key: property key
+    :type key: str or unicode
+
+    :param value: property value
+    :type value: str or unicode
+
+    :param style: style name
+    :type style: str
+    """
+    def __init__(self, key, value, style=None):
+        super(DetailProp, self).__init__(u"{0}: {1}".format(key, value), style)
+
+
+class DetailGroup(object):
+    """
+    Group the detail content
+    :param title: the group title
+    :type title: str
+
+    :param items: detail items
+    :type items: iterable for DetailLine or DetailProp
+    """
+    def __init__(self, title, items):
+        self.title = title
+        self.items = items
+
+
+class DetailItemWidget(urwid.WidgetWrap):
+    def __init__(self, item):
         w = urwid.AttrMap(
-            urwid.Text(text), style)
-        super(Prop, self).__init__(w)
+            urwid.Text(item.content), item.style or "detailitem")
+        super(DetailItemWidget, self).__init__(w)
 
     def keypress(self, size, key):
         return key
 
 
-class PropSeparator(urwid.WidgetWrap):
+class DetailItemSeparator(urwid.WidgetWrap):
     def __init__(self, content):
-        super(PropSeparator, self).__init__(
-            urwid.AttrMap(urwid.Text(content), "prop separator"))
+        super(DetailItemSeparator, self).__init__(
+            urwid.AttrMap(urwid.Text(content), "detailitem separator"))
 
 
 class EmptyLine(urwid.Text):
