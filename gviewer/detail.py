@@ -30,18 +30,15 @@ class Detail(urwid.WidgetWrap):
 
 
 class Prop(urwid.WidgetWrap):
-    def __init__(self, content):
+    def __init__(self, content, style="prop"):
         if isinstance(content, tuple):
             key, value = content
             text = u"{0}: {1}".format(key, value)
         else:
             text = content
         w = urwid.AttrMap(
-            urwid.Text(text), "prop", "prop focus")
+            urwid.Text(text), style)
         super(Prop, self).__init__(w)
-
-    def selectable(self):
-        return True
 
     def keypress(self, size, key):
         return key
