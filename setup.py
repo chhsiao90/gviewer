@@ -3,4 +3,7 @@ from distutils.core import setup
 
 setup(name="gviewer",
       version="0.0.1",
-      py_modules=["gviewer"])
+      description="General Viewer",
+      author="chhsiao90",
+      author_email="chhsiao90@gmail.com",
+      packages=["gviewer"])
