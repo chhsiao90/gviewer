@@ -18,12 +18,25 @@ Contents:
 
 
 class DetailWidget(BasicWidget):
-    def __init__(self, message, **kwargs):
-        displayer = kwargs["parent"].displayer
-        super(DetailWidget, self).__init__(self._make_widget(displayer, message), **kwargs)
+    def __init__(self, message, index, parent):
+        self.index = index
+        self.message = message
 
-    def _make_widget(self, displayer, message):
-        detail_groups = displayer.to_detail_groups(message)
+        _, detail_displayer = parent.detail_displayers[index]
+        detail_names = parent.detail_names
+
+        widget = self._make_widget(detail_displayer, detail_names)
+        super(DetailWidget, self).__init__(
+            widget, parent)
+
+    def _make_widget(self, detail_displayer, detail_names):
+        body = self._make_body(detail_displayer)
+        header = Tabs(detail_names, self.index)
+        return urwid.Frame(body, header=header)
+
+    def _make_body(self, detail_displayer):
+        detail_groups = detail_displayer \
+            .to_detail_groups(self.message)
         widgets = []
         for group in detail_groups:
             widgets.append(DetailItemSeparator(group.title))
@@ -32,6 +45,22 @@ class DetailWidget(BasicWidget):
 
         walker = urwid.SimpleFocusListWalker(widgets)
         return urwid.ListBox(walker)
+
+    def _next_view(self):
+        if len(self.parent.detail_names) == 1:
+            return
+
+        if len(self.parent.detail_names) > self.index + 1:
+            next_index = self.index + 1
+        else:
+            next_index = 0
+        self.parent.open_detail(self.message, next_index)
+
+    def keypress(self, size, key):
+        if key == "tab":
+            self._next_view()
+            return None
+        return super(DetailWidget, self).keypress(size, key)
 
 
 class DetailLine(object):
@@ -97,3 +126,16 @@ class DetailItemSeparator(BasicWidget):
 class EmptyLine(urwid.Text):
     def __init__(self):
         super(EmptyLine, self).__init__("")
+
+
+class Tabs(urwid.WidgetWrap):
+    def __init__(self, detail_names, index):
+        super(Tabs, self).__init__(self._make_widget(detail_names, index))
+
+    def _make_widget(self, detail_names, index):
+        def make_tab(curr_index):
+            name = detail_names[curr_index]
+            if curr_index == index:
+                return urwid.AttrMap(urwid.Text(name), "tabs focus")
+            return urwid.AttrMap(urwid.Text(name), "tabs")
+        return urwid.Columns(map(make_tab, range(0, len(detail_names))))

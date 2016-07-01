@@ -29,7 +29,7 @@ class SummaryItem(BasicWidget):
 
     def keypress(self, size, key):
         if key == "enter":
-            self.parent.open_detail(self.message)
+            self.parent.open_detail(self.message, 0)
             return None
         return key
 

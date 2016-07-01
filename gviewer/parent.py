@@ -23,6 +23,8 @@ class ParentFrame(urwid.Frame):
         self.config = config
         self.data_store = data_store
         self.displayer = displayer
+        self.detail_displayers = displayer.get_detail_displayers()
+        self.detail_names = [k for k, _ in self.detail_displayers]
 
         self.msg_listener = MessageListener()
         self.data_store.register_listener(self.msg_listener)
@@ -34,8 +36,8 @@ class ParentFrame(urwid.Frame):
             body=self.summary,
             header=header_widget)
 
-    def open_detail(self, message):
-        self.set_body(DetailWidget(message, parent=self))
+    def open_detail(self, message, index):
+        self.set_body(DetailWidget(message, index, self))
 
     def close_detail(self):
         self.set_body(self.summary)
