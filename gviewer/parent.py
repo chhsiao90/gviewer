@@ -1,5 +1,5 @@
 import urwid
-from summary import SummaryListWidget, SummaryListWalker
+from summary import SummaryListWidget, SummaryListWalker, MessageListener
 from detail import DetailWidget
 
 
@@ -23,8 +23,13 @@ class ParentFrame(urwid.Frame):
         self.config = config
         self.data_store = data_store
         self.displayer = displayer
-        self.walker = SummaryListWalker(parent=self)
-        self.summary = SummaryListWidget(self.walker, parent=self)
+
+        self.msg_listener = MessageListener()
+        self.data_store.register_listener(self.msg_listener)
+
+        walker = SummaryListWalker(parent=self)
+
+        self.summary = SummaryListWidget(walker, parent=self)
         super(ParentFrame, self).__init__(
             body=self.summary,
             header=header_widget)

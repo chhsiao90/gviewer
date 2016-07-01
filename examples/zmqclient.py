@@ -11,7 +11,7 @@ CHANNEL = "tcp://127.0.0.1:5581"
 
 class Displayer(BaseDisplayer):
     def to_summary(self, message):
-        return message
+        return message[0]
 
     def to_detail_groups(self, message):
         return [DetailGroup("Summary", [DetailLine(message)])]

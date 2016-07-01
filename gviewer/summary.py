@@ -34,11 +34,26 @@ class SummaryItem(BasicWidget):
         return key
 
 
+class MessageListener(object):
+    def __init__(self):
+        self.walkers = []
+
+    def on_message(self, message):
+        for walker in self.walkers:
+            walker.recv(message)
+
+    def _register(self, walker):
+        self.walkers.append(walker)
+
+    def _unregister(self, walker):
+        self.walkers.remove(walker)
+
+
 class SummaryListWalker(urwid.SimpleFocusListWalker):
     def __init__(self, parent, content=None):
         super(SummaryListWalker, self).__init__(content or [])
         self.parent = parent
-        parent.data_store.register_walker(self)
+        self.parent.msg_listener._register(self)
 
     def recv(self, message):
         self.append(SummaryItem(message, parent=self.parent))
@@ -52,8 +67,12 @@ class FilterSummaryListWalker(SummaryListWalker):
         self.search = search
 
     def recv(self, message):
-        if self.displayer.match(self.search, message):
-            self.append(SummaryItem(self.parent, self.displayer, message))
+        title = self.parent.displayer.to_summary(message)
+        if self.parent.displayer.match(self.search, message, title):
+            self.append(SummaryItem(message, self.parent))
+
+    def close(self):
+        self.parent.msg_listener._unregister(self)
 
 
 class SummaryListWidget(BasicWidget):
@@ -71,6 +90,9 @@ class SummaryListWidget(BasicWidget):
             self._update(new_walker)
 
     def _update(self, walker):
+        if self.current_walker is not self.base_walker:
+            self.current_walker.close()
+
         self.current_walker = walker
         self._w.contents.pop(0)
         self._w.contents.insert(0, (urwid.ListBox(walker), self._w.options()))

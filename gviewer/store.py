@@ -17,8 +17,8 @@ class BaseDataStore(object):
     def __init__(self):
         self.walker = None
 
-    def register_walker(self, walker):
-        self.walker = walker
+    def register_listener(self, msg_listener):
+        self.msg_listener = msg_listener
 
     def set_up(self):
         raise NotImplementedError
@@ -37,7 +37,7 @@ class StaticDataStore(BaseDataStore):
 
     def set_up(self):
         for message in self.messages:
-            self.walker.recv(message)
+            self.msg_listener.on_message(message)
 
 
 class AsyncDataStore(BaseDataStore):
@@ -52,4 +52,4 @@ class AsyncDataStore(BaseDataStore):
         super(BaseDataStore, self).__init__()
 
     def set_up(self):
-        self.register_func(self.walker.recv)
+        self.register_func(self.msg_listener.on_message)

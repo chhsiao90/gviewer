@@ -27,8 +27,10 @@ class GViewer(object):
     def __init__(self, data_store, displayer, config=None, palette=default, **kwargs):
         self.config = config or Config()
         self.view = ParentFrame(data_store, displayer, self.config)
+
         if "unhandled_input" not in kwargs:
             kwargs["unhandled_input"] = self.default_unhandled_input
+
         self.loop = urwid.MainLoop(
             self.view, palette, **kwargs)
         self.data_store = data_store
