@@ -1,9 +1,9 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 setup(
     name="gviewer",
-    version="0.2.0",
+    version="1.0.0",
     description="General Viewer",
     author="chhsiao90",
     author_email="chhsiao90@gmail.com",
@@ -26,7 +26,7 @@ setup(
         "Topic :: Internet :: Proxy Servers",
         "Topic :: Software Development :: Testing"
     ],
-    packages=["gviewer"],
+    packages=find_packages(include=["gviewer", "gviewer.*"]),
     install_requires=[
         "urwid==1.3.1"
     ]
