@@ -20,6 +20,9 @@ class BaseDataStore(object):
     def register_listener(self, msg_listener):
         self.msg_listener = msg_listener
 
+    def transform(self, msg):
+        return msg
+
     def set_up(self):
         raise NotImplementedError
 
@@ -53,3 +56,21 @@ class AsyncDataStore(BaseDataStore):
 
     def set_up(self):
         self.register_func(self.msg_listener.on_message)
+
+
+class MessageListener(object):
+    def __init__(self, data_store):
+        self.data_store = data_store
+        self.walkers = []
+        self.data_store.register_listener(self)
+
+    def on_message(self, message):
+        transformed_msg = self.data_store.transform(message)
+        for walker in self.walkers:
+            walker.recv(transformed_msg)
+
+    def _register(self, walker):
+        self.walkers.append(walker)
+
+    def _unregister(self, walker):
+        self.walkers.remove(walker)

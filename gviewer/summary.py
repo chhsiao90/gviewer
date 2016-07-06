@@ -32,21 +32,6 @@ class SummaryItem(BasicWidget):
         return key
 
 
-class MessageListener(object):
-    def __init__(self):
-        self.walkers = []
-
-    def on_message(self, message):
-        for walker in self.walkers:
-            walker.recv(message)
-
-    def _register(self, walker):
-        self.walkers.append(walker)
-
-    def _unregister(self, walker):
-        self.walkers.remove(walker)
-
-
 class SummaryListWalker(urwid.SimpleFocusListWalker):
     def __init__(self, parent, content=None):
         super(SummaryListWalker, self).__init__(content or [])
