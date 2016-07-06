@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name="gviewer",
-    version="0.0.2",
+    version="0.2.0",
     description="General Viewer",
     author="chhsiao90",
     author_email="chhsiao90@gmail.com",
