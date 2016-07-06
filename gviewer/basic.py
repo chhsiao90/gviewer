@@ -2,11 +2,15 @@ import urwid
 
 
 class BasicWidget(urwid.WidgetWrap):
-    def __init__(self, widget, parent=None):
+    def __init__(self, parent=None, widget=None):
+        super(BasicWidget, self).__init__(widget or "")
         self.parent = parent
-        super(BasicWidget, self).__init__(widget)
+
+    def display(self, widget):
+        self._w = widget
 
     def keypress(self, size, key):
-        if key in self.parent.config.keys:
-            return super(BasicWidget, self).keypress(size, self.parent.config.keys[key])
+        if self.parent and key in self.parent.config.keys:
+            return super(BasicWidget, self) \
+                .keypress(size, self.parent.config.keys[key])
         return super(BasicWidget, self).keypress(size, key)

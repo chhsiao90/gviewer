@@ -16,13 +16,13 @@ Contents:
 
 class SummaryItem(BasicWidget):
     def __init__(self, message, parent):
+        super(SummaryItem, self).__init__(parent)
         self.message = message
         self.title = parent.displayer.to_summary(message)
-        super(SummaryItem, self).__init__(self._make_widget(), parent=parent)
 
-    def _make_widget(self):
-        return urwid.AttrMap(
-            urwid.Text(self.title), "summary", "summary focus")
+        widget = urwid.Text(self.title)
+        widget = urwid.AttrMap(widget, "summary", "summary focus")
+        self.display(widget)
 
     def selectable(self):
         return True
@@ -56,7 +56,7 @@ class SummaryListWalker(urwid.SimpleFocusListWalker):
         self.parent.msg_listener._register(self)
 
     def recv(self, message):
-        self.append(SummaryItem(message, parent=self.parent))
+        self.append(SummaryItem(message, self.parent))
 
 
 class FilterSummaryListWalker(SummaryListWalker):
@@ -76,13 +76,16 @@ class FilterSummaryListWalker(SummaryListWalker):
 
 
 class SummaryListWidget(BasicWidget):
-    def __init__(self, walker, **kwargs):
+    def __init__(self, walker, parent):
+        super(SummaryListWidget, self).__init__(parent)
         self.base_walker = walker
         self.current_walker = walker
         self.list_box = urwid.ListBox(walker)
-        self.search = SearchWidget(self)
-        widget = urwid.Pile([self.list_box, ("pack", self.search)])
-        super(SummaryListWidget, self).__init__(widget, **kwargs)
+        self.search = SearchWidget(parent)
+
+        widget_list = [self.list_box, ("pack", self.search)]
+        widget = urwid.Pile(widget_list)
+        self.display(widget)
 
     def filter(self, search):
         new_walker = FilterSummaryListWalker(self.base_walker, search) if search else self.base_walker

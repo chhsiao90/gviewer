@@ -19,20 +19,17 @@ Contents:
 
 class DetailWidget(BasicWidget):
     def __init__(self, message, index, parent):
+        super(DetailWidget, self).__init__(parent)
         self.index = index
         self.message = message
 
         _, detail_displayer = parent.detail_displayers[index]
         detail_names = parent.detail_names
 
-        widget = self._make_widget(detail_displayer, detail_names)
-        super(DetailWidget, self).__init__(
-            widget, parent)
-
-    def _make_widget(self, detail_displayer, detail_names):
         body = self._make_body(detail_displayer)
         header = Tabs(detail_names, self.index)
-        return urwid.Frame(body, header=header)
+        widget = urwid.Frame(body, header=header)
+        self.display(widget)
 
     def _make_body(self, detail_displayer):
         detail_groups = detail_displayer \
@@ -109,18 +106,16 @@ class DetailGroup(object):
 
 class DetailItemWidget(BasicWidget):
     def __init__(self, item):
-        w = urwid.AttrMap(
-            urwid.Text(item.content), item.style or "detailitem")
-        super(DetailItemWidget, self).__init__(w)
-
-    def keypress(self, size, key):
-        return key
+        widget = urwid.Text(item.content)
+        widget = urwid.AttrMap(widget, item.style or "detailitem")
+        super(DetailItemWidget, self).__init__(widget=widget)
 
 
 class DetailItemSeparator(BasicWidget):
     def __init__(self, content):
-        super(DetailItemSeparator, self).__init__(
-            urwid.AttrMap(urwid.Text(content), "detailitem separator"))
+        widget = urwid.Text(content)
+        widget = urwid.AttrMap(widget, "detailitem separator")
+        super(DetailItemSeparator, self).__init__(widget=widget)
 
 
 class EmptyLine(urwid.Text):
@@ -128,9 +123,10 @@ class EmptyLine(urwid.Text):
         super(EmptyLine, self).__init__("")
 
 
-class Tabs(urwid.WidgetWrap):
+class Tabs(BasicWidget):
     def __init__(self, detail_names, index):
-        super(Tabs, self).__init__(self._make_widget(detail_names, index))
+        widget = self._make_widget(detail_names, index)
+        super(Tabs, self).__init__(widget=widget)
 
     def _make_widget(self, detail_names, index):
         def make_tab(curr_index):
@@ -138,4 +134,5 @@ class Tabs(urwid.WidgetWrap):
             if curr_index == index:
                 return urwid.AttrMap(urwid.Text(name), "tabs focus")
             return urwid.AttrMap(urwid.Text(name), "tabs")
-        return urwid.Columns(map(make_tab, range(0, len(detail_names))))
+        widgets = map(make_tab, range(0, len(detail_names)))
+        return urwid.Columns(widgets)

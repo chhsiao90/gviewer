@@ -29,18 +29,22 @@ class ParentFrame(urwid.Frame):
         self.msg_listener = MessageListener()
         self.data_store.register_listener(self.msg_listener)
 
-        walker = SummaryListWalker(parent=self)
+        walker = SummaryListWalker(self)
 
-        self.summary = SummaryListWidget(walker, parent=self)
+        self.summary = SummaryListWidget(walker, self)
         super(ParentFrame, self).__init__(
             body=self.summary,
             header=header_widget)
 
     def open_detail(self, message, index):
-        self.set_body(DetailWidget(message, index, self))
+        widget = DetailWidget(message, index, self)
+        self.set_body(widget)
 
     def close_detail(self):
         self.set_body(self.summary)
+
+    def filter(self, search):
+        self.summary.filter(search)
 
     def keypress(self, size, key):
         if key in ("q", "Q"):
