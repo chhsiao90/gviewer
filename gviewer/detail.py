@@ -24,10 +24,11 @@ class DetailWidget(BasicWidget):
         self.message = message
 
         _, detail_displayer = parent.detail_displayers[index]
-        detail_names = parent.detail_names
 
         body = self._make_body(detail_displayer)
-        header = Tabs(detail_names, self.index)
+        header = Tabs(parent.detail_names, self.index) \
+            if len(parent.detail_names) > 1 \
+            else None
         widget = urwid.Frame(body, header=header)
         self.display(widget)
 
@@ -36,7 +37,7 @@ class DetailWidget(BasicWidget):
             .to_detail_groups(self.message)
         widgets = []
         for group in detail_groups:
-            widgets.append(DetailItemSeparator(group.title))
+            widgets.append(DetailTitleWidget(group.title))
             widgets += [DetailItemWidget(i) for i in group.items]
             widgets.append(EmptyLine())
 
@@ -69,12 +70,15 @@ class DetailLine(object):
     :param style: style name
     :type style: str
     """
-    def __init__(self, content, style=None):
+    def __init__(self, content):
         self.content = content
-        self.style = style
+
+    def to_widget(self):
+        widget = urwid.Text(self.content)
+        return urwid.AttrMap(widget, "detailitem")
 
 
-class DetailProp(DetailLine):
+class DetailProp(object):
     """
     One line detail content
     :param key: property key
@@ -86,8 +90,19 @@ class DetailProp(DetailLine):
     :param style: style name
     :type style: str
     """
-    def __init__(self, key, value, style=None):
-        super(DetailProp, self).__init__(u"{0}: {1}".format(key, value), style)
+    def __init__(self, key, value):
+        self.kv = (key, value)
+        self.max_key_length = 0
+
+    def to_widget(self):
+        if self.max_key_length:
+            format_str = "{0:" + str(self.max_key_length) + "}: "
+            return urwid.Text(
+                [("detailitem key", format_str.format(self.kv[0])),
+                 ("detailitem value", self.kv[1])])
+        return urwid.Text(
+            [("detailitem key", self.kv[0] + ": "),
+             ("detailitem value", self.kv[1])])
 
 
 class DetailGroup(object):
@@ -106,16 +121,15 @@ class DetailGroup(object):
 
 class DetailItemWidget(BasicWidget):
     def __init__(self, item):
-        widget = urwid.Text(item.content)
-        widget = urwid.AttrMap(widget, item.style or "detailitem")
+        widget = item.to_widget()
         super(DetailItemWidget, self).__init__(widget=widget)
 
 
-class DetailItemSeparator(BasicWidget):
+class DetailTitleWidget(BasicWidget):
     def __init__(self, content):
         widget = urwid.Text(content)
-        widget = urwid.AttrMap(widget, "detailitem separator")
-        super(DetailItemSeparator, self).__init__(widget=widget)
+        widget = urwid.AttrMap(widget, "detailtitle")
+        super(DetailTitleWidget, self).__init__(widget=widget)
 
 
 class EmptyLine(urwid.Text):

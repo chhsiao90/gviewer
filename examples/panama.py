@@ -10,16 +10,18 @@ with open("examples/panama-taiwan.json", "r") as data_file:
 class PanamaDisplayer(BaseDisplayer):
     def __init__(self, data):
         data_store = self.create_data_store(data)
-        self.viewer = GViewer(data_store, self)
+        self.viewer = GViewer(
+            data_store, self,
+            palette=[("nodeid", "light cyan", "black")])
 
     def create_data_store(self, data):
         return StaticDataStore(data)
 
     def to_summary(self, message):
-        return u"[{0}][{1}] {2}".format(
-            message["node_id"],
-            message["country_codes"],
-            message["name"])
+        return [
+            ("nodeid", message["node_id"]),
+            " ",
+            message["name"]]
 
     def get_detail_displayers(self):
         return [("Detail", PanamaDetailDisplayer())]

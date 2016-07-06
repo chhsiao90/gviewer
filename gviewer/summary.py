@@ -1,7 +1,7 @@
 import urwid
 
 from search import SearchWidget
-from basic import BasicWidget
+from basic import BasicWidget, FocusableText
 
 """ Summary Widget Related Component
 
@@ -18,14 +18,12 @@ class SummaryItem(BasicWidget):
     def __init__(self, message, parent):
         super(SummaryItem, self).__init__(parent)
         self.message = message
-        self.title = parent.displayer.to_summary(message)
+        summary = parent.displayer.to_summary(message)
 
-        widget = urwid.Text(self.title)
+        widget = FocusableText(summary)
+        self.title = widget.get_plain_text()
         widget = urwid.AttrMap(widget, "summary", "summary focus")
         self.display(widget)
-
-    def selectable(self):
-        return True
 
     def keypress(self, size, key):
         if key == "enter":

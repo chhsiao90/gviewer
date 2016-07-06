@@ -4,7 +4,9 @@ palette = [
     ("summary", "white", "black"),
     ("summary focus", "black", "light gray"),
     ("detailitem", "white", "black"),
-    ("detailitem separator", "white", "dark red", "bold"),
+    ("detailitem key", "light cyan", "black"),
+    ("detailitem value", "white", "black"),
+    ("detailtitle", "yellow", "black", "bold"),
     ("tabs", "white", "black", "bold"),
-    ("tabs focus", "white", "light blue", "bold")
+    ("tabs focus", "white", "dark blue", "bold")
 ]

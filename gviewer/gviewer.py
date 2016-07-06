@@ -24,15 +24,16 @@ class GViewer(object):
 
     :param **kwargs: other urwid.MainLoop supported parameters
     """
-    def __init__(self, data_store, displayer, config=None, palette=default, **kwargs):
+    def __init__(self, data_store, displayer, config=None, template=default, palette=None, **kwargs):
         self.config = config or Config()
         self.view = ParentFrame(data_store, displayer, self.config)
 
         if "unhandled_input" not in kwargs:
             kwargs["unhandled_input"] = self.default_unhandled_input
 
+        palette = palette or []
         self.loop = urwid.MainLoop(
-            self.view, palette, **kwargs)
+            self.view, template + palette, **kwargs)
         self.data_store = data_store
 
     def default_unhandled_input(self, key):
