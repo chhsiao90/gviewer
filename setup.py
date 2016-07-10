@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="gviewer",
-    version="1.0.0",
+    version="1.1.0",
     description="General Viewer",
     author="chhsiao90",
     author_email="chhsiao90@gmail.com",
@@ -20,11 +20,8 @@ setup(
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
-        "Topic :: Security",
-        "Topic :: Internet",
-        "Topic :: Internet :: WWW/HTTP",
-        "Topic :: Internet :: Proxy Servers",
-        "Topic :: Software Development :: Testing"
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Topic :: Software Development :: Widget Sets"
     ],
     packages=find_packages(include=["gviewer", "gviewer.*"]),
     install_requires=[
