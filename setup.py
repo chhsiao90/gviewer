@@ -1,10 +1,18 @@
 from setuptools import setup, find_packages
+from codecs import open
+import os
 
+
+here = os.path.abspath(os.path.dirname(__file__))
+
+with open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
 
 setup(
     name="gviewer",
     version="1.1.0",
     description="General Viewer",
+    long_description=long_description,
     author="chhsiao90",
     author_email="chhsiao90@gmail.com",
     url="https://github.com/chhsiao90/gviewer",
