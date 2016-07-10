@@ -7,12 +7,14 @@ from basic import BasicWidget
 Contents:
 
 * `DetailWidget`: ListBox to display detail
-* `DetailItemWidget`: Each line of the detail
-* `DetailItemSeparator`: Seperator between properties group
+* `DetailTitleWidget`: Title for detail group
+* `DetailItemWidget`: Each line of the detail item
+* `DetailGroup`: define detail group that contains title and content
+* `PropsDetailGroup`: define detail group that contains title and key-value prop content
 * `EmptyLine`: Empty Line
 * `DetailLine`: detail line
 * `DetailProp`: detail properties
-* `DetailGroup`: detail group
+* `Tabs`: tabs
 
 """
 

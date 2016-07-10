@@ -9,7 +9,8 @@ from basic import BasicWidget, FocusableText
 Contents:
 
 * `SummaryItem`: One line of the SummaryList
-* `SummaryListWalker`: The urwid Walker to iterate over the data_store*
+* `SummaryListWalker`: The urwid Walker to iterate over the data_store
+* `FilterSummaryListWalker`: The urwid Walker to iterate over the data_store with filter
 * `SummaryListWidget`: urwid ListBox to display Summary
 
 """
