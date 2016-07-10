@@ -1,13 +1,15 @@
-from gviewer import StaticDataStore, GViewer, BaseDisplayer, DetailDisplayer
+from gviewer import StaticDataStore, GViewer, BaseDisplayer
 from gviewer import DetailLine, DetailGroup
 
 
 data = [{"summary": "summary a",
          "a": "detail a",
-         "b": "detail b"},
-        {"summary": "summary a",
-         "a": "detail a",
-         "b": "detail b"}]
+         "b": "detail b",
+         "c": "detail c"},
+        {"summary": "summary b",
+         "a": "detail d",
+         "b": "detail f",
+         "c": "detail g"}]
 
 
 class Displayer(BaseDisplayer):
@@ -19,19 +21,21 @@ class Displayer(BaseDisplayer):
         return message["summary"]
 
     def get_detail_displayers(self):
-        return [("Detail A", SimpleDetailDisplayer("a")),
-                ("Detail B", SimpleDetailDisplayer("b"))]
+        return [("Detail A", self.detail_a),
+                ("Detail B", self.detail_b),
+                ("Detail C", self.detail_c)]
+
+    def detail_a(self, message):
+        return [DetailGroup("Detail", [DetailLine(message["a"])])]
+
+    def detail_b(self, message):
+        return [DetailGroup("Detail", [DetailLine(message["b"])])]
+
+    def detail_c(self, message):
+        return [DetailGroup("Detail", [DetailLine(message["c"])])]
 
     def run(self):
         self.viewer.start()
-
-
-class SimpleDetailDisplayer(DetailDisplayer):
-    def __init__(self, char):
-        self.char = char
-
-    def to_detail_groups(self, message):
-        return [DetailGroup("Detail", [DetailLine(message[self.char])])]
 
 
 def main():

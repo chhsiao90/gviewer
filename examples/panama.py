@@ -1,5 +1,5 @@
 import json
-from gviewer import StaticDataStore, GViewer, BaseDisplayer, DetailDisplayer
+from gviewer import StaticDataStore, GViewer, BaseDisplayer
 from gviewer import DetailProp, DetailGroup
 
 
@@ -24,14 +24,9 @@ class PanamaDisplayer(BaseDisplayer):
             message["name"]]
 
     def get_detail_displayers(self):
-        return [("Detail", PanamaDetailDisplayer())]
+        return [("Detail", self.detail)]
 
-    def run(self):
-        self.viewer.start()
-
-
-class PanamaDetailDisplayer(DetailDisplayer):
-    def to_detail_groups(self, message):
+    def detail(self, message):
         detail_groups = []
         summary_group_content = \
             [DetailProp(k, v) for k, v in message.iteritems() if isinstance(v, str) or isinstance(v, unicode)]
@@ -44,6 +39,9 @@ class PanamaDetailDisplayer(DetailDisplayer):
                 [DetailProp(k, v) for k, v in shareholder.iteritems() if isinstance(v, str) or isinstance(v, unicode)]))
 
         return detail_groups
+
+    def run(self):
+        self.viewer.start()
 
 
 def main():

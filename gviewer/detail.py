@@ -33,8 +33,7 @@ class DetailWidget(BasicWidget):
         self.display(widget)
 
     def _make_body(self, detail_displayer):
-        detail_groups = detail_displayer \
-            .to_detail_groups(self.message)
+        detail_groups = detail_displayer(self.message)
         widgets = []
         for group in detail_groups:
             widgets.append(DetailTitleWidget(group.title))

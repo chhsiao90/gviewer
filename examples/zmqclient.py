@@ -1,7 +1,7 @@
 import zmq
 from zmq.eventloop import ioloop, zmqstream
 import urwid
-from gviewer import AsyncDataStore, GViewer, BaseDisplayer, DetailLine, DetailGroup, DetailDisplayer
+from gviewer import AsyncDataStore, GViewer, BaseDisplayer, DetailLine, DetailGroup
 
 
 ioloop.install()
@@ -14,11 +14,9 @@ class Displayer(BaseDisplayer):
         return message[0]
 
     def get_detail_displayers(self):
-        return [("Detail", SimpleDetailDisplayer())]
+        return [("Detail", self.detail)]
 
-
-class SimpleDetailDisplayer(DetailDisplayer):
-    def to_detail_groups(self, message):
+    def detail(self, message):
         return [DetailGroup("Summary", [DetailLine(message)])]
 
 
