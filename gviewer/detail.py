@@ -25,14 +25,14 @@ class DetailWidget(BasicWidget):
 
         _, detail_displayer = parent.detail_displayers[index]
 
-        body = self._make_body(detail_displayer)
+        body = self._make_widget(detail_displayer)
         header = Tabs(parent.detail_names, self.index) \
             if len(parent.detail_names) > 1 \
             else None
         widget = urwid.Frame(body, header=header)
         self.display(widget)
 
-    def _make_body(self, detail_displayer):
+    def _make_widget(self, detail_displayer):
         detail_groups = detail_displayer(self.message)
         widgets = []
         for group in detail_groups:

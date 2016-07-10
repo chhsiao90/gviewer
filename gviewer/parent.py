@@ -1,7 +1,9 @@
+import sys
 import urwid
 from summary import SummaryListWidget, SummaryListWalker
 from store import MessageListener
 from detail import DetailWidget
+from error import ErrorWidget
 
 
 """ Parent Frame to control the which widget to display """
@@ -41,19 +43,26 @@ class ParentFrame(urwid.Frame):
             footer=footer_widget)
 
     def open_detail(self, message, index):
-        widget = DetailWidget(message, index, self)
-        self.set_body(widget)
+        try:
+            widget = DetailWidget(message, index, self)
+            self.set_body(widget)
+        except:
+            self.on_error(sys.exc_info())
 
-    def close_detail(self):
+    def to_summary(self):
         self.set_body(self.summary)
 
     def filter(self, search):
         self.summary.filter(search)
 
+    def on_error(self, exc_info):
+        widget = ErrorWidget(self, exc_info)
+        self.set_body(widget)
+
     def keypress(self, size, key):
         if key in ("q", "Q"):
-            if isinstance(self.get_body(), DetailWidget):
-                self.close_detail()
+            if self.get_body() is not self.summary:
+                self.to_summary()
                 return None
         return super(ParentFrame, self).keypress(size, key)
 

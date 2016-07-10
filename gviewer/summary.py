@@ -1,3 +1,4 @@
+import sys
 import urwid
 
 from search import SearchWidget
@@ -15,11 +16,10 @@ Contents:
 
 
 class SummaryItem(BasicWidget):
-    def __init__(self, message, parent):
+    def __init__(self, message, parent, summary):
         super(SummaryItem, self).__init__(parent)
-        self.message = message
-        summary = parent.displayer.to_summary(message)
 
+        self.message = message
         widget = FocusableText(summary)
         self.title = widget.get_plain_text()
         widget = urwid.AttrMap(widget, "summary", "summary focus")
@@ -39,7 +39,11 @@ class SummaryListWalker(urwid.SimpleFocusListWalker):
         self.parent.msg_listener._register(self)
 
     def recv(self, message):
-        self.append(SummaryItem(message, self.parent))
+        try:
+            summary = self.parent.displayer.to_summary(message)
+            self.append(SummaryItem(message, self.parent, summary))
+        except:
+            self.parent.on_error(sys.exc_info())
 
 
 class FilterSummaryListWalker(SummaryListWalker):
@@ -50,9 +54,12 @@ class FilterSummaryListWalker(SummaryListWalker):
         self.search = search
 
     def recv(self, message):
-        title = self.parent.displayer.to_summary(message)
-        if self.parent.displayer.match(self.search, message, title):
-            self.append(SummaryItem(message, self.parent))
+        try:
+            summary = self.parent.displayer.to_summary(message)
+            if self.parent.displayer.match(self.search, message, summary):
+                self.append(SummaryItem(message, self.parent, summary))
+        except:
+            self.parent.on_error(sys.exc_info())
 
     def close(self):
         self.parent.msg_listener._unregister(self)
