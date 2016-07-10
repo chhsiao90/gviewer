@@ -74,6 +74,7 @@ class SummaryListWidget(BasicWidget):
         new_walker = FilterSummaryListWalker(self.base_walker, search) if search else self.base_walker
         if new_walker is not self.current_walker:
             self._update(new_walker)
+        self._w.set_focus(0)
 
     def _update(self, walker):
         if self.current_walker is not self.base_walker:
@@ -82,7 +83,6 @@ class SummaryListWidget(BasicWidget):
         self.current_walker = walker
         self._w.contents.pop(0)
         self._w.contents.insert(0, (urwid.ListBox(walker), self._w.options()))
-        self._w.set_focus(0)
 
     def keypress(self, size, key):
         if key == "/":
@@ -92,4 +92,7 @@ class SummaryListWidget(BasicWidget):
             self.search.clear()
             self.filter(None)
             return None
+
+        if self._w.get_focus() is self.search:
+            return self.default_keypress(size, key)
         return super(SummaryListWidget, self).keypress(size, key)

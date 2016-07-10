@@ -23,6 +23,7 @@ class ParentFrame(urwid.Frame):
         header_widget = urwid.AttrMap(urwid.Text(config.header), "header")
         self.config = config
         self.data_store = data_store
+
         self.displayer = displayer
         self.detail_displayers = displayer.get_detail_displayers()
         self.detail_names = [k for k, _ in self.detail_displayers]
@@ -30,8 +31,8 @@ class ParentFrame(urwid.Frame):
         self.msg_listener = MessageListener(self.data_store)
 
         walker = SummaryListWalker(self)
-
         self.summary = SummaryListWidget(walker, self)
+
         super(ParentFrame, self).__init__(
             body=self.summary,
             header=header_widget)

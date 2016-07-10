@@ -16,6 +16,9 @@ class BasicWidget(urwid.WidgetWrap):
                 .keypress(size, self.parent.config.keys[key])
         return super(BasicWidget, self).keypress(size, key)
 
+    def default_keypress(self, size, key):
+        return super(BasicWidget, self).keypress(size, key)
+
 
 class FocusableText(urwid.WidgetWrap):
     def __init__(self, text_markup):

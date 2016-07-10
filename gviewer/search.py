@@ -14,4 +14,7 @@ class SearchWidget(BasicWidget):
         if key == "enter":
             self.parent.filter(self._w.edit_text)
             return None
-        return super(SearchWidget, self).keypress(size, key)
+        if key == "esc":
+            self.parent.filter(None)
+            return None
+        return self.default_keypress(size, key)
