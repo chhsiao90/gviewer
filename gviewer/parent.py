@@ -20,7 +20,6 @@ class ParentFrame(urwid.Frame):
     :type header: str
     """
     def __init__(self, data_store, displayer, config):
-        header_widget = urwid.AttrMap(urwid.Text(config.header), "header")
         self.config = config
         self.data_store = data_store
 
@@ -33,9 +32,13 @@ class ParentFrame(urwid.Frame):
         walker = SummaryListWalker(self)
         self.summary = SummaryListWidget(walker, self)
 
+        header_widget = urwid.AttrMap(urwid.Text(config.header), "header")
+        footer_widget = Footer(config.keys)
+
         super(ParentFrame, self).__init__(
             body=self.summary,
-            header=header_widget)
+            header=header_widget,
+            footer=footer_widget)
 
     def open_detail(self, message, index):
         widget = DetailWidget(message, index, self)
@@ -53,3 +56,12 @@ class ParentFrame(urwid.Frame):
                 self.close_detail()
                 return None
         return super(ParentFrame, self).keypress(size, key)
+
+
+class Footer(urwid.WidgetWrap):
+    def __init__(self, keys):
+        text = "; ".join(
+            ["{0}: {1}".format(k, v) for k, v in keys.iteritems()])
+        widget = urwid.Text(text)
+        widget = urwid.AttrMap(widget, "footer")
+        super(Footer, self).__init__(widget)
