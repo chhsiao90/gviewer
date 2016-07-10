@@ -54,9 +54,19 @@ class DetailWidget(BasicWidget):
             next_index = 0
         self.parent.open_detail(self.message, next_index)
 
+    def _prev_view(self):
+        if len(self.parent.detail_names) == 1:
+            return
+
+        next_index = len(self.parent.detail_names) - 1 if self.index == 0 else self.index - 1
+        self.parent.open_detail(self.message, next_index)
+
     def keypress(self, size, key):
         if key == "tab":
             self._next_view()
+            return None
+        if key == "shift tab":
+            self._prev_view()
             return None
         return super(DetailWidget, self).keypress(size, key)
 
