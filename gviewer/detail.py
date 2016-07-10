@@ -36,8 +36,7 @@ class DetailWidget(BasicWidget):
         detail_groups = detail_displayer(self.message)
         widgets = []
         for group in detail_groups:
-            widgets.append(DetailTitleWidget(group.title))
-            widgets += [DetailItemWidget(i) for i in group.items]
+            widgets += group.to_widgets()
             widgets.append(EmptyLine())
 
         walker = urwid.SimpleFocusListWalker(widgets)
@@ -105,7 +104,7 @@ class DetailProp(object):
 
     def to_widget(self):
         if self.max_key_length:
-            format_str = "{0:" + str(self.max_key_length) + "}: "
+            format_str = "{0:" + str(self.max_key_length + 1) + "}: "
             return urwid.Text(
                 [("detailitem key", format_str.format(self.kv[0])),
                  ("detailitem value", self.kv[1])])
@@ -123,9 +122,25 @@ class DetailGroup(object):
     :param items: detail items
     :type items: iterable for DetailLine or DetailProp
     """
-    def __init__(self, title, items):
+    def __init__(self, title, items, show_title=True):
         self.title = title
         self.items = items
+        self.show_title = show_title
+
+    def to_widgets(self):
+        widgets = []
+        if self.show_title:
+            widgets.append(DetailTitleWidget(self.title))
+        widgets += [DetailItemWidget(i) for i in self.items]
+        return widgets
+
+
+class PropsDetailGroup(DetailGroup):
+    def __init__(self, title, items, *args, **kwargs):
+        max_key_length = max(map(lambda p: len(p.kv[0]), items))
+        for p in items:
+            p.max_key_length = max_key_length
+        super(PropsDetailGroup, self).__init__(title, items, *args, **kwargs)
 
 
 class DetailItemWidget(BasicWidget):

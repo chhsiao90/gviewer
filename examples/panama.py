@@ -1,6 +1,6 @@
 import json
 from gviewer import StaticDataStore, GViewer, BaseDisplayer
-from gviewer import DetailProp, DetailGroup
+from gviewer import DetailProp, DetailGroup, PropsDetailGroup
 
 
 with open("examples/panama-taiwan.json", "r") as data_file:
@@ -31,10 +31,10 @@ class PanamaDisplayer(BaseDisplayer):
         summary_group_content = \
             [DetailProp(k, v) for k, v in message.iteritems() if isinstance(v, str) or isinstance(v, unicode)]
 
-        detail_groups.append(DetailGroup("Summary", summary_group_content))
+        detail_groups.append(PropsDetailGroup("Summary", summary_group_content))
 
         for shareholder in message.get("officers").get("shareholder of"):
-            detail_groups.append(DetailGroup(
+            detail_groups.append(PropsDetailGroup(
                 shareholder.get("name"),
                 [DetailProp(k, v) for k, v in shareholder.iteritems() if isinstance(v, str) or isinstance(v, unicode)]))
 
