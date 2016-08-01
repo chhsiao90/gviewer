@@ -55,6 +55,9 @@ class ParentFrame(urwid.Frame):
     def filter(self, search):
         self.summary.filter(search)
 
+    def clear_search(self):
+        self.summary.clear_search()
+
     def on_error(self, exc_info):
         widget = ErrorWidget(self, exc_info)
         self.set_body(widget)

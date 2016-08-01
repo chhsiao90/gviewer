@@ -15,6 +15,6 @@ class SearchWidget(BasicWidget):
             self.parent.filter(self._w.edit_text)
             return None
         if key == "esc":
-            self.parent.filter(None)
+            self.parent.clear_search()
             return None
         return self.default_keypress(size, key)
