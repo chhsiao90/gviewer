@@ -28,13 +28,18 @@ class GViewer(object):
         self.config = config or Config()
         self.view = ParentFrame(data_store, displayer, self.config)
 
-        if "unhandled_input" not in kwargs:
-            kwargs["unhandled_input"] = self.default_unhandled_input
+        self._default_urwid_options(kwargs)
 
         palette = palette or []
         self.loop = urwid.MainLoop(
             self.view, template + palette, **kwargs)
         self.data_store = data_store
+
+    def _default_urwid_options(self, kwargs):
+        if "handle_mouse" not in kwargs:
+            kwargs["handle_mouse"] = False
+        if "unhandled_input" not in kwargs:
+            kwargs["unhandled_input"] = self.default_unhandled_input
 
     def default_unhandled_input(self, key):
         if key in ("q", "Q"):
