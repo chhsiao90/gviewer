@@ -28,6 +28,7 @@ class SearchableText(urwid.WidgetWrap):
     def __init__(self, plain_text):
         if not isinstance(plain_text, (str, unicode)):
             plain_text = decompose_tagmarkup(plain_text)
+        plain_text = plain_text.decode("utf8") if isinstance(plain_text, str) else plain_text
         widget = urwid.Text(plain_text)
         super(SearchableText, self).__init__(widget)
         self.plain_text = plain_text
@@ -35,6 +36,8 @@ class SearchableText(urwid.WidgetWrap):
 
     def search_next(self, keyword):
         prev_index = self.prev_index[0]
+        if isinstance(keyword, str):
+            keyword = keyword.decode("utf8")
         if keyword in self.plain_text[prev_index:]:
             start_index = self.plain_text[prev_index:].index(keyword) + prev_index
             end_index = start_index + len(keyword)

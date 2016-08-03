@@ -35,6 +35,7 @@ class DetailWidget(BasicWidget):
         header = Tabs(parent.detail_names, self.index) if len(parent.detail_names) else None
 
         widget = urwid.Frame(self.body, header=header)
+        widget.set_focus("body")
         self.display(widget)
 
     def _make_widget(self, detail_displayer):
@@ -59,6 +60,8 @@ class DetailWidget(BasicWidget):
         self.parent.open_detail(self.message, next_index)
 
     def open_search(self):
+        self.search_widget.clear()
+        self.detail_content.clear_prev_search()
         if len(self.body.contents) == 1:
             self.body.contents.append((
                 self.search_widget,
@@ -209,13 +212,13 @@ class DetailItemWidget(BasicWidget):
     def search_next(self, keyword):
         try:
             return self._w.search_next(keyword)
-        except:
+        except AttributeError:
             pass
 
     def search_prev(self, keyword):
         try:
             return self._w.search_prev(keyword)
-        except:
+        except AttributeError:
             pass
 
     def clear_search(self):
@@ -227,7 +230,8 @@ class DetailListWidget(urwid.WidgetWrap):
     def __init__(self, detail_groups):
         widget = urwid.ListBox(self._make_walker(detail_groups))
         super(DetailListWidget, self).__init__(widget)
-        self.curr_match = 0
+        self._w.set_focus(0)
+        self.prev_match = 0
 
     def _make_walker(self, detail_groups):
         widgets = []
@@ -235,26 +239,51 @@ class DetailListWidget(urwid.WidgetWrap):
             widgets += group.to_widgets()
             widgets.append(EmptyLine())
 
+        if not widgets:
+            widgets.append(EmptyLine())
+
         walker = urwid.SimpleFocusListWalker(widgets)
         return walker
 
     def search_next(self, keyword):
-        for index in range(self.curr_match, len(self._w.body)):
+        curr_index = self._w.get_focus()[1]
+        if self.prev_match != curr_index:
+            self.clear_prev_search()
+
+        match_index = len(self._w.body) - 1
+        for index in range(curr_index, len(self._w.body)):
             try:
                 if self._w.body[index].search_next(keyword):
-                    self.curr_match = index
+                    match_index = index
                     break
-            except:
+            except AttributeError:
                 pass
 
+        self.prev_match = match_index
+        self._w.set_focus(match_index)
+
     def search_prev(self, keyword):
-        for index in reversed(range(0, self.curr_match + 1)):
+        curr_index = self._w.get_focus()[1]
+        if self.prev_match != curr_index:
+            self.clear_prev_search()
+
+        match_index = 0
+        for index in reversed(range(0, curr_index + 1)):
             try:
                 if self._w.body[index].search_prev(keyword):
-                    self.curr_match = index
+                    match_index = index
                     break
-            except:
+            except AttributeError:
                 pass
+
+        self.prev_match = match_index
+        self._w.set_focus(match_index)
+
+    def clear_prev_search(self):
+        try:
+            self._w.body[self.prev_match].clear_search()
+        except AttributeError:
+            pass
 
 
 class DetailTitleWidget(BasicWidget):
