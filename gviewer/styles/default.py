@@ -8,5 +8,6 @@ palette = [
     ("detailitem value", "white", "black"),
     ("detailtitle", "yellow", "black", "bold"),
     ("tabs", "white", "black", "bold"),
-    ("tabs focus", "white", "dark blue", "bold")
+    ("tabs focus", "white", "dark blue", "bold"),
+    ("match", "black", "light gray")
 ]

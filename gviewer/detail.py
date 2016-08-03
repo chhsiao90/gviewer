@@ -1,6 +1,7 @@
 import urwid
 
 from basic import BasicWidget
+from search import SearchableText, SearchWidget
 
 """ Detail Widget Related Component
 
@@ -25,24 +26,20 @@ class DetailWidget(BasicWidget):
         self.index = index
         self.message = message
 
-        _, detail_displayer = parent.detail_displayers[index]
+        self.search_widget = SearchWidget(self.search, self.clear_search)
 
-        body = self._make_widget(detail_displayer)
-        header = Tabs(parent.detail_names, self.index) \
-            if len(parent.detail_names) > 1 \
-            else None
-        widget = urwid.Frame(body, header=header)
+        _, detail_displayer = parent.detail_displayers[index]
+        self.detail_content = self._make_widget(detail_displayer)
+        self.body = urwid.Pile([self.detail_content])
+
+        header = Tabs(parent.detail_names, self.index) if len(parent.detail_names) else None
+
+        widget = urwid.Frame(self.body, header=header)
         self.display(widget)
 
     def _make_widget(self, detail_displayer):
         detail_groups = detail_displayer(self.message)
-        widgets = []
-        for group in detail_groups:
-            widgets += group.to_widgets()
-            widgets.append(EmptyLine())
-
-        walker = urwid.SimpleFocusListWalker(widgets)
-        return urwid.ListBox(walker)
+        return DetailListWidget(detail_groups)
 
     def _next_view(self):
         if len(self.parent.detail_names) == 1:
@@ -61,17 +58,62 @@ class DetailWidget(BasicWidget):
         next_index = len(self.parent.detail_names) - 1 if self.index == 0 else self.index - 1
         self.parent.open_detail(self.message, next_index)
 
+    def open_search(self):
+        if len(self.body.contents) == 1:
+            self.body.contents.append((
+                self.search_widget,
+                self.body.options(height_type="pack"))
+            )
+        self.body.set_focus(self.search_widget)
+
+    def close_search(self):
+        if len(self.body.contents) == 2:
+            del self.body.contents[1]
+
+    def search(self, keyword):
+        self.detail_content.search_next(keyword)
+        self.close_search()
+
+    def clear_search(self):
+        self.search_widget.clear()
+        self.close_search()
+
     def keypress(self, size, key):
+        if self.body.get_focus() is self.search_widget:
+            if key == "esc":
+                self.close_search()
+                return None
+            else:
+                return self.default_keypress(size, key)
+        if key == "q":
+            self.parent.to_summary()
+            return None
         if key == "tab":
             self._next_view()
             return None
         if key == "shift tab":
             self._prev_view()
             return None
+        if key == "/":
+            self.open_search()
+            return None
+        if key == "n":
+            if self.search_widget.get_keyword():
+                self.detail_content.search_next(
+                    self.search_widget.get_keyword()
+                )
+            return None
+        if key == "N":
+            if self.search_widget.get_keyword():
+                self.detail_content.search_prev(
+                    self.search_widget.get_keyword()
+                )
+            return None
+
         return super(DetailWidget, self).keypress(size, key)
 
 
-class DetailLine(object):
+class DetailLine(urwid.WidgetWrap):
     """
     One line detail content
     :param content: content
@@ -81,11 +123,25 @@ class DetailLine(object):
     :type style: str
     """
     def __init__(self, content):
-        self.content = content
+        self.search_widget = SearchableText(content)
+        widget = urwid.AttrMap(self.search_widget, "detailitem")
+        super(DetailLine, self).__init__(widget)
+
+    def search_next(self, keyword):
+        if self.search_widget.search_next(keyword):
+            return True
+        return False
+
+    def search_prev(self, keyword):
+        if self.search_widget.search_prev(keyword):
+            return True
+        return False
+
+    def clear_search(self):
+        self.search_widget.clear()
 
     def to_widget(self):
-        widget = urwid.Text(self.content)
-        return urwid.AttrMap(widget, "detailitem")
+        return self
 
 
 class DetailProp(object):
@@ -149,6 +205,56 @@ class DetailItemWidget(BasicWidget):
     def __init__(self, item):
         widget = item.to_widget()
         super(DetailItemWidget, self).__init__(widget=widget)
+
+    def search_next(self, keyword):
+        try:
+            return self._w.search_next(keyword)
+        except:
+            pass
+
+    def search_prev(self, keyword):
+        try:
+            return self._w.search_prev(keyword)
+        except:
+            pass
+
+    def clear_search(self):
+        if self._w.clear_search:
+            self._w.clear_search()
+
+
+class DetailListWidget(urwid.WidgetWrap):
+    def __init__(self, detail_groups):
+        widget = urwid.ListBox(self._make_walker(detail_groups))
+        super(DetailListWidget, self).__init__(widget)
+        self.curr_match = 0
+
+    def _make_walker(self, detail_groups):
+        widgets = []
+        for group in detail_groups:
+            widgets += group.to_widgets()
+            widgets.append(EmptyLine())
+
+        walker = urwid.SimpleFocusListWalker(widgets)
+        return walker
+
+    def search_next(self, keyword):
+        for index in range(self.curr_match, len(self._w.body)):
+            try:
+                if self._w.body[index].search_next(keyword):
+                    self.curr_match = index
+                    break
+            except:
+                pass
+
+    def search_prev(self, keyword):
+        for index in reversed(range(0, self.curr_match + 1)):
+            try:
+                if self._w.body[index].search_prev(keyword):
+                    self.curr_match = index
+                    break
+            except:
+                pass
 
 
 class DetailTitleWidget(BasicWidget):

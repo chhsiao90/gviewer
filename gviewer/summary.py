@@ -72,14 +72,14 @@ class SummaryListWidget(BasicWidget):
         self.base_walker = walker
         self.current_walker = walker
         self.list_box = urwid.ListBox(walker)
-        self.search = SearchWidget(parent)
+        self.search_widget = SearchWidget(self.filter, self.clear_search)
 
         widget_list = [self.list_box]
         widget = urwid.Pile(widget_list)
         self.display(widget)
 
-    def filter(self, search):
-        new_walker = FilterSummaryListWalker(self.base_walker, search) if search else self.base_walker
+    def filter(self, keyword):
+        new_walker = FilterSummaryListWalker(self.base_walker, keyword) if keyword else self.base_walker
         if new_walker is not self.current_walker:
             self._update(new_walker)
 
@@ -97,27 +97,27 @@ class SummaryListWidget(BasicWidget):
     def open_search(self):
         if len(self._w.contents) == 1:
             self._w.contents.append((
-                self.search,
+                self.search_widget,
                 self._w.options(height_type="pack"))
             )
-        self._w.set_focus(self.search)
+        self._w.set_focus(self.search_widget)
 
     def close_search(self):
         if len(self._w.contents) == 2:
             del self._w.contents[1]
 
     def clear_search(self):
-        self.search.clear()
+        self.search_widget.clear()
         self.filter(None)
 
     def keypress(self, size, key):
         if key == "/":
             self.open_search()
             return None
+        if self._w.get_focus() is self.search_widget:
+            return self.default_keypress(size, key)
         if key == "q" and isinstance(self.current_walker, FilterSummaryListWalker):
             self.clear_search()
             return None
 
-        if self._w.get_focus() is self.search:
-            return self.default_keypress(size, key)
         return super(SummaryListWidget, self).keypress(size, key)

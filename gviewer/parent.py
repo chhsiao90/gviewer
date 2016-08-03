@@ -52,22 +52,9 @@ class ParentFrame(urwid.Frame):
     def to_summary(self):
         self.set_body(self.summary)
 
-    def filter(self, search):
-        self.summary.filter(search)
-
-    def clear_search(self):
-        self.summary.clear_search()
-
     def on_error(self, exc_info):
         widget = ErrorWidget(self, exc_info)
         self.set_body(widget)
-
-    def keypress(self, size, key):
-        if key in ("q", "Q"):
-            if self.get_body() is not self.summary:
-                self.to_summary()
-                return None
-        return super(ParentFrame, self).keypress(size, key)
 
 
 class Footer(urwid.WidgetWrap):
