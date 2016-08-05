@@ -1,8 +1,7 @@
 import sys
 import urwid
 
-from search import SearchWidget
-from basic import BasicWidget, FocusableText
+from basic import BasicWidget, FocusableText, SearchWidget
 
 """ Summary Widget Related Component
 

@@ -1,7 +1,6 @@
 import urwid
 
-from basic import BasicWidget
-from search import SearchableText, SearchWidget
+from basic import BasicWidget, SearchableText, SearchWidget
 
 """ Detail Widget Related Component
 
