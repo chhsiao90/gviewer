@@ -13,3 +13,9 @@ class ErrorWidget(BasicWidget):
         widget = urwid.ListBox(walker)
         widget = urwid.AttrMap(widget, "error")
         super(ErrorWidget, self).__init__(parent, widget)
+
+    def keypress(self, size, key):
+        if key == "q":
+            self.parent.to_summary()
+            return None
+        return super(ErrorWidget, self).keypress(size, key)
