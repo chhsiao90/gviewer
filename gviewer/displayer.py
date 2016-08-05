@@ -3,7 +3,7 @@
 
 class BaseDisplayer(object):
     """ absctract class for displayer """
-    def to_summary(self, message):
+    def summary(self, message):
         """
         define how message display in summary widget
 
@@ -32,7 +32,7 @@ class BaseDisplayer(object):
         """
         return search in summary
 
-    def get_detail_displayers(self):
+    def get_displayers(self):
         """
         return a list of tuple that contains view name and a func that transform message into detail group
         """

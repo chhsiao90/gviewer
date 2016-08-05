@@ -1,7 +1,7 @@
 import zmq
 from zmq.eventloop import ioloop, zmqstream
 import urwid
-from gviewer import AsyncDataStore, GViewer, BaseDisplayer, DetailLine, DetailGroup
+from gviewer import AsyncDataStore, GViewer, BaseDisplayer, Line, Group
 
 
 ioloop.install()
@@ -10,14 +10,14 @@ CHANNEL = "tcp://127.0.0.1:5581"
 
 
 class Displayer(BaseDisplayer):
-    def to_summary(self, message):
+    def summary(self, message):
         return message[0]
 
-    def get_detail_displayers(self):
-        return [("Detail", self.detail)]
+    def get_views(self):
+        return [("View", self.detail)]
 
     def detail(self, message):
-        return [DetailGroup("Summary", [DetailLine(message)])]
+        return [Group("Summary", [Line(message[0])])]
 
 
 def print_message(message):

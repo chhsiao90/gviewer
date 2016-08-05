@@ -7,7 +7,7 @@ from basic import BasicWidget, FocusableText, SearchWidget
 
 Contents:
 
-* `SummaryItem`: One line of the SummaryList
+* `SummaryItemWidget`: One line of the SummaryList
 * `SummaryListWalker`: The urwid Walker to iterate over the data_store
 * `FilterSummaryListWalker`: The urwid Walker to iterate over the data_store with filter
 * `SummaryListWidget`: urwid ListBox to display Summary
@@ -15,9 +15,9 @@ Contents:
 """
 
 
-class SummaryItem(BasicWidget):
-    def __init__(self, message, parent, summary):
-        super(SummaryItem, self).__init__(parent)
+class SummaryItemWidget(BasicWidget):
+    def __init__(self, parent, message, summary):
+        super(SummaryItemWidget, self).__init__(parent)
 
         self.message = message
         widget = FocusableText(summary)
@@ -27,7 +27,7 @@ class SummaryItem(BasicWidget):
 
     def keypress(self, size, key):
         if key == "enter":
-            self.parent.open_detail(self.message, 0)
+            self.parent.display_view(self.message, 0)
             return None
         return key
 
@@ -36,14 +36,14 @@ class SummaryListWalker(urwid.SimpleFocusListWalker):
     def __init__(self, parent, content=None):
         super(SummaryListWalker, self).__init__(content or [])
         self.parent = parent
-        self.parent.msg_listener._register(self)
+        self.parent.msg_listener.register(self)
 
     def recv(self, message):
         try:
-            summary = self.parent.displayer.to_summary(message)
-            self.append(SummaryItem(message, self.parent, summary))
+            summary = self.parent.displayer.summary(message)
+            self.append(SummaryItemWidget(self.parent, message, summary))
         except:
-            self.parent.on_error(sys.exc_info())
+            self.parent.open_error(sys.exc_info())
 
 
 class FilterSummaryListWalker(SummaryListWalker):
@@ -55,14 +55,14 @@ class FilterSummaryListWalker(SummaryListWalker):
 
     def recv(self, message):
         try:
-            summary = self.parent.displayer.to_summary(message)
+            summary = self.parent.displayer.summary(message)
             if self.parent.displayer.match(self.search, message, summary):
-                self.append(SummaryItem(message, self.parent, summary))
+                self.append(SummaryItemWidget(self.parent, message, summary))
         except:
-            self.parent.on_error(sys.exc_info())
+            self.parent.open_error(sys.exc_info())
 
     def close(self):
-        self.parent.msg_listener._unregister(self)
+        self.parent.msg_listener.unregister(self)
 
 
 class SummaryListWidget(BasicWidget):

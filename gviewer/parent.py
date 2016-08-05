@@ -2,7 +2,7 @@ import sys
 import urwid
 from summary import SummaryListWidget, SummaryListWalker
 from store import MessageListener
-from detail import DetailWidget
+from view import ViewWidget
 from error import ErrorWidget
 
 
@@ -26,8 +26,8 @@ class ParentFrame(urwid.Frame):
         self.data_store = data_store
 
         self.displayer = displayer
-        self.detail_displayers = displayer.get_detail_displayers()
-        self.detail_names = [k for k, _ in self.detail_displayers]
+        self.views = displayer.get_views()
+        self.view_names = [k for k, _ in self.views]
 
         self.msg_listener = MessageListener(self.data_store)
 
@@ -42,17 +42,17 @@ class ParentFrame(urwid.Frame):
             header=header_widget,
             footer=footer_widget)
 
-    def open_detail(self, message, index):
+    def display_view(self, message, index):
         try:
-            widget = DetailWidget(message, index, self)
+            widget = ViewWidget(message, index, self)
             self.set_body(widget)
         except:
-            self.on_error(sys.exc_info())
+            self.open_error(sys.exc_info())
 
-    def to_summary(self):
+    def open_summary(self):
         self.set_body(self.summary)
 
-    def on_error(self, exc_info):
+    def open_error(self, exc_info):
         widget = ErrorWidget(self, exc_info)
         self.set_body(widget)
 

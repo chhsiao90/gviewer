@@ -70,8 +70,8 @@ class MessageListener(object):
         for walker in self.walkers:
             walker.recv(transformed_msg)
 
-    def _register(self, walker):
+    def register(self, walker):
         self.walkers.append(walker)
 
-    def _unregister(self, walker):
+    def unregister(self, walker):
         self.walkers.remove(walker)

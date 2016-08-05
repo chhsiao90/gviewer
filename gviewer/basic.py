@@ -69,6 +69,7 @@ class SearchWidget(urwid.WidgetWrap):
 
 class SearchableText(urwid.WidgetWrap):
     def __init__(self, plain_text):
+        plain_text = plain_text or ""
         if not isinstance(plain_text, (str, unicode)):
             plain_text = decompose_tagmarkup(plain_text)
         plain_text = plain_text.decode("utf8") if isinstance(plain_text, str) else plain_text

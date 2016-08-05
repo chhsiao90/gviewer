@@ -1,6 +1,6 @@
 import json
 from gviewer import StaticDataStore, GViewer, BaseDisplayer
-from gviewer import DetailProp, DetailGroup, PropsDetailGroup
+from gviewer import Prop, PropsGroup
 
 
 with open("examples/panama-taiwan.json", "r") as data_file:
@@ -17,26 +17,26 @@ class PanamaDisplayer(BaseDisplayer):
     def create_data_store(self, data):
         return StaticDataStore(data)
 
-    def to_summary(self, message):
+    def summary(self, message):
         return [
             ("nodeid", message["node_id"]),
             " ",
             message["name"]]
 
-    def get_detail_displayers(self):
+    def get_views(self):
         return [("Detail", self.detail)]
 
     def detail(self, message):
         detail_groups = []
         summary_group_content = \
-            [DetailProp(k, v) for k, v in message.iteritems() if isinstance(v, str) or isinstance(v, unicode)]
+            [Prop(k, v) for k, v in message.iteritems() if isinstance(v, str) or isinstance(v, unicode)]
 
-        detail_groups.append(PropsDetailGroup("Summary", summary_group_content))
+        detail_groups.append(PropsGroup("Summary", summary_group_content))
 
         for shareholder in message.get("officers").get("shareholder of"):
-            detail_groups.append(PropsDetailGroup(
+            detail_groups.append(PropsGroup(
                 shareholder.get("name"),
-                [DetailProp(k, v) for k, v in shareholder.iteritems() if isinstance(v, str) or isinstance(v, unicode)]))
+                [Prop(k, v) for k, v in shareholder.iteritems() if isinstance(v, str) or isinstance(v, unicode)]))
 
         return detail_groups
 
