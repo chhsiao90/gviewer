@@ -1,6 +1,6 @@
 import json
 from gviewer import StaticDataStore, GViewer, BaseDisplayer
-from gviewer import Prop, PropsGroup
+from gviewer import Prop, PropsGroup, Groups
 
 
 with open("examples/panama-taiwan.json", "r") as data_file:
@@ -38,7 +38,7 @@ class PanamaDisplayer(BaseDisplayer):
                 shareholder.get("name"),
                 [Prop(k, v) for k, v in shareholder.iteritems() if isinstance(v, str) or isinstance(v, unicode)]))
 
-        return detail_groups
+        return Groups(detail_groups)
 
     def run(self):
         self.viewer.start()

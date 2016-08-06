@@ -1,5 +1,5 @@
 from gviewer import StaticDataStore, GViewer, BaseDisplayer
-from gviewer import Line, Group
+from gviewer import Line, Group, Groups
 
 
 data = [{"summary": "summary a",
@@ -26,13 +26,13 @@ class Displayer(BaseDisplayer):
                 ("View C", self.detail_c)]
 
     def detail_a(self, message):
-        return [Group("AAA", [Line(message["a"])])]
+        return Groups([Group("AAA", [Line(message["a"])])])
 
     def detail_b(self, message):
-        return [Group("BBB", [Line(message["b"])])]
+        return Groups([Group("BBB", [Line(message["b"])])])
 
     def detail_c(self, message):
-        return [Group("CCC", [Line(message["c"])])]
+        return Groups([Group("CCC", [Line(message["c"])])])
 
     def run(self):
         self.viewer.start()

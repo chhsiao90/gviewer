@@ -32,7 +32,7 @@ class BaseDisplayer(object):
         """
         return search in summary
 
-    def get_displayers(self):
+    def get_views(self):
         """
         return a list of tuple that contains view name and a func that transform message into detail group
         """

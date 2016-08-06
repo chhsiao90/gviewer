@@ -22,8 +22,7 @@ class ViewWidget(BasicWidget):
         self.display(widget)
 
     def _make_widget(self, view):
-        groups = view(self.message)
-        return ListWidget(groups)
+        return view(self.message).to_widget()
 
     def _next_view(self):
         if len(self.parent.view_names) == 1:
@@ -95,100 +94,6 @@ class ViewWidget(BasicWidget):
             return None
 
         return super(ViewWidget, self).keypress(size, key)
-
-
-class ItemWidget(BasicWidget):
-    def __init__(self, item):
-        widget = item.to_widget()
-        super(ItemWidget, self).__init__(widget=widget)
-
-    def search_next(self, keyword):
-        try:
-            return self._w.search_next(keyword)
-        except AttributeError:
-            pass
-
-    def search_prev(self, keyword):
-        try:
-            return self._w.search_prev(keyword)
-        except AttributeError:
-            pass
-
-    def clear_search(self):
-        if self._w.clear_search:
-            self._w.clear_search()
-
-
-class ListWidget(urwid.WidgetWrap):
-    def __init__(self, groups):
-        widget = urwid.ListBox(self._make_walker(groups))
-        super(ListWidget, self).__init__(widget)
-        self._w.set_focus(0)
-        self.prev_match = 0
-
-    def _make_walker(self, groups):
-        widgets = []
-        for group in groups:
-            widgets += group.to_widgets()
-            widgets.append(EmptyLine())
-
-        if not widgets:
-            widgets.append(EmptyLine())
-
-        walker = urwid.SimpleFocusListWalker(widgets)
-        return walker
-
-    def search_next(self, keyword):
-        curr_index = self._w.get_focus()[1]
-        if self.prev_match != curr_index:
-            self.clear_prev_search()
-
-        match_index = len(self._w.body) - 1
-        for index in range(curr_index, len(self._w.body)):
-            try:
-                if self._w.body[index].search_next(keyword):
-                    match_index = index
-                    break
-            except AttributeError:
-                pass
-
-        self.prev_match = match_index
-        self._w.set_focus(match_index)
-
-    def search_prev(self, keyword):
-        curr_index = self._w.get_focus()[1]
-        if self.prev_match != curr_index:
-            self.clear_prev_search()
-
-        match_index = 0
-        for index in reversed(range(0, curr_index + 1)):
-            try:
-                if self._w.body[index].search_prev(keyword):
-                    match_index = index
-                    break
-            except AttributeError:
-                pass
-
-        self.prev_match = match_index
-        self._w.set_focus(match_index)
-
-    def clear_prev_search(self):
-        try:
-            self._w.body[self.prev_match].clear_search()
-        except AttributeError:
-            pass
-
-
-class TitleWidget(BasicWidget):
-    def __init__(self, content):
-        widget = urwid.Text(content)
-        widget = urwid.AttrMap(widget, "view-title")
-        super(TitleWidget, self).__init__(widget=widget)
-
-
-class EmptyLine(urwid.Text):
-    def __init__(self):
-        super(EmptyLine, self).__init__("")
 
 
 class Tabs(BasicWidget):
