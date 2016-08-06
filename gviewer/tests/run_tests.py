@@ -2,7 +2,8 @@ import unittest
 
 
 TEST_MODULES = [
-    "gviewer.tests.test_basic"
+    "gviewer.tests.test_basic",
+    "gviewer.tests.test_element"
 ]
 
 
