@@ -3,13 +3,16 @@ from gviewer import Line, Group, Groups
 
 
 data = [{"summary": "summary a",
-         "a": "detail a",
-         "b": "detail b",
-         "c": "detail c"},
+         "a": ["detail a",
+               "detail aa",
+               "detail aaa",
+               "detail aaaa"],
+         "b": ["detail b"],
+         "c": ["detail c"]},
         {"summary": "summary b",
-         "a": "detail d",
-         "b": "detail f",
-         "c": "detail g"}]
+         "a": ["detail d"],
+         "b": ["detail f"],
+         "c": ["detail g"]}]
 
 
 class Displayer(BaseDisplayer):
@@ -26,13 +29,13 @@ class Displayer(BaseDisplayer):
                 ("View C", self.detail_c)]
 
     def detail_a(self, message):
-        return Groups([Group("AAA", [Line(message["a"])])])
+        return Groups([Group("AAA", [Line(m) for m in message["a"]])])
 
     def detail_b(self, message):
-        return Groups([Group("BBB", [Line(message["b"])])])
+        return Groups([Group("BBB", [Line(m) for m in message["b"]])])
 
     def detail_c(self, message):
-        return Groups([Group("CCC", [Line(message["c"])])])
+        return Groups([Group("CCC", [Line(m) for m in message["c"]])])
 
     def run(self):
         self.viewer.start()

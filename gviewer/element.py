@@ -20,7 +20,7 @@ class Line(Base):
         self.content = content
 
     def to_widget(self):
-        return SearchableWidget(self.content)
+        return SearchableText(self.content, attr_map="view-item")
 
 
 class Prop(Base):
@@ -68,7 +68,7 @@ class Group(object):
         widgets = []
         if self.show_title:
             widgets.append(TitleWidget(self.title))
-        widgets += [ElementWidget(i) for i in self.items]
+        widgets += [e.to_widget() for e in self.items]
         return widgets
 
 
@@ -86,48 +86,6 @@ class Groups(Base):
 
     def to_widget(self):
         return ListWidget(self.groups)
-
-
-class SearchableWidget(urwid.WidgetWrap):
-    def __init__(self, content):
-        self.search_widget = SearchableText(content)
-        widget = urwid.AttrMap(self.search_widget, "view-item")
-        super(SearchableWidget, self).__init__(widget)
-
-    def search_next(self, keyword):
-        if self.search_widget.search_next(keyword):
-            return True
-        return False
-
-    def search_prev(self, keyword):
-        if self.search_widget.search_prev(keyword):
-            return True
-        return False
-
-    def clear_search(self):
-        self.search_widget.clear()
-
-
-class ElementWidget(BasicWidget):
-    def __init__(self, item):
-        widget = item.to_widget()
-        super(ElementWidget, self).__init__(widget=widget)
-
-    def search_next(self, keyword):
-        try:
-            return self._w.search_next(keyword)
-        except AttributeError:
-            pass
-
-    def search_prev(self, keyword):
-        try:
-            return self._w.search_prev(keyword)
-        except AttributeError:
-            pass
-
-    def clear_search(self):
-        if self._w.clear_search:
-            self._w.clear_search()
 
 
 class TitleWidget(BasicWidget):
@@ -192,7 +150,7 @@ class ListWidget(urwid.WidgetWrap):
 
     def clear_prev_search(self):
         try:
-            self._w.body[self.prev_match].clear_search()
+            self._w.body[self.prev_match].clear()
         except AttributeError:
             pass
 
