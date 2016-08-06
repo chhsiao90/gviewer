@@ -2,8 +2,8 @@ import unittest
 import mock
 
 from gviewer.basic import SearchableText
-from gviewer.element import Line, Prop, Group, PropsGroup
-from gviewer.element import TitleWidget
+from gviewer.element import Line, Prop, Group, PropsGroup, Groups
+from gviewer.element import TitleWidget, ListWidget, EmptyLine
 
 
 class LineTest(unittest.TestCase):
@@ -77,6 +77,25 @@ class PropsGroupTest(unittest.TestCase):
         self.assertEqual(props_group.items[0].max_key_length, 7)
         self.assertEqual(props_group.items[1].max_key_length, 7)
         self.assertEqual(props_group.items[2].max_key_length, 7)
+
+
+class GroupsTest(unittest.TestCase):
+    def test_groups_widget(self):
+        groups = Groups([
+            Group("group1", [Line("content1")]),
+            Group("group2", [Line("content2")])]
+        )
+        widget = groups.to_widget()
+        self.assertTrue(isinstance(widget, ListWidget))
+
+        contents = widget._w.body
+        self.assertEqual(len(contents), 6)
+        self.assertTrue(isinstance(contents[0], TitleWidget))
+        self.assertTrue(isinstance(contents[1], SearchableText))
+        self.assertTrue(isinstance(contents[2], EmptyLine))
+        self.assertTrue(isinstance(contents[3], TitleWidget))
+        self.assertTrue(isinstance(contents[4], SearchableText))
+        self.assertTrue(isinstance(contents[5], EmptyLine))
 
 
 if __name__ == "__main__":
