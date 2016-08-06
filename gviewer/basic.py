@@ -11,13 +11,13 @@ class BasicWidget(urwid.WidgetWrap):
         self._w = widget
 
     def keypress(self, size, key):
-        if self.parent and key in self.parent.config.keys:
+        if not self.is_editing() and self.parent and key in self.parent.config.keys:
             return super(BasicWidget, self) \
                 .keypress(size, self.parent.config.keys[key])
         return super(BasicWidget, self).keypress(size, key)
 
-    def default_keypress(self, size, key):
-        return super(BasicWidget, self).keypress(size, key)
+    def is_editing(self):
+        return False
 
 
 class FocusableText(urwid.WidgetWrap):

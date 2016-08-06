@@ -64,13 +64,12 @@ class ViewWidget(BasicWidget):
         self.search_widget.clear()
         self.close_search()
 
+    def is_editing(self):
+        return self.body.get_focus() is self.search_widget
+
     def keypress(self, size, key):
-        if self.body.get_focus() is self.search_widget:
-            if key == "esc":
-                self.close_search()
-                return None
-            else:
-                return self.default_keypress(size, key)
+        if self.is_editing():
+            return super(ViewWidget, self).keypress(size, key)
         if key == "q":
             self.parent.open_summary()
             return None

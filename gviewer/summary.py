@@ -109,12 +109,15 @@ class SummaryListWidget(BasicWidget):
         self.search_widget.clear()
         self.filter(None)
 
+    def is_editing(self):
+        return self._w.get_focus() is self.search_widget
+
     def keypress(self, size, key):
+        if self.is_editing():
+            return super(SummaryListWidget, self).keypress(size, key)
         if key == "/":
             self.open_search()
             return None
-        if self._w.get_focus() is self.search_widget:
-            return self.default_keypress(size, key)
         if key == "q" and isinstance(self.current_walker, FilterSummaryListWalker):
             self.clear_search()
             return None
