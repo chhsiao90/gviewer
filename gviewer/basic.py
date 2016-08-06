@@ -11,9 +11,11 @@ class BasicWidget(urwid.WidgetWrap):
         self._w = widget
 
     def keypress(self, size, key):
-        if not self.is_editing() and self.parent and key in self.parent.config.keys:
-            return super(BasicWidget, self) \
-                .keypress(size, self.parent.config.keys[key])
+        if (not self.is_editing() and
+                self.parent and
+                key in self.parent.config.keys):
+            return super(BasicWidget, self).keypress(
+                size, self.parent.config.keys[key])
         return super(BasicWidget, self).keypress(size, key)
 
     def is_editing(self):
@@ -62,6 +64,7 @@ class SearchWidget(urwid.WidgetWrap):
             self.search_func(self._w.edit_text)
             return None
         if key == "esc":
+            self.clear()
             self.clear_func()
             return None
         super(SearchWidget, self).keypress(size, key)

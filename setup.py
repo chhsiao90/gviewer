@@ -32,6 +32,7 @@ setup(
         "Topic :: Software Development :: Widget Sets"
     ],
     packages=find_packages(include=["gviewer", "gviewer.*"]),
+    test_suite="gviewer.tests",
     install_requires=[
         "urwid==1.3.1"
     ]
