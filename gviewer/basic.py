@@ -49,12 +49,12 @@ class FocusableText(urwid.WidgetWrap):
 
 class SearchWidget(urwid.WidgetWrap):
     def __init__(self, search_func, clear_func):
-        super(SearchWidget, self).__init__(urwid.Edit())
+        super(SearchWidget, self).__init__(urwid.Edit("/"))
         self.search_func = search_func
         self.clear_func = clear_func
 
     def clear(self):
-        self._w.set_edit_text("")
+        self._w = urwid.Edit("/")
 
     def get_keyword(self):
         return self._w.edit_text
@@ -67,7 +67,7 @@ class SearchWidget(urwid.WidgetWrap):
             self.clear()
             self.clear_func()
             return None
-        super(SearchWidget, self).keypress(size, key)
+        return super(SearchWidget, self).keypress(size, key)
 
 
 class SearchableText(urwid.WidgetWrap):

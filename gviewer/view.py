@@ -61,7 +61,6 @@ class ViewWidget(BasicWidget):
         self.close_search()
 
     def clear_search(self):
-        self.search_widget.clear()
         self.close_search()
 
     def is_editing(self):

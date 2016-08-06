@@ -94,6 +94,7 @@ class SummaryListWidget(BasicWidget):
         self._w.contents.insert(0, (urwid.ListBox(walker), self._w.options()))
 
     def open_search(self):
+        self.search_widget.clear()
         if len(self._w.contents) == 1:
             self._w.contents.append((
                 self.search_widget,
@@ -106,7 +107,6 @@ class SummaryListWidget(BasicWidget):
             del self._w.contents[1]
 
     def clear_search(self):
-        self.search_widget.clear()
         self.filter(None)
 
     def is_editing(self):
