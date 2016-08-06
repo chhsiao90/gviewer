@@ -1,7 +1,6 @@
 import urwid
 from parent import ParentFrame
 from config import Config
-from styles import default
 
 
 """A General Purpose tui Viewer library that based on urwid """
@@ -24,22 +23,27 @@ class GViewer(object):
 
     :param **kwargs: other urwid.MainLoop supported parameters
     """
-    def __init__(self, data_store, displayer, config=None, template=default, palette=None, **kwargs):
+    def __init__(self, data_store, displayer, config=None, **kwargs):
         self.config = config or Config()
         self.view = ParentFrame(data_store, displayer, self.config)
 
         self._default_urwid_options(kwargs)
 
-        palette = palette or []
         self.loop = urwid.MainLoop(
-            self.view, template + palette, **kwargs)
+            self.view, **kwargs)
         self.data_store = data_store
 
     def _default_urwid_options(self, kwargs):
         if "handle_mouse" not in kwargs:
             kwargs["handle_mouse"] = False
+
         if "unhandled_input" not in kwargs:
             kwargs["unhandled_input"] = self.default_unhandled_input
+
+        if "palette" in kwargs:
+            kwargs["palette"] = self.config.template + kwargs["palette"]
+        else:
+            kwargs["palette"] = self.config.template
 
     def default_unhandled_input(self, key):
         if key in ("q", "Q"):
