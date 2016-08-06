@@ -1,7 +1,7 @@
 import unittest
 
-from gviewer.element import Line, SearchableWidget, Prop, Group, PropsGroup
-from gviewer.view import TitleWidget, ItemWidget
+from gviewer.element import Line, Prop, Group, PropsGroup
+from gviewer.element import SearchableWidget, TitleWidget, ElementWidget
 
 
 class LineTest(unittest.TestCase):
@@ -44,8 +44,8 @@ class GroupTest(unittest.TestCase):
 
         self.assertEqual(len(widgets), 3)
         self.assertTrue(isinstance(widgets[0], TitleWidget))
-        self.assertTrue(isinstance(widgets[1], ItemWidget))
-        self.assertTrue(isinstance(widgets[2], ItemWidget))
+        self.assertTrue(isinstance(widgets[1], ElementWidget))
+        self.assertTrue(isinstance(widgets[2], ElementWidget))
 
     def test_group_widget_without_title(self):
         widgets = Group(
@@ -56,8 +56,8 @@ class GroupTest(unittest.TestCase):
             show_title=False).to_widgets()
 
         self.assertEqual(len(widgets), 2)
-        self.assertTrue(isinstance(widgets[0], ItemWidget))
-        self.assertTrue(isinstance(widgets[1], ItemWidget))
+        self.assertTrue(isinstance(widgets[0], ElementWidget))
+        self.assertTrue(isinstance(widgets[1], ElementWidget))
 
 
 class PropsGroupTest(unittest.TestCase):
