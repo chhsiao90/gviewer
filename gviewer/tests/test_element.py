@@ -175,6 +175,51 @@ class ListWidgetTest(unittest.TestCase):
             no_match
         )
 
+    def test_search_before_move(self):
+        widget = ListWidget([
+            SearchableText("this is aaa bbb"),
+            SearchableText("this is ccc ddd"),
+            SearchableText("this is eee aaa")
+        ])
+
+        no_match = render_widgets_to_content([
+            urwid.Text("this is aaa bbb"),
+            urwid.Text("this is ccc ddd"),
+            urwid.Text("this is eee aaa")],
+            (15, 3)
+        )
+        first_match = render_widgets_to_content([
+            urwid.Text(["this is ", ("match", "aaa"), " bbb"]),
+            urwid.Text("this is ccc ddd"),
+            urwid.Text("this is eee aaa")],
+            (15, 3)
+        )
+        second_match = render_widgets_to_content([
+            urwid.Text("this is aaa bbb"),
+            urwid.Text("this is ccc ddd"),
+            urwid.Text(["this is eee ", ("match", "aaa")])],
+            (15, 3)
+        )
+
+        self.assertEqual(
+            render_to_content(widget, (15, 3)),
+            no_match
+        )
+
+        widget.search_next("aaa")
+        self.assertEqual(
+            render_to_content(widget, (15, 3)),
+            first_match
+        )
+
+        widget._w.set_focus(1)
+
+        widget.search_next("aaa")
+        self.assertEqual(
+            render_to_content(widget, (15, 3)),
+            second_match
+        )
+
 
 def render_to_content(widget, size):
     return [line for line in widget.render(size).content()]

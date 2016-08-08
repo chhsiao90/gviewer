@@ -123,7 +123,7 @@ class ListWidget(urwid.WidgetWrap):
                 if self._w.body[index].search_next(keyword):
                     match_index = index
                     break
-            except AttributeError:
+            except AttributeError:  # pragma: no cover
                 pass
 
         self.prev_match = match_index
@@ -140,7 +140,7 @@ class ListWidget(urwid.WidgetWrap):
                 if self._w.body[index].search_prev(keyword):
                     match_index = index
                     break
-            except AttributeError:
+            except AttributeError:  # pragma: no cover
                 pass
 
         self.prev_match = match_index
