@@ -85,34 +85,32 @@ class Groups(Base):
         self.groups = groups
 
     def to_widget(self):
-        return ListWidget(self.groups)
-
-
-class TitleWidget(BasicWidget):
-    def __init__(self, content):
-        widget = urwid.Text(content)
-        widget = urwid.AttrMap(widget, "view-title")
-        super(TitleWidget, self).__init__(widget=widget)
-
-
-class ListWidget(urwid.WidgetWrap):
-    def __init__(self, groups):
-        widget = urwid.ListBox(self._make_walker(groups))
-        super(ListWidget, self).__init__(widget)
-        self._w.set_focus(0)
-        self.prev_match = 0
-
-    def _make_walker(self, groups):
         widgets = []
-        for group in groups:
+        for group in self.groups:
             widgets += group.to_widgets()
             widgets.append(EmptyLine())
 
         if not widgets:
             widgets.append(EmptyLine())
 
+        return ListWidget(widgets)
+
+
+class TitleWidget(BasicWidget):
+    def __init__(self, content):
+        widget = urwid.Text(content)
+        super(TitleWidget, self).__init__(
+            widget=widget,
+            attr_map="view-title")
+
+
+class ListWidget(urwid.WidgetWrap):
+    def __init__(self, widgets):
         walker = urwid.SimpleFocusListWalker(widgets)
-        return walker
+        widget = urwid.ListBox(walker)
+        super(ListWidget, self).__init__(widget)
+        self._w.set_focus(0)
+        self.prev_match = 0
 
     def search_next(self, keyword):
         curr_index = self._w.get_focus()[1]

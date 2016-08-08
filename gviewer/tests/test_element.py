@@ -1,5 +1,5 @@
 import unittest
-import mock
+import urwid
 
 from gviewer.basic import SearchableText
 from gviewer.element import Line, Prop, Group, PropsGroup, Groups
@@ -7,7 +7,7 @@ from gviewer.element import TitleWidget, ListWidget, EmptyLine
 
 
 class LineTest(unittest.TestCase):
-    def test_line_widget(self):
+    def test_to_widget(self):
         widget = Line("content").to_widget()
         self.assertTrue(isinstance(widget, SearchableText))
         self.assertEqual(
@@ -16,7 +16,7 @@ class LineTest(unittest.TestCase):
 
 
 class PropTest(unittest.TestCase):
-    def test_prop_widget(self):
+    def test_to_widget(self):
         widget = Prop("key", "value").to_widget()
         text, attr = widget.get_text()
         self.assertEqual(
@@ -29,7 +29,7 @@ class PropTest(unittest.TestCase):
              ("view-item value", 5)]
         )
 
-    def test_prop_widget_with_padding(self):
+    def test_to_widget_with_padding(self):
         prop = Prop("key", "value")
         prop.max_key_length = 5
         self.assertEqual(
@@ -39,7 +39,7 @@ class PropTest(unittest.TestCase):
 
 
 class GroupTest(unittest.TestCase):
-    def test_group_widget_with_title(self):
+    def test_to_widget_with_title(self):
         widgets = Group(
             "title",
             items=[
@@ -52,7 +52,7 @@ class GroupTest(unittest.TestCase):
         self.assertTrue(isinstance(widgets[1], SearchableText))
         self.assertTrue(isinstance(widgets[2], SearchableText))
 
-    def test_group_widget_without_title(self):
+    def test_to_widget_without_title(self):
         widgets = Group(
             "title",
             items=[
@@ -80,7 +80,7 @@ class PropsGroupTest(unittest.TestCase):
 
 
 class GroupsTest(unittest.TestCase):
-    def test_groups_widget(self):
+    def test_to_widget(self):
         groups = Groups([
             Group("group1", [Line("content1")]),
             Group("group2", [Line("content2")])]
@@ -96,6 +96,93 @@ class GroupsTest(unittest.TestCase):
         self.assertTrue(isinstance(contents[3], TitleWidget))
         self.assertTrue(isinstance(contents[4], SearchableText))
         self.assertTrue(isinstance(contents[5], EmptyLine))
+
+
+class TitleWidgetTest(unittest.TestCase):
+    def test_render(self):
+        widget = TitleWidget("content")
+        contents = [c for c in widget.render((7,)).content()]
+        self.assertEqual(len(contents), 1)
+        self.assertEqual(len(contents[0]), 1)
+        self.assertEqual(contents[0][0], ("view-title", None, "content"))
+
+
+class ListWidgetTest(unittest.TestCase):
+    def test_search(self):
+        widget = ListWidget([
+            SearchableText("this is aaa bbb"),
+            SearchableText("this is ccc ddd"),
+            SearchableText("this is eee aaa")
+        ])
+
+        no_match = render_widgets_to_content([
+            urwid.Text("this is aaa bbb"),
+            urwid.Text("this is ccc ddd"),
+            urwid.Text("this is eee aaa")],
+            (15, 3)
+        )
+        first_match = render_widgets_to_content([
+            urwid.Text(["this is ", ("match", "aaa"), " bbb"]),
+            urwid.Text("this is ccc ddd"),
+            urwid.Text("this is eee aaa")],
+            (15, 3)
+        )
+        second_match = render_widgets_to_content([
+            urwid.Text("this is aaa bbb"),
+            urwid.Text("this is ccc ddd"),
+            urwid.Text(["this is eee ", ("match", "aaa")])],
+            (15, 3)
+        )
+
+        self.assertEqual(
+            render_to_content(widget, (15, 3)),
+            no_match
+        )
+
+        widget.search_next("aaa")
+        self.assertEqual(
+            render_to_content(widget, (15, 3)),
+            first_match
+        )
+
+        widget.search_next("aaa")
+        self.assertEqual(
+            render_to_content(widget, (15, 3)),
+            second_match
+        )
+
+        widget.search_next("aaa")
+        self.assertEqual(
+            render_to_content(widget, (15, 3)),
+            no_match
+        )
+
+        widget.search_prev("aaa")
+        self.assertEqual(
+            render_to_content(widget, (15, 3)),
+            second_match
+        )
+
+        widget.search_prev("aaa")
+        self.assertEqual(
+            render_to_content(widget, (15, 3)),
+            first_match
+        )
+
+        widget.search_prev("aaa")
+        self.assertEqual(
+            render_to_content(widget, (15, 3)),
+            no_match
+        )
+
+
+def render_to_content(widget, size):
+    return [line for line in widget.render(size).content()]
+
+
+def render_widgets_to_content(widgets, size):
+    widget = urwid.ListBox(urwid.SimpleFocusListWalker(widgets))
+    return render_to_content(widget, size)
 
 
 if __name__ == "__main__":
