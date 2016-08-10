@@ -11,8 +11,10 @@ class ErrorWidget(BasicWidget):
                 exc_info[0], exc_info[1], exc_info[2])]
         walker = urwid.SimpleFocusListWalker(contents)
         widget = urwid.ListBox(walker)
-        widget = urwid.AttrMap(widget, "error")
-        super(ErrorWidget, self).__init__(parent, widget)
+        super(ErrorWidget, self).__init__(
+            parent=parent,
+            widget=widget,
+            attr_map="error")
 
     def keypress(self, size, key):
         if key == "q":

@@ -1,7 +1,7 @@
 """ Displayer """
 
 
-class BaseDisplayer(object):
+class BaseDisplayer(object):  # pragma: no cover
     """ absctract class for displayer """
     def summary(self, message):
         """

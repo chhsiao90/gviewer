@@ -1,6 +1,7 @@
 import unittest
 import urwid
 
+from util import render_to_content, render_widgets_to_content
 from gviewer.basic import SearchableText
 from gviewer.element import Line, Prop, Group, PropsGroup, Groups
 from gviewer.element import TitleWidget, ListWidget, EmptyLine
@@ -219,15 +220,6 @@ class ListWidgetTest(unittest.TestCase):
             render_to_content(widget, (15, 3)),
             second_match
         )
-
-
-def render_to_content(widget, size):
-    return [line for line in widget.render(size).content()]
-
-
-def render_widgets_to_content(widgets, size):
-    widget = urwid.ListBox(urwid.SimpleFocusListWalker(widgets))
-    return render_to_content(widget, size)
 
 
 if __name__ == "__main__":

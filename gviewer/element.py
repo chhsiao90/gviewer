@@ -149,7 +149,7 @@ class ListWidget(urwid.WidgetWrap):
     def clear_prev_search(self):
         try:
             self._w.body[self.prev_match].clear()
-        except AttributeError:
+        except AttributeError:  # pragma: no cover
             pass
 
 
