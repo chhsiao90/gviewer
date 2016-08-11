@@ -1,13 +1,12 @@
 import unittest
 import sys
-import urwid
 
 try:
     import unittest.mock as mock
 except:
     import mock
 
-from util import render_to_content, render_widgets_to_content
+from util import render_to_content
 from gviewer.error import ErrorWidget
 
 

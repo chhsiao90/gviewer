@@ -17,13 +17,18 @@ Contents:
 
 class SummaryItemWidget(BasicWidget):
     def __init__(self, parent, message, summary):
-        super(SummaryItemWidget, self).__init__(parent)
+        super(SummaryItemWidget, self).__init__(
+            parent=parent,
+            widget=FocusableText(
+                summary,
+                attr_map="summary",
+                focus_map="summary focus")
+        )
 
         self.message = message
-        widget = FocusableText(summary)
-        self.title = widget.get_plain_text()
-        widget = urwid.AttrMap(widget, "summary", "summary focus")
-        self.display(widget)
+
+    def get_title(self):
+        return self._w.get_plain_text()
 
     def keypress(self, size, key):
         if key == "enter":
@@ -49,7 +54,7 @@ class SummaryListWalker(urwid.SimpleFocusListWalker):
 class FilterSummaryListWalker(SummaryListWalker):
     def __init__(self, origin_walker, search):
         parent = origin_walker.parent
-        content = [m for m in origin_walker if parent.displayer.match(search, m.message, m.title)]
+        content = [m for m in origin_walker if parent.displayer.match(search, m.message, m.get_title())]
         super(FilterSummaryListWalker, self).__init__(parent, content=content)
         self.search = search
 

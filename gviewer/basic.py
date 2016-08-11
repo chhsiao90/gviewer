@@ -3,17 +3,18 @@ from urwid.util import decompose_tagmarkup
 
 
 class BasicWidget(urwid.WidgetWrap):
-    def __init__(self, parent=None, widget=None, attr_map=None):
+    def __init__(self, parent=None, widget=None, attr_map=None, focus_map=None):
         widget = widget or urwid.Text("")
         if attr_map:
-            widget = urwid.AttrMap(widget, attr_map)
+            widget = urwid.AttrMap(widget, attr_map, focus_map=focus_map)
         super(BasicWidget, self).__init__(widget)
         self.parent = parent
 
     def display(self, widget):
         if isinstance(self._w, urwid.AttrMap):
             self._w.original_widget = widget
-        self._w = widget
+        else:
+            self._w = widget
 
     def keypress(self, size, key):
         if (not self.is_editing() and
@@ -37,9 +38,9 @@ class FocusableText(BasicWidget):
     def render(self, size, focus=False):
         if focus:
             plain_text = self.get_plain_text()
-            self._w = urwid.Text(plain_text)
+            self.display(urwid.Text(plain_text))
         else:
-            self._w = urwid.Text(self.text_markup)
+            self.display(urwid.Text(self.text_markup))
         return super(FocusableText, self).render(size, focus)
 
     def get_plain_text(self):
@@ -61,7 +62,7 @@ class SearchWidget(BasicWidget):
         self.clear_func = clear_func
 
     def clear(self):
-        self._w = urwid.Edit("/")
+        self.display(urwid.Edit("/"))
 
     def get_keyword(self):
         return self._w.edit_text
@@ -104,11 +105,11 @@ class SearchableText(BasicWidget):
         if keyword in self.plain_text[prev_index:]:
             start_index = self.plain_text[prev_index:].index(keyword) + prev_index
             end_index = start_index + len(keyword)
-            self._w = urwid.Text([
+            self.display(urwid.Text([
                 self.plain_text[:start_index],
                 ("match", keyword),
                 self.plain_text[end_index:]
-            ])
+            ]))
 
             self.prev_index = (end_index, start_index)
             return True
@@ -121,11 +122,11 @@ class SearchableText(BasicWidget):
         if keyword in self.plain_text[:prev_index]:
             start_index = self.plain_text[:prev_index].rindex(keyword)
             end_index = start_index + len(keyword)
-            self._w = urwid.Text([
+            self.display(urwid.Text([
                 self.plain_text[:start_index],
                 ("match", keyword),
                 self.plain_text[end_index:]
-            ])
+            ]))
 
             self.prev_index = (end_index, start_index)
             return True
