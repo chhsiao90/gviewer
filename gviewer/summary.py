@@ -83,14 +83,18 @@ class SummaryListWidget(BasicWidget):
         self.display(widget)
 
     def filter(self, keyword):
-        new_walker = FilterSummaryListWalker(self.base_walker, keyword) if keyword else self.base_walker
+        if keyword:
+            new_walker = FilterSummaryListWalker(self.base_walker, keyword)
+        else:
+            new_walker = self.base_walker
+
         if new_walker is not self.current_walker:
-            self._update(new_walker)
+            self.update(new_walker)
 
         self.close_search()
-        self._w.set_focus(0)
+        self._w.focus_position = 0
 
-    def _update(self, walker):
+    def update(self, walker):
         if self.current_walker is not self.base_walker:
             self.current_walker.close()
 
@@ -105,7 +109,7 @@ class SummaryListWidget(BasicWidget):
                 self.search_widget,
                 self._w.options(height_type="pack"))
             )
-        self._w.set_focus(self.search_widget)
+        self._w.focus_position = 1
 
     def close_search(self):
         if len(self._w.contents) == 2:
@@ -115,7 +119,7 @@ class SummaryListWidget(BasicWidget):
         self.filter(None)
 
     def is_editing(self):
-        return self._w.get_focus() is self.search_widget
+        return self._w.focus is self.search_widget
 
     def keypress(self, size, key):
         if self.is_editing():
