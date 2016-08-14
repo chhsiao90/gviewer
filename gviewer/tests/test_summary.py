@@ -8,7 +8,6 @@ except:
 
 from util import render_to_content, render_widgets_to_content
 from gviewer.summary import SummaryItemWidget, SummaryListWalker, FilterSummaryListWalker, SummaryListWidget
-from gviewer.basic import SearchWidget
 
 
 class SummaryItemWidgetTest(unittest.TestCase):
@@ -181,16 +180,12 @@ class SummaryListWidgetTest(unittest.TestCase):
     def test_open_search(self):
         self.widget.open_search()
 
-        self.assertIsInstance(self.widget._w.focus, SearchWidget)
+        self.assertIs(self.widget._w.focus, self.widget.search_widget)
         self.assertTrue(self.widget.is_editing())
 
-        self.assertEqual(
-            render_to_content(self.widget, (9, 3)),
-            render_widgets_to_content([
-                urwid.AttrMap(urwid.Text("summary 1"), "summary"),
-                urwid.AttrMap(urwid.Text("summary 2"), "summary"),
-                urwid.Edit("/")
-            ], (9, 3))
+        self.assertIs(
+            self.widget._w.contents[1][0],
+            self.widget.search_widget
         )
 
     def test_close_search(self):

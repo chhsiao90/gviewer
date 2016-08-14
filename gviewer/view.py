@@ -15,10 +15,12 @@ class ViewWidget(BasicWidget):
         self.content_widget = self._make_widget(view)
         self.body = urwid.Pile([self.content_widget])
 
-        header = Tabs(parent.view_names, self.index) if len(parent.view_names) else None
+        if len(parent.view_names) > 1:
+            header = Tabs(parent.view_names, self.index)
+        else:
+            header = None
 
         widget = urwid.Frame(self.body, header=header)
-        widget.set_focus("body")
         self.display(widget)
 
     def _make_widget(self, view):
@@ -49,7 +51,7 @@ class ViewWidget(BasicWidget):
                 self.search_widget,
                 self.body.options(height_type="pack"))
             )
-        self.body.set_focus(self.search_widget)
+        self.body.focus_position = 1
 
     def close_search(self):
         if len(self.body.contents) == 2:
@@ -63,7 +65,7 @@ class ViewWidget(BasicWidget):
         self.close_search()
 
     def is_editing(self):
-        return self.body.get_focus() is self.search_widget
+        return self.body.focus is self.search_widget
 
     def keypress(self, size, key):
         if self.is_editing():
