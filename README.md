@@ -13,32 +13,45 @@ pip install gviewer
 
 ## Usage
 #### Data Store
-- BaseStaticDataStore
+- StaticDataStore
 ```python
-data_store = BaseStaticDataStore(data)
+from gviewer import StaticDataStore
+data_store = StaticDataStore(data)
 ```
-- Custom Implementation
+
+- AsyncDataStore
 ```python
-class CustomDataStore(BasicDataStore):
-    def set_up(self):
-        # your implementation
+data_store = AsyncDataStore(register_funct)
 ```
 
 #### Displayer
 ```python
+from gviewer import BaseDisplayer, Groups, Group, PropsGroup, Line, Prop
+
 class MyDisplayer(BaseDisplayer):
     def to_summary(self, message):
-        # your implementation
         # return a str or text markup
         # reference: http://urwid.org/manual/displayattributes.html#text-markup
+        return message["summary"]
 
-    def get_detail_displayers(self):
-        # your implementation
-        # return an array of tuple that contains detail view title and a function that transform message to detail
-        # return [("title1", self.detail1), ("title2", self.detail2), ("title3", self.any_name_you_want)]
+    def get_views(self):
+        # return an array of tuple that contains view title and a function that transform message to detail
+        return [
+            ("view1", self.view1),
+            ("view2", self.view2),
+        ]
 
-    def detail1(self, message):
-        # return DetailGroup
+    def view1(self, message):
+        # return groups
+        return Groups(
+            [Group("title", [Line(m) for m in message["view1"]])]
+        )
+
+    def view2(self, message):
+        # return groups
+        return Groups(
+            [PropsGroup("title", [Prop(p[0], p[1]) for p in message["view2"]])]
+        )
 ```
 
 #### GViewer
