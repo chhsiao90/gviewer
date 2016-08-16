@@ -106,7 +106,7 @@ class ViewWidgetTest(unittest.TestCase):
             self.test_message,
             0, self.parent)
 
-        widget.open_search()
+        widget._open_search()
         self.assertEqual(
             widget.body.contents[1][0],
             widget.search_widget)
@@ -118,11 +118,11 @@ class ViewWidgetTest(unittest.TestCase):
             0, self.parent)
 
         self.assertEqual(len(widget.body.contents), 1)
-        widget.close_search()
+        widget._close_search()
         self.assertEqual(len(widget.body.contents), 1)
-        widget.open_search()
+        widget._open_search()
         self.assertEqual(len(widget.body.contents), 2)
-        widget.close_search()
+        widget._close_search()
         self.assertEqual(len(widget.body.contents), 1)
 
 

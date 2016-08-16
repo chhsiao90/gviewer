@@ -4,12 +4,19 @@ from basic import BasicWidget, SearchWidget
 
 
 class ViewWidget(BasicWidget):
+    """ Display content for message
+
+    Attributes:
+        message: message generate by DataStore
+        index: view's index
+        parent: ParentFrame instance
+    """
     def __init__(self, message, index, parent):
         super(ViewWidget, self).__init__(parent)
         self.index = index
         self.message = message
 
-        self.search_widget = SearchWidget(self.search, self.clear_search)
+        self.search_widget = SearchWidget(self._search, self._clear_search)
 
         _, view = parent.views[index]
         self.content_widget = self._make_widget(view)
@@ -43,7 +50,7 @@ class ViewWidget(BasicWidget):
         next_index = len(self.parent.view_names) - 1 if self.index == 0 else self.index - 1
         self.parent.display_view(self.message, next_index)
 
-    def open_search(self):
+    def _open_search(self):
         self.search_widget.clear()
         self.content_widget.clear_prev_search()
         if len(self.body.contents) == 1:
@@ -53,16 +60,16 @@ class ViewWidget(BasicWidget):
             )
         self.body.focus_position = 1
 
-    def close_search(self):
+    def _close_search(self):
         if len(self.body.contents) == 2:
             del self.body.contents[1]
 
-    def search(self, keyword):
+    def _search(self, keyword):
         self.content_widget.search_next(keyword)
-        self.close_search()
+        self._close_search()
 
-    def clear_search(self):
-        self.close_search()
+    def _clear_search(self):
+        self._close_search()
 
     def is_editing(self):
         return self.body.focus is self.search_widget
@@ -80,7 +87,7 @@ class ViewWidget(BasicWidget):
             self._prev_view()
             return None
         if key == "/":
-            self.open_search()
+            self._open_search()
             return None
         if key == "n":
             if self.search_widget.get_keyword():
@@ -99,6 +106,7 @@ class ViewWidget(BasicWidget):
 
 
 class Tabs(BasicWidget):
+    """Tab to display title for each view"""
     def __init__(self, view_names, index):
         widget = self._make_widget(view_names, index)
         super(Tabs, self).__init__(widget=widget)

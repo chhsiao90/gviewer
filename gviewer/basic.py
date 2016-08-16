@@ -3,6 +3,16 @@ from urwid.util import decompose_tagmarkup
 
 
 class BasicWidget(urwid.WidgetWrap):
+    """ Basic widget for GViewer
+
+    Define the basic attr and basic behavior how GViewer widget to display or act
+
+    Attributes:
+        parent: a ParentFrame instance
+        widget: a urwid Widget
+        attr_map: non-focus attribute
+        focus_map: focus attribute
+    """
     def __init__(self, parent=None, widget=None, attr_map=None, focus_map=None):
         widget = widget or urwid.Text("")
         if attr_map:
@@ -11,12 +21,18 @@ class BasicWidget(urwid.WidgetWrap):
         self.parent = parent
 
     def display(self, widget):
+        """ Display the widget
+
+        Args:
+            widget: urwid Widget
+        """
         if isinstance(self._w, urwid.AttrMap):
             self._w.original_widget = widget
         else:
             self._w = widget
 
     def keypress(self, size, key):
+        """ Define default keypress action for GViewer """
         if (not self.is_editing() and
                 self.parent and
                 key in self.parent.config.keys):
@@ -25,10 +41,23 @@ class BasicWidget(urwid.WidgetWrap):
         return super(BasicWidget, self).keypress(size, key)
 
     def is_editing(self):
+        """ Check that current state is editing or not
+
+        Override this method if that widget had Edit widget in its content
+        and return True if the focus widget is the Edit widget
+
+        Returns:
+            True if in editing, False if not in editing
+        """
         return False
 
 
 class FocusableText(BasicWidget):
+    """ Text widget that will highlight correctly
+
+    Attributes:
+        text_markup: urwid Text Markup instance
+    """
     def __init__(self, text_markup, **kwargs):
         widget = urwid.Text(text_markup)
         super(FocusableText, self).__init__(
@@ -36,6 +65,10 @@ class FocusableText(BasicWidget):
         self.text_markup = text_markup
 
     def render(self, size, focus=False):
+        """ Override original render function
+
+        Display the widget in different way depend on that the widget is focus or not
+        """
         if focus:
             plain_text = self.get_plain_text()
             self.display(urwid.Text(plain_text))
@@ -44,6 +77,7 @@ class FocusableText(BasicWidget):
         return super(FocusableText, self).render(size, focus)
 
     def get_plain_text(self):
+        """ Retrieve the plain text from text_markup """
         if isinstance(self.text_markup, str) or \
            isinstance(self.text_markup, unicode):
             return self.text_markup
@@ -55,6 +89,12 @@ class FocusableText(BasicWidget):
 
 
 class SearchWidget(BasicWidget):
+    """ Edit widget to handle searching
+
+    Attributes:
+        search_func: a callback function that will be called when search is invoke
+        clear_func: a callback function that will be called when search is cancelled
+    """
     def __init__(self, search_func, clear_func, **kwargs):
         super(SearchWidget, self).__init__(
             widget=urwid.Edit("/"), **kwargs)
@@ -79,6 +119,11 @@ class SearchWidget(BasicWidget):
 
 
 class SearchableText(BasicWidget):
+    """ Searchable text let its content could be search and hightlight
+
+    Attributes:
+        plain_text: str or unicode
+    """
     def __init__(self, plain_text, **kwargs):
         plain_text = self._try_decompose_text(plain_text)
         widget = urwid.Text(plain_text)

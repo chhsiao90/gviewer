@@ -5,6 +5,12 @@ from basic import BasicWidget
 
 
 class ErrorWidget(BasicWidget):
+    """Widget for displaying exception info
+
+    Attributes:
+        parent: ParentFrame instance
+        exc_info: sys.exc_info()
+    """
     def __init__(self, parent, exc_info):
         contents = [
             urwid.Text(s.rstrip()) for s in traceback.format_exception(

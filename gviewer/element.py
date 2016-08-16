@@ -3,18 +3,16 @@ from basic import BasicWidget, SearchableText
 
 
 class Base(object):
+    """Abstract class for view displayer eleemnt"""
     def to_widget(self):
         raise NotImplementedError
 
 
 class Line(Base):
-    """
-    One line detail content
-    :param content: content
-    :type content: str or unicode
+    """One line detail content
 
-    :param style: style name
-    :type style: str
+    Attributes:
+        content: str or unicode
     """
     def __init__(self, content):
         self.content = content
@@ -24,16 +22,11 @@ class Line(Base):
 
 
 class Prop(Base):
-    """
-    One line detail content
-    :param key: property key
-    :type key: str or unicode
+    """ Key-value property
 
-    :param value: property value
-    :type value: str or unicode
-
-    :param style: style name
-    :type style: str
+    Attributes:
+        key: str or unicode represent property key
+        value: str or unicode represent propertyvalue 
     """
     def __init__(self, key, value):
         self.kv = (key, value)
@@ -51,13 +44,11 @@ class Prop(Base):
 
 
 class Group(object):
-    """
-    Group the detail content
-    :param title: the group title
-    :type title: str
+    """Group of view items
 
-    :param items: detail items
-    :type items: iterable for Line or Prop
+    Attributes:
+        title: the group title
+        items: iterable of Prop or Line
     """
     def __init__(self, title, items, show_title=True):
         self.title = title
@@ -73,6 +64,12 @@ class Group(object):
 
 
 class PropsGroup(Group):
+    """Group of Prop
+
+    Attributes:
+        title: str or unicode
+        items: iterable of Prop
+    """
     def __init__(self, title, items, *args, **kwargs):
         max_key_length = max(map(lambda p: len(p.kv[0]), items))
         for p in items:
@@ -81,6 +78,11 @@ class PropsGroup(Group):
 
 
 class Groups(Base):
+    """Group of Group
+
+    Attributes:
+        groups: iterable of Group
+    """
     def __init__(self, groups):
         self.groups = groups
 
@@ -97,6 +99,7 @@ class Groups(Base):
 
 
 class TitleWidget(BasicWidget):
+    """Widget for title"""
     def __init__(self, content):
         widget = urwid.Text(content)
         super(TitleWidget, self).__init__(
@@ -105,6 +108,7 @@ class TitleWidget(BasicWidget):
 
 
 class ListWidget(urwid.WidgetWrap):
+    """Widget for view items"""
     def __init__(self, widgets):
         walker = urwid.SimpleFocusListWalker(widgets)
         widget = urwid.ListBox(walker)

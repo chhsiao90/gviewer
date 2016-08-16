@@ -6,20 +6,13 @@ from view import ViewWidget
 from error import ErrorWidget
 
 
-""" Parent Frame to control the which widget to display """
-
-
 class ParentFrame(urwid.Frame):
-    """
-    Parent Frame to control the which widget to display
-    :param data_store:
-    :type data_store: BaseDataStore Implementation
+    """ Parent Frame to control the which widget to display
 
-    :param displayer:
-    :type displayer: BaseDisplayer implmementation
-
-    :param header: header title
-    :type header: str
+    Attributes:
+        data_store: BaseDataStore implementation instance
+        displayer: BaseDisplayer implmementation
+        config: Config instance
     """
     def __init__(self, data_store, displayer, config):
         self.config = config
@@ -43,6 +36,12 @@ class ParentFrame(urwid.Frame):
             footer=footer_widget)
 
     def display_view(self, message, index):
+        """ Display view for message
+
+        Args:
+            message: Message generate by DataStore
+            index: int represent which view to display
+        """
         try:
             widget = ViewWidget(message, index, self)
             self.set_body(widget)
@@ -50,14 +49,24 @@ class ParentFrame(urwid.Frame):
             self.open_error(sys.exc_info())
 
     def open_summary(self):
+        """ Open SummaryWidget """
         self.set_body(self.summary)
 
     def open_error(self, exc_info):
+        """ Open ErrorWidget
+
+        Args:
+            exc_info: sys.exc_info()
+        """
         widget = ErrorWidget(self, exc_info)
         self.set_body(widget)
 
 
 class Footer(urwid.WidgetWrap):
+    """ Footer widget for ParentFrame
+
+    Contains the key mapping
+    """
     def __init__(self, keys):
         text = "; ".join(
             ["{0}: {1}".format(k, v) for k, v in keys.iteritems()])

@@ -2,17 +2,13 @@ from keys import vim
 from styles import default
 
 
-""" General Viewer Config """
-
-
 class Config(object):
-    """
-    config for GViewer
-    :header param: header content
-    :header type: str
+    """Config for GViewer
 
-    :keys param: key mapping, default is vim mode
-    :keys type: dict
+    Attributes:
+        header: header content
+        keys: dictionary define key mapping
+        template: list of tuple for default stylesheet
     """
     def __init__(self,
                  header="General Viewer",

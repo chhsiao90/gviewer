@@ -1,24 +1,17 @@
-"""Data Store
-
-Contents:
-
-* `BaseDataStore`: abstract class for data store
-* `StaticDataStore`: basic data store for static fixed list
-* `AsyncDataStore`: async data store, like zmq, asyncio, etc...
-* `MessageListener`: listener to listen on DataStore message received, and transmit it to viewer
-"""
-
-
 class BaseDataStore(object):
-    """
-    Base absctract class for data store
+    """ Base absctract class for data store
 
-    Please extend it with set_up implementation
+    Attributes:
+        msg_listener: MessageListener instance
     """
     def __init__(self):
-        self.walker = None
+        self.msg_listener = None
 
     def register_listener(self, msg_listener):
+        """ Register msg_listener
+
+        Register msg_listener, will be called before GViewer start
+        """
         self.msg_listener = msg_listener
 
     def transform(self, msg):
