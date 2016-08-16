@@ -7,7 +7,8 @@ TEST_MODULES = [
     "gviewer.tests.test_config",
     "gviewer.tests.test_error",
     "gviewer.tests.test_summary",
-    "gviewer.tests.test_view"
+    "gviewer.tests.test_view",
+    "gviewer.tests.test_parent"
 ]
 
 

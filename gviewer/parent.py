@@ -45,7 +45,7 @@ class ParentFrame(urwid.Frame):
         try:
             widget = ViewWidget(message, index, self)
             self.set_body(widget)
-        except:
+        except:  # pragma: no cover
             self.open_error(sys.exc_info())
 
     def open_summary(self):
