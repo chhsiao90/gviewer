@@ -178,7 +178,7 @@ class SummaryListWidgetTest(unittest.TestCase):
         )
 
     def test_open_search(self):
-        self.widget.open_search()
+        self.widget._open_search()
 
         self.assertIs(self.widget._w.focus, self.widget.search_widget)
         self.assertTrue(self.widget.is_editing())
@@ -189,30 +189,30 @@ class SummaryListWidgetTest(unittest.TestCase):
         )
 
     def test_close_search(self):
-        self.widget.close_search()  # nothing happen
+        self.widget._close_search()  # nothing happen
         self.assertFalse(self.widget.is_editing())
 
-        self.widget.open_search()
+        self.widget._open_search()
         self.assertTrue(self.widget.is_editing())
 
-        self.widget.close_search()
+        self.widget._close_search()
         self.assertFalse(self.widget.is_editing())
         self.assertEqual(len(self.widget._w.contents), 1)
 
     def test_filter(self):
-        self.widget.filter("summary 1")
+        self.widget._filter("summary 1")
         self.assertIsInstance(self.widget._w.focus, urwid.ListBox)
         self.assertIsInstance(self.widget.current_walker, FilterSummaryListWalker)
         self.assertEqual(len(self.widget.current_walker), 1)
 
     def test_filter_with_empty(self):
-        self.widget.filter("")
+        self.widget._filter("")
         self.assertIs(
             self.widget.current_walker,
             self.widget.base_walker)
 
     def test_keypress_on_editing(self):
-        self.widget.open_search()
+        self.widget._open_search()
         self.assertIsNone(self.widget.keypress((0,), "q"))
         self.assertIsNone(self.widget.keypress((0,), "j"))
         self.assertIsNone(self.widget.keypress((0,), "/"))
@@ -225,7 +225,7 @@ class SummaryListWidgetTest(unittest.TestCase):
         self.assertTrue(self.widget.is_editing())
 
     def test_keypress_clear_search(self):
-        self.widget.filter("test")
+        self.widget._filter("test")
         self.assertEqual(len(self.widget.current_walker), 0)
 
         self.widget.keypress((0,), "q")
