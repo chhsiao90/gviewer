@@ -3,7 +3,7 @@ from parent import ParentFrame
 from config import Config
 
 
-class GViewer(object):
+class GViewer(object):  # pragma: no cover
     """ General viewer main class
 
     Attributes:
