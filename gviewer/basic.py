@@ -139,7 +139,7 @@ class SearchableText(BasicWidget):
         if not isinstance(plain_text, (str, unicode)):
             plain_text = decompose_tagmarkup(plain_text)
         if isinstance(plain_text, str):
-            plain_text.decode("utf8")
+            plain_text = plain_text.decode("utf8")
 
         return plain_text
 
@@ -181,4 +181,4 @@ class SearchableText(BasicWidget):
 
     def clear(self):
         self.prev_index = (0, len(self.plain_text))
-        self._w = urwid.Text(self.plain_text)
+        self.display(urwid.Text(self.plain_text))

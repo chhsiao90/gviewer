@@ -23,6 +23,7 @@ class ViewWidgetTest(unittest.TestCase):
         self.parent.view_names = [
             e[0] for e in self.parent.views
         ]
+        self.parent.open_summary = mock.Mock()
 
         self.test_message = dict(view1="view1", view2="view2", view3="view3")
 
@@ -52,21 +53,21 @@ class ViewWidgetTest(unittest.TestCase):
         widget = ViewWidget(
             self.test_message,
             0, self.parent)
-        widget._next_view()
+        widget.keypress((0,), "tab")
         self.parent.display_view.assert_called_with(
             self.test_message, 1)
 
         widget = ViewWidget(
             self.test_message,
             1, self.parent)
-        widget._next_view()
+        widget.keypress((0,), "tab")
         self.parent.display_view.assert_called_with(
             self.test_message, 2)
 
         widget = ViewWidget(
             self.test_message,
             2, self.parent)
-        widget._next_view()
+        widget.keypress((0,), "tab")
         self.parent.display_view.assert_called_with(
             self.test_message, 0)
 
@@ -74,21 +75,21 @@ class ViewWidgetTest(unittest.TestCase):
         widget = ViewWidget(
             self.test_message,
             0, self.parent)
-        widget._prev_view()
+        widget.keypress((0,), "shift tab")
         self.parent.display_view.assert_called_with(
             self.test_message, 2)
 
         widget = ViewWidget(
             self.test_message,
             2, self.parent)
-        widget._prev_view()
+        widget.keypress((0,), "shift tab")
         self.parent.display_view.assert_called_with(
             self.test_message, 1)
 
         widget = ViewWidget(
             self.test_message,
             1, self.parent)
-        widget._prev_view()
+        widget.keypress((0,), "shift tab")
         self.parent.display_view.assert_called_with(
             self.test_message, 0)
 
@@ -106,7 +107,7 @@ class ViewWidgetTest(unittest.TestCase):
             self.test_message,
             0, self.parent)
 
-        widget._open_search()
+        widget.keypress((0,), "/")
         self.assertEqual(
             widget.body.contents[1][0],
             widget.search_widget)
@@ -124,6 +125,55 @@ class ViewWidgetTest(unittest.TestCase):
         self.assertEqual(len(widget.body.contents), 2)
         widget._close_search()
         self.assertEqual(len(widget.body.contents), 1)
+
+    def test_open_summary(self):
+        widget = ViewWidget(
+            self.test_message,
+            0, self.parent)
+
+        widget.keypress((0,), "q")
+        self.parent.open_summary.assert_called_with()
+
+    def test_search(self):
+        widget = ViewWidget(
+            self.test_message,
+            0, self.parent)
+
+        widget.search_widget.keypress((4,), "v")
+        widget.search_widget.keypress((4,), "i")
+        widget.search_widget.keypress((4,), "e")
+        widget.search_widget.keypress((4,), "w")
+        widget.search_widget.keypress((4,), "enter")
+
+        match = render_widgets_to_content(
+            [urwid.Text(("view-title", "Title")),
+             urwid.Text([("match", "view"), ("view-item", "1")])],
+            (5, 3)
+        )
+        no_match = render_widgets_to_content(
+            [urwid.Text(("view-title", "Title")),
+             urwid.Text(("view-item", "view1"))],
+            (5, 3)
+        )
+
+        self.assertEqual(
+            render_to_content(widget.content_widget, (5, 3)),
+            match)
+
+        widget.keypress((0,), "n")
+        self.assertEqual(
+            render_to_content(widget.content_widget, (5, 3)),
+            no_match)
+
+        widget.keypress((0,), "N")
+        self.assertEqual(
+            render_to_content(widget.content_widget, (5, 3)),
+            match)
+
+        widget.keypress((0,), "N")
+        self.assertEqual(
+            render_to_content(widget.content_widget, (5, 3)),
+            no_match)
 
 
 class TabsTest(unittest.TestCase):

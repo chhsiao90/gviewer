@@ -102,7 +102,7 @@ class ViewWidget(BasicWidget):
                 )
             return None
 
-        return super(ViewWidget, self).keypress(size, key)
+        return super(ViewWidget, self).keypress(size, key)  # pragma: no cover
 
 
 class Tabs(BasicWidget):
