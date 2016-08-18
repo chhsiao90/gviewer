@@ -26,7 +26,7 @@ class Prop(Base):
 
     Attributes:
         key: str or unicode represent property key
-        value: str or unicode represent propertyvalue 
+        value: str or unicode represent property value
     """
     def __init__(self, key, value):
         self.kv = (key, value)

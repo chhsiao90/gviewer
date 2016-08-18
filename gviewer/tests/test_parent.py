@@ -2,11 +2,6 @@ import unittest
 import urwid
 import sys
 
-try:
-    import unittest.mock as mock
-except:
-    import mock
-
 from util import render_to_content, render_widgets_to_content
 from gviewer.parent import ParentFrame, Footer
 from gviewer.config import Config

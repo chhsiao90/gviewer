@@ -5,7 +5,7 @@ class BaseDataStore(object):
         msg_listener: MessageListener instance
     """
     def __init__(self):
-        self.msg_listener = None
+        self.msg_listener = None  # pragma: no cover
 
     def register_listener(self, msg_listener):
         """ Register msg_listener
