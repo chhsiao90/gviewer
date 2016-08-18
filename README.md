@@ -1,6 +1,6 @@
 # General Viewer (GViewer)
 [![Build Status](https://travis-ci.org/chhsiao90/gviewer.svg?branch=master)](https://travis-ci.org/chhsiao90/gviewer)
-[![Coverage Status](https://coveralls.io/repos/github/chhsiao90/gviewer/badge.svg)](https://coveralls.io/github/chhsiao90/gviewer)
+[![Coverage Status](https://coveralls.io/repos/github/chhsiao90/gviewer/badge.svg?branch=master)](https://coveralls.io/github/chhsiao90/gviewer?branch=master)
 
 ##### Simple, Light Weight, but Powerful 
 GViewer is a terminal UI library that depends on [urwid](https://github.com/urwid/urwid) simplified writing a tui based reporting system.
