@@ -1,6 +1,6 @@
 import json
 from gviewer import StaticDataStore, GViewer, BaseDisplayer
-from gviewer import Prop, PropsGroup, Groups
+from gviewer import Prop, PropsGroup, View
 
 
 with open("examples/panama-taiwan.json", "r") as data_file:
@@ -38,7 +38,11 @@ class PanamaDisplayer(BaseDisplayer):
                 shareholder.get("name"),
                 [Prop(k, v) for k, v in shareholder.iteritems() if isinstance(v, str) or isinstance(v, unicode)]))
 
-        return Groups(detail_groups)
+        return View(detail_groups, actions=dict(e=self.export))
+
+    def export(self, parent, message):
+        with open("panama-export.json", "w") as w:
+            w.write(json.dumps(message))
 
     def run(self):
         self.viewer.start()

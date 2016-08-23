@@ -4,7 +4,7 @@ from gviewer.basic import BasicWidget, SearchableText
 
 class Base(object):
     """Abstract class for view displayer eleemnt"""
-    def to_widget(self):
+    def to_widget(self, parent, message):
         raise NotImplementedError
 
 
@@ -17,7 +17,7 @@ class Line(Base):
     def __init__(self, content):
         self.content = content
 
-    def to_widget(self):
+    def to_widget(self, parent, message):
         return SearchableText(self.content, attr_map="view-item")
 
 
@@ -32,7 +32,7 @@ class Prop(Base):
         self.kv = (key, value)
         self.max_key_length = 0
 
-    def to_widget(self):
+    def to_widget(self, parent, message):
         if self.max_key_length:
             format_str = "{0:" + str(self.max_key_length + 1) + "}: "
             return urwid.Text(
@@ -55,11 +55,11 @@ class Group(object):
         self.items = items
         self.show_title = show_title
 
-    def to_widgets(self):
+    def to_widgets(self, parent, message):
         widgets = []
         if self.show_title:
             widgets.append(TitleWidget(self.title))
-        widgets += [e.to_widget() for e in self.items]
+        widgets += [e.to_widget(parent, message) for e in self.items]
         return widgets
 
 
@@ -82,20 +82,22 @@ class View(Base):
 
     Attributes:
         groups: iterable of Group
+        actions: dict defined {key: callback}
     """
-    def __init__(self, groups):
+    def __init__(self, groups, actions=None):
         self.groups = groups
+        self.actions = actions or dict()
 
-    def to_widget(self):
+    def to_widget(self, parent, message):
         widgets = []
         for group in self.groups:
-            widgets += group.to_widgets()
+            widgets += group.to_widgets(parent, message)
             widgets.append(EmptyLine())
 
         if not widgets:
             widgets.append(EmptyLine())
 
-        return ListWidget(widgets)
+        return ContentWidget(widgets, parent, message, self.actions)
 
 
 class Groups(View):
@@ -116,14 +118,18 @@ class TitleWidget(BasicWidget):
             attr_map="view-title")
 
 
-class ListWidget(urwid.WidgetWrap):
+class ContentWidget(urwid.WidgetWrap):
     """Widget for view items"""
-    def __init__(self, widgets):
+    def __init__(self, widgets, parent, message, actions=None):
         walker = urwid.SimpleFocusListWalker(widgets)
         widget = urwid.ListBox(walker)
-        super(ListWidget, self).__init__(widget)
-        self._w.set_focus(0)
+        super(ContentWidget, self).__init__(widget)
+
         self.prev_match = 0
+
+        self.parent = parent
+        self.message = message
+        self.actions = actions or dict()
 
     def search_next(self, keyword):
         curr_index = self._w.get_focus()[1]
@@ -164,6 +170,12 @@ class ListWidget(urwid.WidgetWrap):
             self._w.body[self.prev_match].clear()
         except AttributeError:  # pragma: no cover
             pass
+
+    def keypress(self, size, key):
+        if key in self.actions:
+            self.actions[key].__call__(self.parent, self.message)
+            return None
+        return super(ContentWidget, self).keypress(size, key)
 
 
 class EmptyLine(urwid.Text):

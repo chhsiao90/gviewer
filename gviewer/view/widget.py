@@ -31,7 +31,7 @@ class ViewWidget(BasicWidget):
         self.display(widget)
 
     def _make_widget(self, view):
-        return view(self.message).to_widget()
+        return view(self.message).to_widget(self.parent, self.message)
 
     def _next_view(self):
         if len(self.parent.view_names) == 1:
