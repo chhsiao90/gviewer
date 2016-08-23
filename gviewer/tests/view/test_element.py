@@ -1,10 +1,10 @@
 import unittest
 import urwid
 
-from util import render_to_content, render_widgets_to_content
+from gviewer.tests.util import render_to_content, render_widgets_to_content
 from gviewer.basic import SearchableText
-from gviewer.element import Line, Prop, Group, PropsGroup, Groups
-from gviewer.element import TitleWidget, ListWidget, EmptyLine
+from gviewer.view.element import Line, Prop, Group, PropsGroup, Groups
+from gviewer.view.element import TitleWidget, ListWidget, EmptyLine
 
 
 class LineTest(unittest.TestCase):

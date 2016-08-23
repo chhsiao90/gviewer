@@ -6,9 +6,9 @@ try:
 except:
     import mock
 
-from util import render_to_content, render_widgets_to_content
-from gviewer.view import ViewWidget, Tabs
-from gviewer import Line, Group, Groups
+from gviewer.tests.util import render_to_content, render_widgets_to_content
+from gviewer.view.widget import ViewWidget, Tabs
+from gviewer.view.element import Line, Group, Groups
 
 
 class ViewWidgetTest(unittest.TestCase):

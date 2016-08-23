@@ -1,6 +1,6 @@
 import urwid
 
-from basic import BasicWidget, SearchWidget
+from gviewer.basic import BasicWidget, SearchWidget
 
 
 class ViewWidget(BasicWidget):

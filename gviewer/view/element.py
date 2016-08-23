@@ -1,5 +1,5 @@
 import urwid
-from basic import BasicWidget, SearchableText
+from gviewer.basic import BasicWidget, SearchableText
 
 
 class Base(object):
