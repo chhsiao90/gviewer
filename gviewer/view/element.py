@@ -77,8 +77,8 @@ class PropsGroup(Group):
         super(PropsGroup, self).__init__(title, items, *args, **kwargs)
 
 
-class Groups(Base):
-    """Group of Group
+class View(Base):
+    """View Element
 
     Attributes:
         groups: iterable of Group
@@ -96,6 +96,15 @@ class Groups(Base):
             widgets.append(EmptyLine())
 
         return ListWidget(widgets)
+
+
+class Groups(View):
+    """Groups
+
+    Deprecated, for lagacy interface compatibility, would removed in the future
+    Attributes:
+        groups: iterable of Group
+    """
 
 
 class TitleWidget(BasicWidget):

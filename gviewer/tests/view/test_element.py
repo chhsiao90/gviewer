@@ -3,7 +3,7 @@ import urwid
 
 from gviewer.tests.util import render_to_content, render_widgets_to_content
 from gviewer.basic import SearchableText
-from gviewer.view.element import Line, Prop, Group, PropsGroup, Groups
+from gviewer.view.element import Line, Prop, Group, PropsGroup, View
 from gviewer.view.element import TitleWidget, ListWidget, EmptyLine
 
 
@@ -80,9 +80,9 @@ class PropsGroupTest(unittest.TestCase):
         self.assertEqual(props_group.items[2].max_key_length, 7)
 
 
-class GroupsTest(unittest.TestCase):
+class ViewTest(unittest.TestCase):
     def test_to_widget(self):
-        groups = Groups([
+        groups = View([
             Group("group1", [Line("content1")]),
             Group("group2", [Line("content2")])]
         )
