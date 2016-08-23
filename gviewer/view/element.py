@@ -1,11 +1,23 @@
 import urwid
+
 from gviewer.basic import BasicWidget, SearchableText
+
+
+def try_decode(text):
+    if isinstance(text, str):
+        return text.decode("utf8")
+    if not isinstance(text, unicode):
+        raise ValueError("not legal str: {0}".format(text))
+    return text
 
 
 class Base(object):
     """Abstract class for view displayer eleemnt"""
     def to_widget(self, parent, message):
         raise NotImplementedError
+
+    def text(self):
+        return ""
 
 
 class Line(Base):
@@ -19,6 +31,9 @@ class Line(Base):
 
     def to_widget(self, parent, message):
         return SearchableText(self.content, attr_map="view-item")
+
+    def text(self):
+        return try_decode(self.content)
 
 
 class Prop(Base):
@@ -42,6 +57,14 @@ class Prop(Base):
             [("view-item key", self.kv[0] + ": "),
              ("view-item value", self.kv[1])])
 
+    def text(self):
+        if self.max_key_length:
+            format_str = "{0:" + str(self.max_key_length + 1) + "}: {1}"
+            text = format_str.format(self.kv[0], self.kv[1])
+        else:
+            text = "{0}: {1}".format(self.kv[0], self.kv[1])
+        return try_decode(text)
+
 
 class Group(object):
     """Group of view items
@@ -61,6 +84,12 @@ class Group(object):
             widgets.append(TitleWidget(self.title))
         widgets += [e.to_widget(parent, message) for e in self.items]
         return widgets
+
+    def text(self):
+        text = u"\n".join([e.text() for e in self.items])
+        if self.show_title:
+            text = try_decode(self.title) + u"\n" + text
+        return text
 
 
 class PropsGroup(Group):
@@ -99,6 +128,9 @@ class View(Base):
 
         return ContentWidget(widgets, parent, message, self.actions)
 
+    def text(self):
+        return u"\n".join([g.text() + u"\n" for g in self.groups])
+
 
 class Groups(View):
     """Groups
@@ -107,6 +139,7 @@ class Groups(View):
     Attributes:
         groups: iterable of Group
     """
+    pass
 
 
 class TitleWidget(BasicWidget):

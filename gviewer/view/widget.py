@@ -1,4 +1,5 @@
 import urwid
+import time
 
 from gviewer.basic import BasicWidget, SearchWidget
 
@@ -18,20 +19,19 @@ class ViewWidget(BasicWidget):
 
         self.search_widget = SearchWidget(self._search, self._clear_search)
 
-        _, view = parent.views[index]
-        self.content_widget = self._make_widget(view)
+        _, view_callable = self.parent.views[index]
+        self.view = view_callable(self.message)
+
+        self.content_widget = self.view.to_widget(self.parent, self.message)
         self.body = urwid.Pile([self.content_widget])
 
-        if len(parent.view_names) > 1:
-            header = Tabs(parent.view_names, self.index)
+        if len(self.parent.view_names) > 1:
+            header = Tabs(self.parent.view_names, self.index)
         else:
             header = None
 
         widget = urwid.Frame(self.body, header=header)
         self.display(widget)
-
-    def _make_widget(self, view):
-        return view(self.message).to_widget(self.parent, self.message)
 
     def _next_view(self):
         if len(self.parent.view_names) == 1:
@@ -74,6 +74,11 @@ class ViewWidget(BasicWidget):
     def is_editing(self):
         return self.body.focus is self.search_widget
 
+    def _export(self):
+        file_name = "export-%13d" % (time.time() * 1000)
+        with open(file_name, "w") as f:
+            f.write(self.view.text())
+
     def keypress(self, size, key):
         if self.is_editing():
             return super(ViewWidget, self).keypress(size, key)
@@ -101,7 +106,9 @@ class ViewWidget(BasicWidget):
                     self.search_widget.get_keyword()
                 )
             return None
-
+        if key == "e":
+            self._export()
+            return None
         return super(ViewWidget, self).keypress(size, key)  # pragma: no cover
 
 
