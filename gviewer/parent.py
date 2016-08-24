@@ -11,32 +11,29 @@ class ParentFrame(urwid.Frame):
     """ Parent Frame to control the which widget to display
 
     Attributes:
-        data_store: BaseDataStore implementation instance
-        displayer: BaseDisplayer implmementation
-        config: Config instance
+        context: Context
     """
-    def __init__(self, data_store, displayer, config):
-        self.config = config
-        self.data_store = data_store
+    def __init__(self, context):
+        self._context = context
 
-        self.displayer = displayer
-        self.views = displayer.get_views()
+        self.views = context.displayer.get_views()
         self.view_names = [k for k, _ in self.views]
 
-        self.msg_listener = MessageListener(self.data_store)
+        self.msg_listener = MessageListener(context.store)
 
-        walker = SummaryListWalker(self)
-        self.summary = SummaryListWidget(walker, self)
+        walker = SummaryListWalker(self, context)
+        self._summary = SummaryListWidget(walker, self, context)
 
-        header = urwid.AttrMap(urwid.Text(config.header), "header")
-        self.footer = Footer(self)
+        header = urwid.Text(context.config.header)
+        header = urwid.AttrMap(header, "header")
+        self._footer = Footer(self)
 
         self._prev_views = []
 
         super(ParentFrame, self).__init__(
-            body=self.summary,
+            body=self._summary,
             header=header,
-            footer=self.footer)
+            footer=self._footer)
 
     def display_view(self, message, index, push_prev=True):
         """ Display view for message
@@ -46,7 +43,7 @@ class ParentFrame(urwid.Frame):
             index: int represent which view to display
         """
         try:
-            widget = ViewWidget(message, index, self)
+            widget = ViewWidget(message, index, self, self._context)
             self.open(widget, push_prev)
         except:  # pragma: no cover
             self.open_error(sys.exc_info())
@@ -78,14 +75,14 @@ class ParentFrame(urwid.Frame):
         Args:
             exc_info: sys.exc_info()
         """
-        widget = ErrorWidget(self, exc_info)
+        widget = ErrorWidget(self, self._context, exc_info)
         self.open(widget, True)
 
     def notify(self, message):
         """Notify message"""
-        self.footer.notify(message)
+        self._footer.notify(message)
         self.focus_position = "footer"
-        self.footer._w.focus_position = 1
+        self._footer._w.focus_position = 1
 
     def exit_notify(self):
         """Unfocus notification widget"""

@@ -1,6 +1,7 @@
 import urwid
 from parent import ParentFrame
 from config import Config
+from context import Context
 
 
 class GViewer(object):  # pragma: no cover
@@ -12,15 +13,15 @@ class GViewer(object):  # pragma: no cover
         config: a Config instance
         others: any other args defined in urwid.MainLoop
     """
-    def __init__(self, data_store, displayer, config=None, **kwargs):
+    def __init__(self, store, displayer, summary_actions=None, config=None, **kwargs):
         self.config = config or Config()
-        self.view = ParentFrame(data_store, displayer, self.config)
+        self.context = Context(store, displayer, self.config, summary_actions=summary_actions)
+        self.view = ParentFrame(self.context)
 
         self._default_urwid_options(kwargs)
 
         self.loop = urwid.MainLoop(
             self.view, **kwargs)
-        self.data_store = data_store
 
     def _default_urwid_options(self, kwargs):
         """ generate default urwid options
@@ -48,5 +49,5 @@ class GViewer(object):  # pragma: no cover
     def start(self):
         """ Start the gviewer tui
         """
-        self.data_store.set_up()
+        self.context.store.set_up()
         self.loop.run()

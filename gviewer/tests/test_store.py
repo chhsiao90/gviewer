@@ -11,7 +11,6 @@ from gviewer.store import StaticDataStore, AsyncDataStore, MessageListener
 class StaticDataStoreTest(unittest.TestCase):
     def setUp(self):
         self.listener = mock.Mock()
-        self.listener.on_message = mock.Mock()
 
         self.data_store = StaticDataStore([
             "message 1", "message 2"])
@@ -26,7 +25,6 @@ class StaticDataStoreTest(unittest.TestCase):
 class AsyncDataStoreTest(unittest.TestCase):
     def setUp(self):
         self.listener = mock.Mock()
-        self.listener.on_message = mock.Mock()
 
         self.register_func = mock.Mock()
 

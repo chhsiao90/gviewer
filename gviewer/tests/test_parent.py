@@ -11,6 +11,7 @@ from util import render_to_content, render_widgets_to_content, render_to_text
 from gviewer.parent import ParentFrame, Footer, Helper, Notification
 from gviewer.config import Config
 from gviewer.summary import SummaryListWidget
+from gviewer.context import Context
 from gviewer.view import ViewWidget
 from gviewer.error import ErrorWidget
 from gviewer import Line, Group, Groups, StaticDataStore
@@ -24,14 +25,13 @@ class ParentFrameTest(unittest.TestCase):
             ["ccc1", "ccc2", "ccc3"]
         ]
 
-        self.data_store = StaticDataStore(self.messages)
+        store = StaticDataStore(self.messages)
 
-        self.widget = ParentFrame(
-            self.data_store,
-            self,
-            Config()
-        )
-        self.data_store.set_up()
+        context = Context(
+            store, self, Config())
+        self.widget = ParentFrame(context)
+
+        store.set_up()
 
     def summary(self, message):
         return ";".join(message)
@@ -64,10 +64,10 @@ class ParentFrameTest(unittest.TestCase):
     def test_initial_with_summary(self):
         self.assertIs(
             self.widget.contents["body"][0],
-            self.widget.summary
+            self.widget._summary
         )
         self.assertIsInstance(
-            self.widget.summary,
+            self.widget._summary,
             SummaryListWidget
         )
 
@@ -83,10 +83,10 @@ class ParentFrameTest(unittest.TestCase):
         self.widget.back()
         self.assertIs(
             self.widget.contents["body"][0],
-            self.widget.summary
+            self.widget._summary
         )
         self.assertIsInstance(
-            self.widget.summary,
+            self.widget._summary,
             SummaryListWidget
         )
 

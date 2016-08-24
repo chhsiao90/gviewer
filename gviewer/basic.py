@@ -13,12 +13,14 @@ class BasicWidget(urwid.WidgetWrap):
         attr_map: non-focus attribute
         focus_map: focus attribute
     """
-    def __init__(self, parent=None, widget=None, attr_map=None, focus_map=None):
+    def __init__(self, parent=None, context=None, widget=None,
+                 attr_map=None, focus_map=None):
         widget = widget or urwid.Text("")
         if attr_map:
             widget = urwid.AttrMap(widget, attr_map, focus_map=focus_map)
         super(BasicWidget, self).__init__(widget)
         self.parent = parent
+        self.context = context
 
     def display(self, widget):
         """ Display the widget
@@ -35,10 +37,10 @@ class BasicWidget(urwid.WidgetWrap):
         """ Define default keypress action for GViewer """
         try:
             if (not self.is_editing() and
-                    self.parent and
-                    key in self.parent.config.keys):
+                    self.context and
+                    key in self.context.config.keys):
                 return super(BasicWidget, self).keypress(
-                    size, self.parent.config.keys[key])
+                    size, self.context.config.keys[key])
             return super(BasicWidget, self).keypress(size, key)
         except AttributeError:
             return key

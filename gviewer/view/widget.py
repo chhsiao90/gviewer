@@ -25,23 +25,25 @@ class ViewWidget(BasicWidget):
         index: view's index
         parent: ParentFrame instance
     """
-    def __init__(self, message, index, parent):
-        super(ViewWidget, self).__init__(parent)
+    def __init__(self, message, index, parent, context):
+        super(ViewWidget, self).__init__(
+            parent=parent, context=context)
         self.index = index
         self.message = message
 
         self.search_widget = SearchWidget(self._search, self._clear_search)
         self.help_widget = HelpWidget(
             parent,
+            context,
             HelpContent(
-                [HelpCategory("Basic", self.parent.config.keys),
+                [HelpCategory("Basic", self.context.config.keys),
                  HelpCategory("Advanced", _ADVANCED_KEYS)])
         )
 
         _, view_callable = self.parent.views[index]
         self.view = view_callable(self.message)
 
-        self.content_widget = self.view.to_widget(self.parent, self.message)
+        self.content_widget = self.view.to_widget(self.parent, self.context, self.message)
         self.body = urwid.Pile([self.content_widget])
 
         if len(self.parent.view_names) > 1:

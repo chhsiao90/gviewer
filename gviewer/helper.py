@@ -10,9 +10,9 @@ class HelpWidget(BasicWidget):
         parent: ParentFrame
         widget: ListBox widget contains help messages
     """
-    def __init__(self, parent, help_content):
+    def __init__(self, parent, context, help_content):
         super(HelpWidget, self).__init__(
-            parent=parent)
+            parent=parent, context=context)
         widget = self._widget(help_content)
         self.display(widget)
 

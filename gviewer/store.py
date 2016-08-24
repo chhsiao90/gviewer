@@ -53,13 +53,13 @@ class AsyncDataStore(BaseDataStore):
 
 
 class MessageListener(object):
-    def __init__(self, data_store):
-        self.data_store = data_store
+    def __init__(self, store):
+        self._store = store
         self.walkers = []
-        self.data_store.register_listener(self)
+        self._store.register_listener(self)
 
     def on_message(self, message):
-        transformed_msg = self.data_store.transform(message)
+        transformed_msg = self._store.transform(message)
         for walker in self.walkers:
             walker.recv(transformed_msg)
 

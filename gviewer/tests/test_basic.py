@@ -12,13 +12,8 @@ from gviewer.basic import BasicWidget, FocusableText, SearchWidget, SearchableTe
 
 class BasicWidgetTest(unittest.TestCase):
     def setUp(self):
-        self.keys = dict()
-        self.config = mock.Mock()
-
-        self.config.keys = self.keys
-
-        self.parent = mock.Mock()
-        self.parent.config = self.config
+        self.context = mock.Mock()
+        self.context.config.keys = dict()
 
     def test_display(self):
         widget = BasicWidget()
@@ -33,7 +28,7 @@ class BasicWidgetTest(unittest.TestCase):
         self.assertEqual(widget._w, text)
 
     def test_keypress(self):
-        self.keys.update(dict(
+        self.context.config.keys.update(dict(
             h="left",
             j="down",
             k="up",
@@ -43,7 +38,7 @@ class BasicWidgetTest(unittest.TestCase):
         widget = mock.Mock()
         widget.keypress = lambda size, key: key
         widget = BasicWidget(
-            parent=self.parent,
+            context=self.context,
             widget=widget)
 
         self.assertEqual(widget.keypress((1,), "h"), "left")
@@ -59,7 +54,7 @@ class BasicWidgetTest(unittest.TestCase):
         self.assertEqual(widget.keypress((1,), "right"), "right")
 
     def test_keypress_when_editing(self):
-        self.keys.update(dict(
+        self.context.config.keys.update(dict(
             h="left",
             j="down",
             k="up",
@@ -69,7 +64,7 @@ class BasicWidgetTest(unittest.TestCase):
         widget = mock.Mock()
         widget.keypress = lambda size, key: key
         widget = BasicWidget(
-            parent=self.parent,
+            context=self.context,
             widget=widget)
         widget.is_editing = lambda: True
 

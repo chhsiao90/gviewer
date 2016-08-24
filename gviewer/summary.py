@@ -19,12 +19,14 @@ class SummaryItemWidget(BasicWidget):
 
     Attributes:
         parent: ParentFrame
+        context: Context
         message: Original message genrate by BaseDataStore
         summary: Format message by displayer
     """
-    def __init__(self, parent, message, summary):
+    def __init__(self, parent, context, message, summary):
         super(SummaryItemWidget, self).__init__(
             parent=parent,
+            context=context,
             widget=FocusableText(
                 summary,
                 attr_map="summary",
@@ -56,11 +58,14 @@ class SummaryListWalker(urwid.SimpleFocusListWalker):
 
     Attributes:
         parent: ParentFrame
-        content: Array of SummaryItemWidget
+        context: Context
+        context: Context
+        content: list of SummaryItemWidget
     """
-    def __init__(self, parent, content=None):
+    def __init__(self, parent, context, content=None):
         super(SummaryListWalker, self).__init__(content or [])
         self.parent = parent
+        self.context = context
         self.parent.msg_listener.register(self)
 
     def recv(self, message):
@@ -70,8 +75,8 @@ class SummaryListWalker(urwid.SimpleFocusListWalker):
         and generate a SummaryItemWidget into its content
         """
         try:
-            summary = self.parent.displayer.summary(message)
-            self.append(SummaryItemWidget(self.parent, message, summary))
+            summary = self.context.displayer.summary(message)
+            self.append(SummaryItemWidget(self.parent, self.context, message, summary))
         except:
             self.parent.open_error(sys.exc_info())
 
@@ -87,8 +92,9 @@ class FilterSummaryListWalker(SummaryListWalker):
     """
     def __init__(self, origin_walker, keyword):
         parent = origin_walker.parent
-        content = [m for m in origin_walker if parent.displayer.match(keyword, m.message, m.get_title())]
-        super(FilterSummaryListWalker, self).__init__(parent, content=content)
+        context = origin_walker.context
+        content = [m for m in origin_walker if context.displayer.match(keyword, m.message, m.get_title())]
+        super(FilterSummaryListWalker, self).__init__(parent, context, content=content)
         self.keyword = keyword
 
     def recv(self, message):
@@ -99,9 +105,10 @@ class FilterSummaryListWalker(SummaryListWalker):
         generate a SummaryItemWidget and display it if matchj
         """
         try:
-            summary = self.parent.displayer.summary(message)
-            if self.parent.displayer.match(self.keyword, message, summary):
-                self.append(SummaryItemWidget(self.parent, message, summary))
+            summary = self.context.displayer.summary(message)
+            if self.context.displayer.match(self.keyword, message, summary):
+                self.append(SummaryItemWidget(
+                    self.parent, self.context, message, summary))
         except:
             self.parent.open_error(sys.exc_info())
 
@@ -116,18 +123,20 @@ class SummaryListWidget(BasicWidget):
     Attributes:
         walker: SummaryListWalker instance
         parent: ParentFrame instance
+        context: Context
     """
-    def __init__(self, walker, parent):
-        super(SummaryListWidget, self).__init__(parent)
+    def __init__(self, walker, parent, context):
+        super(SummaryListWidget, self).__init__(
+            parent=parent, context=context)
         self.base_walker = walker
         self.current_walker = walker
         self.list_box = urwid.ListBox(walker)
 
         self.search_widget = SearchWidget(self._filter, self._clear_search)
         self.help_widget = HelpWidget(
-            parent,
+            parent, context,
             HelpContent(
-                [HelpCategory("Basic", self.parent.config.keys),
+                [HelpCategory("Basic", self.context.config.keys),
                  HelpCategory("Advanced", _ADVANCED_KEYS)])
         )
 
