@@ -33,12 +33,15 @@ class BasicWidget(urwid.WidgetWrap):
 
     def keypress(self, size, key):
         """ Define default keypress action for GViewer """
-        if (not self.is_editing() and
-                self.parent and
-                key in self.parent.config.keys):
-            return super(BasicWidget, self).keypress(
-                size, self.parent.config.keys[key])
-        return super(BasicWidget, self).keypress(size, key)
+        try:
+            if (not self.is_editing() and
+                    self.parent and
+                    key in self.parent.config.keys):
+                return super(BasicWidget, self).keypress(
+                    size, self.parent.config.keys[key])
+            return super(BasicWidget, self).keypress(size, key)
+        except AttributeError:
+            return key
 
     def is_editing(self):
         """ Check that current state is editing or not

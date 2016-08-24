@@ -78,9 +78,9 @@ class ParentFrameTest(unittest.TestCase):
             ViewWidget
         )
 
-    def test_open_summary(self):
+    def test_back(self):
         self.widget.display_view(self.messages[0], 0)
-        self.widget.open_summary()
+        self.widget.back()
         self.assertIs(
             self.widget.contents["body"][0],
             self.widget.summary

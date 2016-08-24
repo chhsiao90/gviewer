@@ -31,12 +31,14 @@ class ParentFrame(urwid.Frame):
         header = urwid.AttrMap(urwid.Text(config.header), "header")
         self.footer = Footer(self)
 
+        self._prev_views = []
+
         super(ParentFrame, self).__init__(
             body=self.summary,
             header=header,
             footer=self.footer)
 
-    def display_view(self, message, index):
+    def display_view(self, message, index, push_prev=True):
         """ Display view for message
 
         Args:
@@ -45,21 +47,30 @@ class ParentFrame(urwid.Frame):
         """
         try:
             widget = ViewWidget(message, index, self)
-            self.open(widget)
+            self.open(widget, push_prev)
         except:  # pragma: no cover
             self.open_error(sys.exc_info())
 
-    def open(self, widget):
+    def open(self, widget, push_prev=True):
         """Open widget
 
         Args:
             widget: Widget
+            push_prev: Boolean to record previous view
         """
+        curr_widget = self.contents["body"][0]
+
+        if widget is curr_widget:
+            return
+
+        if push_prev:
+            self._prev_views.append(curr_widget)
+
         self.set_body(widget)
 
-    def open_summary(self):
-        """ Open SummaryWidget """
-        self.open(self.summary)
+    def back(self):
+        """Back to previous view"""
+        self.set_body(self._prev_views.pop())
 
     def open_error(self, exc_info):
         """ Open ErrorWidget
@@ -68,7 +79,7 @@ class ParentFrame(urwid.Frame):
             exc_info: sys.exc_info()
         """
         widget = ErrorWidget(self, exc_info)
-        self.open(widget)
+        self.open(widget, True)
 
     def notify(self, message):
         """Notify message"""

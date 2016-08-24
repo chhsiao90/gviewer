@@ -25,13 +25,14 @@ class HelpWidget(BasicWidget):
             padding = category.max_key_length() + 3
             mapping_widgets = [MappingWidget(k, v, padding) for k, v in category.mappings.iteritems()]
             widgets = widgets + mapping_widgets
+            widgets.append(urwid.Text(""))
 
         walker = urwid.SimpleFocusListWalker(widgets)
         return urwid.ListBox(walker)
 
     def keypress(self, size, key):
         if key == "q":
-            self.parent.open_summary()
+            self.parent.back()
             return None
         return super(HelpWidget, self).keypress(size, key)
 

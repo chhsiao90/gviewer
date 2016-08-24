@@ -1,7 +1,20 @@
 import urwid
 import time
+from collections import OrderedDict
 
 from gviewer.basic import BasicWidget, SearchWidget
+from gviewer.helper import HelpWidget, HelpContent, HelpCategory
+
+
+_ADVANCED_KEYS = OrderedDict([
+    ("/", "search"),
+    ("tab", "next view"),
+    ("shift+tab", "prev view"),
+    ("n", "search next result"),
+    ("N", "search prev result"),
+    ("e", "export content to file"),
+    ("q", "quit")
+])
 
 
 class ViewWidget(BasicWidget):
@@ -18,6 +31,12 @@ class ViewWidget(BasicWidget):
         self.message = message
 
         self.search_widget = SearchWidget(self._search, self._clear_search)
+        self.help_widget = HelpWidget(
+            parent,
+            HelpContent(
+                [HelpCategory("Basic", self.parent.config.keys),
+                 HelpCategory("Advanced", _ADVANCED_KEYS)])
+        )
 
         _, view_callable = self.parent.views[index]
         self.view = view_callable(self.message)
@@ -41,14 +60,14 @@ class ViewWidget(BasicWidget):
             next_index = self.index + 1
         else:
             next_index = 0
-        self.parent.display_view(self.message, next_index)
+        self.parent.display_view(self.message, next_index, push_prev=False)
 
     def _prev_view(self):
         if len(self.parent.view_names) == 1:
             return
 
         next_index = len(self.parent.view_names) - 1 if self.index == 0 else self.index - 1
-        self.parent.display_view(self.message, next_index)
+        self.parent.display_view(self.message, next_index, push_prev=False)
 
     def _open_search(self):
         self.search_widget.clear()
@@ -84,7 +103,7 @@ class ViewWidget(BasicWidget):
         if self.is_editing():
             return super(ViewWidget, self).keypress(size, key)
         if key == "q":
-            self.parent.open_summary()
+            self.parent.back()
             return None
         if key == "tab":
             self._next_view()
@@ -110,6 +129,10 @@ class ViewWidget(BasicWidget):
         if key == "e":  # pragma: no cover
             self._export()
             return None
+        if key == "?":  # pragma: no cover
+            self.parent.open(self.help_widget)
+            return None
+
         return super(ViewWidget, self).keypress(size, key)  # pragma: no cover
 
 

@@ -1,8 +1,15 @@
 import sys
 import urwid
+from collections import OrderedDict
 
 from basic import BasicWidget, FocusableText, SearchWidget
 from helper import HelpWidget, HelpContent, HelpCategory
+
+
+_ADVANCED_KEYS = OrderedDict([
+    ("/", "search"),
+    ("q", "quit")
+])
 
 
 class SummaryItemWidget(BasicWidget):
@@ -119,7 +126,9 @@ class SummaryListWidget(BasicWidget):
         self.search_widget = SearchWidget(self._filter, self._clear_search)
         self.help_widget = HelpWidget(
             parent,
-            HelpContent([HelpCategory("Basic", self.parent.config.keys)])
+            HelpContent(
+                [HelpCategory("Basic", self.parent.config.keys),
+                 HelpCategory("Advanced", _ADVANCED_KEYS)])
         )
 
         widget_list = [self.list_box]

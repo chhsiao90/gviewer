@@ -23,7 +23,7 @@ class ViewWidgetTest(unittest.TestCase):
         self.parent.view_names = [
             e[0] for e in self.parent.views
         ]
-        self.parent.open_summary = mock.Mock()
+        self.parent.config.keys = dict()
 
         self.test_message = dict(view1="view1", view2="view2", view3="view3")
 
@@ -55,21 +55,21 @@ class ViewWidgetTest(unittest.TestCase):
             0, self.parent)
         widget.keypress((0,), "tab")
         self.parent.display_view.assert_called_with(
-            self.test_message, 1)
+            self.test_message, 1, push_prev=False)
 
         widget = ViewWidget(
             self.test_message,
             1, self.parent)
         widget.keypress((0,), "tab")
         self.parent.display_view.assert_called_with(
-            self.test_message, 2)
+            self.test_message, 2, push_prev=False)
 
         widget = ViewWidget(
             self.test_message,
             2, self.parent)
         widget.keypress((0,), "tab")
         self.parent.display_view.assert_called_with(
-            self.test_message, 0)
+            self.test_message, 0, push_prev=False)
 
     def test_prev_view(self):
         widget = ViewWidget(
@@ -77,21 +77,21 @@ class ViewWidgetTest(unittest.TestCase):
             0, self.parent)
         widget.keypress((0,), "shift tab")
         self.parent.display_view.assert_called_with(
-            self.test_message, 2)
+            self.test_message, 2, push_prev=False)
 
         widget = ViewWidget(
             self.test_message,
             2, self.parent)
         widget.keypress((0,), "shift tab")
         self.parent.display_view.assert_called_with(
-            self.test_message, 1)
+            self.test_message, 1, push_prev=False)
 
         widget = ViewWidget(
             self.test_message,
             1, self.parent)
         widget.keypress((0,), "shift tab")
         self.parent.display_view.assert_called_with(
-            self.test_message, 0)
+            self.test_message, 0, push_prev=False)
 
     def test_no_tab(self):
         self.parent.view_names = [self.parent.view_names[0]]
@@ -143,7 +143,7 @@ class ViewWidgetTest(unittest.TestCase):
             0, self.parent)
 
         widget.keypress((0,), "q")
-        self.parent.open_summary.assert_called_with()
+        self.parent.back.assert_called_with()
 
     def test_search(self):
         widget = ViewWidget(

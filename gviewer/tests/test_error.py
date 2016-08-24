@@ -13,7 +13,6 @@ from gviewer.error import ErrorWidget
 class ErrorWidgetTest(unittest.TestCase):
     def setUp(self):
         self.parent = mock.Mock()
-        self.parent.open_summary = mock.Mock()
 
     def test_render(self):
         try:
@@ -49,7 +48,7 @@ class ErrorWidgetTest(unittest.TestCase):
                 sys.exc_info()
             )
         self.assertEqual(widget.keypress(None, "q"), None)
-        self.parent.open_summary.assert_called_with()
+        self.parent.back.assert_called_with()
 
 
 if __name__ == "__main__":

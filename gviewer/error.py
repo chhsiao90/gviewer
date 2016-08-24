@@ -24,6 +24,6 @@ class ErrorWidget(BasicWidget):
 
     def keypress(self, size, key):
         if key == "q":
-            self.parent.open_summary()
+            self.parent.back()
             return None
         return super(ErrorWidget, self).keypress(size, key)  # pragma: no cover
