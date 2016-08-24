@@ -3,7 +3,7 @@ import urwid
 import sys
 
 from util import render_to_content, render_widgets_to_content
-from gviewer.parent import ParentFrame, Footer
+from gviewer.parent import ParentFrame, Footer, Helper, Notification
 from gviewer.config import Config
 from gviewer.summary import SummaryListWidget
 from gviewer.view import ViewWidget
@@ -42,7 +42,7 @@ class ParentFrameTest(unittest.TestCase):
 
     def test_render(self):
         self.assertEqual(
-            render_to_content(self.widget, (100, 10)),
+            render_to_content(self.widget, (30, 10)),
             render_widgets_to_content([
                 urwid.AttrMap(urwid.Text("General Viewer"), "header"),
                 urwid.AttrMap(urwid.Text(";".join(self.messages[0])), "summary"),
@@ -52,9 +52,8 @@ class ParentFrameTest(unittest.TestCase):
                 urwid.Text(""),
                 urwid.Text(""),
                 urwid.Text(""),
-                urwid.Text(""),
-                Footer(self.widget.config.keys)
-            ], (100, 10))
+                Footer(self)
+            ], (30, 10))
         )
 
     def test_initial_with_summary(self):
@@ -100,12 +99,12 @@ class ParentFrameTest(unittest.TestCase):
 
 class FooterTest(unittest.TestCase):
     def test_render(self):
-        widget = Footer(dict(a="up", b="down"))
+        widget = Footer(None)
         self.assertEqual(
-            render_to_content(widget, (20,)),
+            render_to_content(widget, (20, 2)),
             render_widgets_to_content(
-                [urwid.AttrMap(urwid.Text("a: up; b: down"), "footer")],
-                (20,))
+                [Helper(), Notification(None)],
+                (20, 2))
         )
 
 
