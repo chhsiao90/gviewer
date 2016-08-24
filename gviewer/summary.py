@@ -2,6 +2,7 @@ import sys
 import urwid
 
 from basic import BasicWidget, FocusableText, SearchWidget
+from helper import HelpWidget, HelpContent, HelpCategory
 
 
 class SummaryItemWidget(BasicWidget):
@@ -114,7 +115,12 @@ class SummaryListWidget(BasicWidget):
         self.base_walker = walker
         self.current_walker = walker
         self.list_box = urwid.ListBox(walker)
+
         self.search_widget = SearchWidget(self._filter, self._clear_search)
+        self.help_widget = HelpWidget(
+            parent,
+            HelpContent([HelpCategory("Basic", self.parent.config.keys)])
+        )
 
         widget_list = [self.list_box]
         widget = urwid.Pile(widget_list)
@@ -168,5 +174,7 @@ class SummaryListWidget(BasicWidget):
         if key == "q" and isinstance(self.current_walker, FilterSummaryListWalker):
             self._clear_search()
             return None
+        if key == "?":
+            self.parent.open(self.help_widget)
 
         return super(SummaryListWidget, self).keypress(size, key)

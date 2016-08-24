@@ -10,5 +10,8 @@ palette = [
     ("view-title", "yellow", "black", "bold"),
     ("tabs", "white", "black", "bold"),
     ("tabs focus", "white", "dark blue", "bold"),
-    ("match", "black", "light gray")
+    ("match", "black", "light gray"),
+    ("help title", "white", "black", "bold"),
+    ("help key", "light cyan", "black"),
+    ("help value", "white", "black")
 ]

@@ -14,6 +14,7 @@ class SummaryItemWidgetTest(unittest.TestCase):
     def setUp(self):
         self.parent = mock.Mock()
         self.parent.display_view = mock.Mock()
+        self.parent.config.keys = dict()
 
     def test_render(self):
         widget = SummaryItemWidget(
@@ -52,6 +53,8 @@ class SummaryListWalkerTest(unittest.TestCase):
         self.error = False
         self.parent.open_error = mock.Mock(
             side_effect=self._open_error)
+
+        self.parent.config.keys = dict()
 
         self.walker = SummaryListWalker(
             self.parent)
@@ -97,6 +100,8 @@ class FilterSummaryListWalkerTest(unittest.TestCase):
         self.error = False
         self.parent.open_error = mock.Mock(
             side_effect=self._open_error)
+
+        self.parent.config.keys = dict()
 
         self.origin_walker = SummaryListWalker(
             self.parent,
@@ -155,6 +160,7 @@ class SummaryListWidgetTest(unittest.TestCase):
         self.parent.displayer = mock.Mock()
         self.parent.displayer.match = mock.Mock(
             side_effect=lambda k, m, s: k in s)
+        self.parent.config.keys = dict()
         self.walker = SummaryListWalker(
             self.parent,
             content=[

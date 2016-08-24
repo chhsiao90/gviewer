@@ -45,13 +45,21 @@ class ParentFrame(urwid.Frame):
         """
         try:
             widget = ViewWidget(message, index, self)
-            self.set_body(widget)
+            self.open(widget)
         except:  # pragma: no cover
             self.open_error(sys.exc_info())
 
+    def open(self, widget):
+        """Open widget
+
+        Args:
+            widget: Widget
+        """
+        self.set_body(widget)
+
     def open_summary(self):
         """ Open SummaryWidget """
-        self.set_body(self.summary)
+        self.open(self.summary)
 
     def open_error(self, exc_info):
         """ Open ErrorWidget
@@ -60,14 +68,16 @@ class ParentFrame(urwid.Frame):
             exc_info: sys.exc_info()
         """
         widget = ErrorWidget(self, exc_info)
-        self.set_body(widget)
+        self.open(widget)
 
     def notify(self, message):
+        """Notify message"""
         self.footer.notify(message)
         self.focus_position = "footer"
         self.footer._w.focus_position = 1
 
     def exit_notify(self):
+        """Unfocus notification widget"""
         self.focus_position = "body"
 
 
@@ -85,13 +95,14 @@ class Footer(BasicWidget):
             widget=widget)
 
     def notify(self, message):
+        """Notify message"""
         self.notification.notify(message)
 
 
 class Helper(BasicWidget):
     """Helper widget contains basic help words"""
     def __init__(self):
-        widget = urwid.Text("h:help")
+        widget = urwid.Text("?:help")
         widget = urwid.Padding(
             widget, "right", "pack")
         super(Helper, self).__init__(
@@ -109,6 +120,7 @@ class Notification(BasicWidget):
         return True
 
     def notify(self, message):
+        """Notify message"""
         self.display(urwid.Text(message))
 
     def keypress(self, size, key):
