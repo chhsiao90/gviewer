@@ -38,7 +38,7 @@ class SummaryItemWidget(BasicWidget):
         if key == "enter":
             self.parent.display_view(self.message, 0)
             return None
-        return key
+        return super(SummaryItemWidget, self).keypress(size, key)  # pragma: no cover
 
 
 class SummaryListWalker(urwid.SimpleFocusListWalker):
@@ -177,4 +177,4 @@ class SummaryListWidget(BasicWidget):
         if key == "?":
             self.parent.open(self.help_widget)
 
-        return super(SummaryListWidget, self).keypress(size, key)
+        return super(SummaryListWidget, self).keypress(size, key)  # pragma: no cover

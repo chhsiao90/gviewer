@@ -125,23 +125,16 @@ class SearchableText(BasicWidget):
         plain_text: str or unicode
     """
     def __init__(self, plain_text, **kwargs):
-        plain_text = self._try_decompose_text(plain_text)
+        self.plain_text = plain_text or u""
+        if isinstance(plain_text, str):
+            plain_text = plain_text.decode("utf8")
+
         widget = urwid.Text(plain_text)
         super(SearchableText, self).__init__(
             widget=widget, **kwargs)
 
         self.plain_text = plain_text
         self.prev_index = (0, len(plain_text))
-
-    def _try_decompose_text(self, plain_text):
-        plain_text = plain_text or ""
-
-        if not isinstance(plain_text, (str, unicode)):
-            plain_text = decompose_tagmarkup(plain_text)
-        if isinstance(plain_text, str):
-            plain_text = plain_text.decode("utf8")
-
-        return plain_text
 
     def search_next(self, keyword):
         prev_index = self.prev_index[0]

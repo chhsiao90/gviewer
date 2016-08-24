@@ -126,6 +126,17 @@ class ViewWidgetTest(unittest.TestCase):
         widget._close_search()
         self.assertEqual(len(widget.body.contents), 1)
 
+    def test_clear_search(self):
+        widget = ViewWidget(
+            self.test_message,
+            0, self.parent)
+
+        self.assertEqual(len(widget.body.contents), 1)
+        widget._open_search()
+        self.assertEqual(len(widget.body.contents), 2)
+        widget._clear_search()
+        self.assertEqual(len(widget.body.contents), 1)
+
     def test_open_summary(self):
         widget = ViewWidget(
             self.test_message,
@@ -174,6 +185,18 @@ class ViewWidgetTest(unittest.TestCase):
         self.assertEqual(
             render_to_content(widget.content_widget, (5, 3)),
             no_match)
+
+    def test_editing(self):
+        widget = ViewWidget(
+            self.test_message,
+            0, self.parent)
+        widget._open_search()
+        self.assertTrue(widget.is_editing())
+
+        keypress_result = widget.keypress((0, 0), "a")
+        self.assertEqual(keypress_result, "a")
+        keypress_result = widget.keypress((0, 0), "q")
+        self.assertEqual(keypress_result, "q")
 
 
 class TabsTest(unittest.TestCase):

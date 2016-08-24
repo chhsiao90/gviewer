@@ -11,3 +11,7 @@ def render_widgets_to_content(widgets, size, focus=False, inline=False):
     else:
         widget = urwid.Pile([("pack", w) for w in widgets])
     return render_to_content(widget, size, focus)
+
+
+def render_to_text(widget, size, focus=False):
+    return widget.render(size, focus).text

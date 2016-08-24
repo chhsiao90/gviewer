@@ -74,7 +74,7 @@ class ViewWidget(BasicWidget):
     def is_editing(self):
         return self.body.focus is self.search_widget
 
-    def _export(self):
+    def _export(self):  # pragma: no cover
         file_name = "export-%13d" % (time.time() * 1000)
         with open(file_name, "w") as f:
             f.write(self.view.text())
@@ -107,7 +107,7 @@ class ViewWidget(BasicWidget):
                     self.search_widget.get_keyword()
                 )
             return None
-        if key == "e":
+        if key == "e":  # pragma: no cover
             self._export()
             return None
         return super(ViewWidget, self).keypress(size, key)  # pragma: no cover

@@ -26,4 +26,4 @@ class ErrorWidget(BasicWidget):
         if key == "q":
             self.parent.open_summary()
             return None
-        return super(ErrorWidget, self).keypress(size, key)
+        return super(ErrorWidget, self).keypress(size, key)  # pragma: no cover
