@@ -1,6 +1,7 @@
 palette = [
     ("header", "white", "dark green", "bold"),
-    ("footer", "white", "dark blue", "bold"),
+    ("footer helper", "white", "dark blue", "bold"),
+    ("footer info", "white", "black"),
     ("summary", "white", "black"),
     ("summary focus", "black", "light gray"),
     ("view-item", "white", "black"),

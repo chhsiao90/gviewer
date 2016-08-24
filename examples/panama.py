@@ -38,11 +38,15 @@ class PanamaDisplayer(BaseDisplayer):
                 shareholder.get("name"),
                 [Prop(k, v) for k, v in shareholder.iteritems() if isinstance(v, str) or isinstance(v, unicode)]))
 
-        return View(detail_groups, actions=dict(E=self.export))
+        return View(detail_groups, actions=dict(E=self.export, m=self.notify))
+
+    def notify(self, parent, messag):
+        parent.notify("yayaya")
 
     def export(self, parent, message):
         with open("panama-export.json", "w") as w:
             w.write(json.dumps(message))
+        parent.notify("export to file panama-export.json")
 
     def run(self):
         self.viewer.start()

@@ -78,6 +78,7 @@ class ViewWidget(BasicWidget):
         file_name = "export-%13d" % (time.time() * 1000)
         with open(file_name, "w") as f:
             f.write(self.view.text())
+        self.parent.notify("Export to file {0}".format(file_name))
 
     def keypress(self, size, key):
         if self.is_editing():
