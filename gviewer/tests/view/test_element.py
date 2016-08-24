@@ -8,13 +8,13 @@ except:
 
 from gviewer.tests.util import render_to_content, render_widgets_to_content
 from gviewer.basic import SearchableText
-from gviewer.view.element import Line, Prop, Group, PropsGroup, View
+from gviewer.view.element import Text, Prop, Group, PropsGroup, View
 from gviewer.view.element import TitleWidget, ContentWidget, EmptyLine
 
 
-class LineTest(unittest.TestCase):
+class TextTest(unittest.TestCase):
     def test_to_widget(self):
-        widget = Line("content").to_widget(None, None)
+        widget = Text("content").to_widget(None, None)
         self.assertTrue(isinstance(widget, SearchableText))
         self.assertEqual(
             widget.plain_text,
@@ -49,8 +49,8 @@ class GroupTest(unittest.TestCase):
         widgets = Group(
             "title",
             items=[
-                Line("first line"),
-                Line("second line")]
+                Text("first line"),
+                Text("second line")]
         ).to_widgets(None, None)
 
         self.assertEqual(len(widgets), 3)
@@ -62,8 +62,8 @@ class GroupTest(unittest.TestCase):
         widgets = Group(
             "title",
             items=[
-                Line("first line"),
-                Line("second line")],
+                Text("first line"),
+                Text("second line")],
             show_title=False).to_widgets(None, None)
 
         self.assertEqual(len(widgets), 2)
@@ -88,8 +88,8 @@ class PropsGroupTest(unittest.TestCase):
 class ViewTest(unittest.TestCase):
     def test_to_widget(self):
         view = View([
-            Group("group1", [Line("content1")]),
-            Group("group2", [Line("content2")])]
+            Group("group1", [Text("content1")]),
+            Group("group2", [Text("content2")])]
         )
         widget = view.to_widget(None, None)
         self.assertTrue(isinstance(widget, ContentWidget))
@@ -107,8 +107,8 @@ class ViewTest(unittest.TestCase):
         action = mock.Mock()
         parent = mock.Mock()
         view = View([
-            Group("group1", [Line("content1")]),
-            Group("group2", [Line("content2")])],
+            Group("group1", [Text("content1")]),
+            Group("group2", [Text("content2")])],
             actions=dict(a=action)
         )
         widget = view.to_widget(parent, "message")

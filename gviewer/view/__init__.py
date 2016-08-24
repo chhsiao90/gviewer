@@ -1,2 +1,2 @@
-from element import Line, Prop, Group, PropsGroup, Groups, View
+from element import Text, Line, Prop, Group, PropsGroup, Groups, View
 from widget import ViewWidget, Tabs

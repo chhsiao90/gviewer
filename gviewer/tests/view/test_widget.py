@@ -8,7 +8,7 @@ except:
 
 from gviewer.tests.util import render_to_content, render_widgets_to_content
 from gviewer.view.widget import ViewWidget, Tabs
-from gviewer.view.element import Line, Group, Groups
+from gviewer.view.element import Text, Group, Groups
 
 
 class ViewWidgetTest(unittest.TestCase):
@@ -34,7 +34,7 @@ class ViewWidgetTest(unittest.TestCase):
         return self._display(message["view2"])
 
     def _display(self, message):
-        return Groups([Group("Title", [Line(message)])])
+        return Groups([Group("Title", [Text(message)])])
 
     def test_render(self):
         widget = ViewWidget(

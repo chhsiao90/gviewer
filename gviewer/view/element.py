@@ -20,7 +20,7 @@ class Base(object):
         return ""
 
 
-class Line(Base):
+class Text(Base):
     """One line detail content
 
     Attributes:
@@ -34,6 +34,16 @@ class Line(Base):
 
     def text(self):
         return try_decode(self.content)
+
+
+class Line(Text):
+    """Lagacy interface
+
+    Deprecated, for lagacy interface compatibility, would removed in the future
+    Attributes:
+        groups: iterable of Group
+    """
+    pass
 
 
 class Prop(Base):
@@ -133,7 +143,7 @@ class View(Base):
 
 
 class Groups(View):
-    """Groups
+    """Lagacy interface
 
     Deprecated, for lagacy interface compatibility, would removed in the future
     Attributes:
