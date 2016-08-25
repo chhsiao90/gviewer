@@ -26,7 +26,7 @@ data_store = AsyncDataStore(register_func)
 
 #### Displayer
 ```python
-from gviewer import BaseDisplayer, Groups, Group, PropsGroup, Line, Prop
+from gviewer import BaseDisplayer, View, Group, PropsGroup, Line, Prop
 
 class MyDisplayer(BaseDisplayer):
     def to_summary(self, message):
@@ -45,13 +45,13 @@ class MyDisplayer(BaseDisplayer):
 
     def view1(self, message):
         """return groups"""
-        return Groups(
+        return View(
             [Group("title", [Line(m) for m in message["view1"]])]
         )
 
     def view2(self, message):
         """return groups"""
-        return Groups(
+        return View(
             [PropsGroup("title", [Prop(p[0], p[1]) for p in message["view2"]])]
         )
 ```
@@ -61,6 +61,36 @@ class MyDisplayer(BaseDisplayer):
 from gviewer import GViewer
 viewer = GViewer(data_store, displayer)
 viewer.start()
+```
+
+## Advanced Usage
+#### Summary Actions
+Bind function to specific key to apply customize action, ex: export
+```python
+from gviewer import GViewer
+
+def custom_export(parent, message):
+    with open("export", "w") as f:
+        f.write(str(message))
+    parent.notify("file is export")
+viewer = GViewer(data_store, displayer, summary_actions=dict(a=custom_export))
+```
+
+#### View Actions
+Bind function to specific key to apply customize action, ex: export
+```python
+from gviewer import View, BaseDisplayer, Groups
+class MyDisplayer(BaseDisplayer):
+    def get_views(self):
+        return [("view", self.view)]
+
+    def view(self, message):
+        return View(Groups([]), actions=dict(a=self.custom_export))
+
+    def custom_export(parent, message):
+        with open("export", "w") as f:
+            f.write(str(message))
+        parent.notify("file is export")
 ```
 
 ## Contribution
