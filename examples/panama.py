@@ -12,6 +12,7 @@ class PanamaDisplayer(BaseDisplayer):
         data_store = self.create_data_store(data)
         self.viewer = GViewer(
             data_store, self,
+            summary_actions=dict(m=self.notify),
             palette=[("nodeid", "light cyan", "black")])
 
     def create_data_store(self, data):

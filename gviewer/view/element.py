@@ -1,4 +1,5 @@
 import urwid
+import sys
 
 from gviewer.basic import BasicWidget, SearchableText
 
@@ -218,7 +219,10 @@ class ContentWidget(BasicWidget):
 
     def keypress(self, size, key):
         if key in self.actions:
-            self.actions[key].__call__(self.parent, self.message)
+            try:
+                self.actions[key].__call__(self.parent, self.message)
+            except:
+                self.parent.open_error(sys.exc_info())
             return None
         return super(ContentWidget, self).keypress(size, key)
 

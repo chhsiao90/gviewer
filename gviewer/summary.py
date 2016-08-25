@@ -47,6 +47,14 @@ class SummaryItemWidget(BasicWidget):
         if key == "enter":
             self.parent.display_view(self.message, 0)
             return None
+        if key in self.context.summary_actions:
+            try:
+                self.context.summary_actions[key].__call__(
+                    self.parent, self.message)
+            except:
+                self.parent.open_error(sys.exc_info())
+            return None
+
         return super(SummaryItemWidget, self).keypress(size, key)  # pragma: no cover
 
 
