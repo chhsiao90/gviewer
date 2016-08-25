@@ -98,7 +98,7 @@ class ViewWidget(BasicWidget):
     def _export(self):  # pragma: no cover
         file_name = "export-%13d" % (time.time() * 1000)
         with open(file_name, "w") as f:
-            f.write(self.view.text())
+            f.write(self.view.text().encode("utf8"))
         self.parent.notify("Export to file {0}".format(file_name))
 
     def keypress(self, size, key):
