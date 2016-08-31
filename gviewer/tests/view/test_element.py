@@ -8,8 +8,10 @@ except:
 
 from gviewer.tests.util import render_to_content, render_widgets_to_content
 from gviewer.basic import SearchableText
-from gviewer.view.element import Text, Prop, Group, PropsGroup, View
-from gviewer.view.element import TitleWidget, ContentWidget, EmptyLine
+from gviewer.view.element import (
+    Text, Prop, Group, PropsGroup, View,
+    TitleWidget, ContentWidget, EmptyLine)
+from gviewer.view.element import try_decode
 
 
 class TextTest(unittest.TestCase):
@@ -19,6 +21,12 @@ class TextTest(unittest.TestCase):
         self.assertEqual(
             widget.plain_text,
             u"content")
+
+    def test_to_text(self):
+        self.assertEqual(
+            Text(b"content").text(), u"content")
+        self.assertEqual(
+            Text(u"content").text(), u"content")
 
 
 class PropTest(unittest.TestCase):
@@ -42,6 +50,18 @@ class PropTest(unittest.TestCase):
             prop.to_widget(None, None, None).get_text()[0],
             "key   : value"
         )
+
+    def test_to_text(self):
+        self.assertEqual(
+            Prop("key", "value").text(),
+            u"key: value")
+
+    def test_to_text_with_padding(self):
+        prop = Prop("key", "value")
+        prop.max_key_length = 5
+        self.assertEqual(
+            prop.text(),
+            u"key   : value")
 
 
 class GroupTest(unittest.TestCase):
@@ -70,6 +90,17 @@ class GroupTest(unittest.TestCase):
         self.assertTrue(isinstance(widgets[0], SearchableText))
         self.assertTrue(isinstance(widgets[1], SearchableText))
 
+    def test_to_text(self):
+        self.assertEqual(
+            Group("title", items=[Text("first line"), Text("second line")],
+                  show_title=True).text(),
+            u"title\nfirst line\nsecond line")
+
+        self.assertEqual(
+            Group("title", items=[Text("first line"), Text("second line")],
+                  show_title=False).text(),
+            u"first line\nsecond line")
+
 
 class PropsGroupTest(unittest.TestCase):
     def test_calc_key_length(self):
@@ -96,12 +127,18 @@ class ViewTest(unittest.TestCase):
 
         contents = widget._w.body
         self.assertEqual(len(contents), 6)
-        self.assertTrue(isinstance(contents[0], TitleWidget))
-        self.assertTrue(isinstance(contents[1], SearchableText))
-        self.assertTrue(isinstance(contents[2], EmptyLine))
-        self.assertTrue(isinstance(contents[3], TitleWidget))
-        self.assertTrue(isinstance(contents[4], SearchableText))
-        self.assertTrue(isinstance(contents[5], EmptyLine))
+        self.assertIsInstance(contents[0], TitleWidget)
+        self.assertIsInstance(contents[1], SearchableText)
+        self.assertIsInstance(contents[2], EmptyLine)
+        self.assertIsInstance(contents[3], TitleWidget)
+        self.assertIsInstance(contents[4], SearchableText)
+        self.assertIsInstance(contents[5], EmptyLine)
+
+    def test_empty_widget(self):
+        view = View([])
+        contents = view.to_widget(None, None, None)._w.body
+        self.assertEqual(len(contents), 1)
+        self.assertIsInstance(contents[0], EmptyLine)
 
     def test_actions(self):
         action = mock.Mock()
@@ -121,6 +158,15 @@ class ViewTest(unittest.TestCase):
         self.assertEqual(
             widget.keypress((0, 0), "b"),
             "b")
+
+    def test_to_text(self):
+        view = View([
+            Group("group1", [Text("content1")]),
+            Group("group2", [Text("content2")])]
+        )
+        self.assertEqual(
+            view.text(),
+            u"group1\ncontent1\n\ngroup2\ncontent2\n")
 
 
 class TitleWidgetTest(unittest.TestCase):
@@ -200,7 +246,7 @@ class ContentWidgetTest(unittest.TestCase):
             no_match
         )
 
-    def test_search_before_move(self):
+    def test_search_next_before_move(self):
         widget = ContentWidget([
             SearchableText("this is aaa bbb"),
             SearchableText("this is ccc ddd"),
@@ -237,7 +283,7 @@ class ContentWidgetTest(unittest.TestCase):
             first_match
         )
 
-        widget._w.set_focus(1)
+        widget._w.focus_position = 2
 
         widget.search_next("aaa")
         self.assertEqual(
@@ -245,6 +291,59 @@ class ContentWidgetTest(unittest.TestCase):
             second_match
         )
 
+    def test_search_prev_before_move(self):
+        widget = ContentWidget([
+            SearchableText("this is aaa bbb"),
+            SearchableText("this is ccc ddd"),
+            SearchableText("this is eee aaa")
+        ], None, None, None)
+
+        no_match = render_widgets_to_content([
+            urwid.Text("this is aaa bbb"),
+            urwid.Text("this is ccc ddd"),
+            urwid.Text("this is eee aaa")],
+            (15, 3)
+        )
+        first_match = render_widgets_to_content([
+            urwid.Text(["this is ", ("match", "aaa"), " bbb"]),
+            urwid.Text("this is ccc ddd"),
+            urwid.Text("this is eee aaa")],
+            (15, 3)
+        )
+        second_match = render_widgets_to_content([
+            urwid.Text("this is aaa bbb"),
+            urwid.Text("this is ccc ddd"),
+            urwid.Text(["this is eee ", ("match", "aaa")])],
+            (15, 3)
+        )
+
+        self.assertEqual(
+            render_to_content(widget, (15, 3)),
+            no_match
+        )
+
+        widget.search_next("aaa")
+        self.assertEqual(
+            render_to_content(widget, (15, 3)),
+            first_match
+        )
+
+        widget._w.focus_position = 2
+
+        widget.search_prev("aaa")
+        self.assertEqual(
+            render_to_content(widget, (15, 3)),
+            second_match
+        )
+
+
+class ElementTest(unittest.TestCase):
+    def test_try_decode_failed(self):
+        with self.assertRaises(ValueError):
+            try_decode(dict())
+
+    def test_try_decode_bytes_to_utf8(self):
+        self.assertEqual(try_decode(b"aaa"), u"aaa")
 
 if __name__ == "__main__":
     unittest.main()

@@ -59,7 +59,7 @@ class SummaryItemWidget(BasicWidget):
             try:
                 self.context.summary_actions[key].__call__(
                     self.parent, self.message)
-            except:
+            except:  # pragma: no cover
                 self.parent.open_error(sys.exc_info())
             return None
 
@@ -213,5 +213,6 @@ class SummaryListWidget(BasicWidget):
             return None
         if key == "?":
             self.parent.open(self.help_widget)
+            return None
 
         return super(SummaryListWidget, self).keypress(size, key)  # pragma: no cover

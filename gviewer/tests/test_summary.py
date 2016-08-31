@@ -7,7 +7,10 @@ except:
     import mock
 
 from util import render_to_content, render_widgets_to_content
-from gviewer.summary import SummaryItemWidget, SummaryListWalker, FilterSummaryListWalker, SummaryListWidget
+from gviewer.summary import (
+    SummaryItemWidget, SummaryListWalker,
+    FilterSummaryListWalker, SummaryListWidget)
+from gviewer.summary import _verify_keys
 from gviewer.action import Actions
 
 
@@ -17,6 +20,8 @@ class SummaryItemWidgetTest(unittest.TestCase):
         self.parent.config.keys = dict()
 
         self.context = mock.Mock()
+        self.action_a = mock.Mock()
+        self.context.summary_actions = Actions([("a", "aaaa", self.action_a)])
 
     def test_render(self):
         widget = SummaryItemWidget(
@@ -40,8 +45,17 @@ class SummaryItemWidgetTest(unittest.TestCase):
             "summary"
         )
         self.assertIsNone(widget.keypress(None, "enter"))
-        self.parent.display_view.assert_called_with(
-            "message", 0)
+        self.parent.display_view.assert_called_with("message", 0)
+
+    def test_keypress_custom_action(self):
+        widget = SummaryItemWidget(
+            self.parent,
+            self.context,
+            "message",
+            "summary"
+        )
+        self.assertIsNone(widget.keypress(None, "a"))
+        self.action_a.assert_called_with(self.parent, "message")
 
 
 class SummaryListWalkerTest(unittest.TestCase):
@@ -239,6 +253,18 @@ class SummaryListWidgetTest(unittest.TestCase):
             self.widget.current_walker,
             self.widget.base_walker)
         self.assertEqual(len(self.widget.current_walker), 2)
+
+    def test_keypress_open_help(self):
+        self.assertIsNone(self.widget.keypress((0, 0), "?"))
+        self.parent.open.assert_called_with(self.widget.help_widget)
+
+
+class SummaryTest(unittest.TestCase):
+    def test_verify_keys(self):
+        with self.assertRaises(ValueError):
+            _verify_keys(Actions([("/", "search", None)]))
+
+        _verify_keys(Actions([("p", "pppp", None)]))
 
 
 if __name__ == "__main__":

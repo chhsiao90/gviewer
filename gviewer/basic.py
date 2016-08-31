@@ -37,14 +37,13 @@ class BasicWidget(urwid.WidgetWrap):
         """ Define default keypress action for GViewer """
         if self.parent:
             self.parent.run_before_keypress()
+
+        if (not self.is_editing() and self.context and
+                key in self.context.config.keys):
+            return super(BasicWidget, self).keypress(size, self.context.config.keys[key])
         try:
-            if (not self.is_editing() and
-                    self.context and
-                    key in self.context.config.keys):
-                return super(BasicWidget, self).keypress(
-                    size, self.context.config.keys[key])
             return super(BasicWidget, self).keypress(size, key)
-        except AttributeError:
+        except AttributeError:  # pragma: no cover
             return key
 
     def is_editing(self):

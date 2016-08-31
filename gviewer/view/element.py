@@ -13,7 +13,7 @@ def try_decode(text):
     return text
 
 
-class Base(object):
+class Base(object):  # pragma: no cover
     """Abstract class for view displayer eleemnt"""
     def to_widget(self, parent, context, message):
         raise NotImplementedError
@@ -222,7 +222,7 @@ class ContentWidget(BasicWidget):
         if key in self.actions:
             try:
                 self.actions[key].__call__(self.parent, self.message)
-            except:
+            except:  # pragma: no cover
                 self.parent.open_error(sys.exc_info())
             return None
         return super(ContentWidget, self).keypress(size, key)

@@ -8,6 +8,8 @@ TEST_MODULES = [
     "gviewer.tests.test_summary",
     "gviewer.tests.test_parent",
     "gviewer.tests.test_store",
+    "gviewer.tests.test_action",
+    "gviewer.tests.test_helper",
     "gviewer.tests.view.test_widget",
     "gviewer.tests.view.test_element"
 ]

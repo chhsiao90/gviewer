@@ -42,7 +42,7 @@ class HelpWidget(BasicWidget):
         if key == "q":
             self.parent.back()
             return None
-        return super(HelpWidget, self).keypress(size, key)
+        return super(HelpWidget, self).keypress(size, key)  # pragma: no cover
 
 
 class HelpContent(object):
@@ -60,7 +60,7 @@ class HelpCategory(object):
     def max_key_length(self):
         try:
             return max([len(k) for k in self.mappings.iterkeys()])
-        except:
+        except:  # pragma: no cover
             return 0
 
 
