@@ -10,7 +10,7 @@ with open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name="gviewer",
-    version="2.1.1",
+    version="2.1.2",
     description="General Viewer",
     long_description=long_description,
     author="chhsiao90",
