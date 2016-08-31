@@ -35,6 +35,8 @@ class BasicWidget(urwid.WidgetWrap):
 
     def keypress(self, size, key):
         """ Define default keypress action for GViewer """
+        if self.parent:
+            self.parent.run_before_keypress()
         try:
             if (not self.is_editing() and
                     self.context and

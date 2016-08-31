@@ -81,12 +81,9 @@ class ParentFrame(urwid.Frame):
     def notify(self, message):
         """Notify message"""
         self._footer.notify(message)
-        self.focus_position = "footer"
-        self._footer._w.focus_position = 1
 
-    def exit_notify(self):
-        """Unfocus notification widget"""
-        self.focus_position = "body"
+    def run_before_keypress(self):
+        self._footer.notify("")
 
 
 class Footer(BasicWidget):
@@ -119,21 +116,14 @@ class Helper(BasicWidget):
 
 class Notification(BasicWidget):
     def __init__(self, parent):
+        self.message = ""
         super(Notification, self).__init__(
             parent=parent,
             widget=urwid.Text(""),
             attr_map="footer info")
 
-    def selectable(self):
-        return True
-
     def notify(self, message):
         """Notify message"""
-        self.display(urwid.Text(message))
-
-    def keypress(self, size, key):
-        self.display(urwid.Text(""))
-        self.parent.exit_notify()
-        if key == "q":
-            return None
-        return key
+        if self.message != message:
+            self.message = message
+            self.display(urwid.Text(message))

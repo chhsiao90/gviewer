@@ -103,11 +103,7 @@ class ParentFrameTest(unittest.TestCase):
 
     def test_notify(self):
         self.widget.notify("test")
-        self.assertEqual(
-            self.widget.focus_position,
-            "footer")
-        self.assertEqual(
-            self.widget.footer._w.focus_position, 1)
+
         self.assertEqual(
             render_to_text(self.widget.footer.notification, (5,)),
             ["test "])
@@ -146,19 +142,6 @@ class NotificationTest(unittest.TestCase):
         self.assertEqual(
             render_to_text(self.widget, (5,)),
             ["test "])
-
-    def test_exit_from_notify(self):
-        self.widget.notify("test")
-        self.widget.keypress((0, 0), "a")  # any keys
-
-        self.parent.exit_notify.assert_called_with()
-        self.assertEqual(
-            render_to_text(self.widget, (5,)),
-            ["     "])
-
-    def test_exit_with_q(self):
-        self.assertIsNone(
-            self.widget.keypress((0, 0), "q"))
 
 
 if __name__ == "__main__":
