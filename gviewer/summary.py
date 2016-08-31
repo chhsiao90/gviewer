@@ -3,7 +3,9 @@ import urwid
 from collections import OrderedDict
 
 from basic import BasicWidget, FocusableText, SearchWidget
-from helper import HelpWidget, HelpContent, HelpCategory
+from helper import (
+    HelpWidget, HelpContent, HelpCategory,
+    make_category_with_actions)
 
 
 _ADVANCED_KEYS = OrderedDict([
@@ -145,7 +147,8 @@ class SummaryListWidget(BasicWidget):
             parent, context,
             HelpContent(
                 [HelpCategory("Basic", self.context.config.keys),
-                 HelpCategory("Advanced", _ADVANCED_KEYS)])
+                 HelpCategory("Advanced", _ADVANCED_KEYS),
+                 make_category_with_actions("Custom", self.context.summary_actions)])
         )
 
         widget_list = [self.list_box]

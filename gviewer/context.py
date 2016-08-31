@@ -1,3 +1,6 @@
+from action import Actions
+
+
 class Context(object):
     """GViewer context
 
@@ -11,4 +14,4 @@ class Context(object):
         self.store = store
         self.displayer = displayer
         self.config = config
-        self.summary_actions = summary_actions or dict()
+        self.summary_actions = summary_actions or Actions()

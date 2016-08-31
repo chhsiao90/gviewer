@@ -3,7 +3,9 @@ import time
 from collections import OrderedDict
 
 from gviewer.basic import BasicWidget, SearchWidget
-from gviewer.helper import HelpWidget, HelpContent, HelpCategory
+from gviewer.helper import (
+    HelpWidget, HelpContent, HelpCategory,
+    make_category_with_actions)
 
 
 _ADVANCED_KEYS = OrderedDict([
@@ -31,19 +33,21 @@ class ViewWidget(BasicWidget):
         self.index = index
         self.message = message
 
+        _, view_callable = self.parent.views[index]
+        self.view = view_callable(self.message)
+
+        self.content_widget = self.view.to_widget(self.parent, self.context, self.message)
+
         self.search_widget = SearchWidget(self._search, self._clear_search)
         self.help_widget = HelpWidget(
             parent,
             context,
             HelpContent(
                 [HelpCategory("Basic", self.context.config.keys),
-                 HelpCategory("Advanced", _ADVANCED_KEYS)])
+                 HelpCategory("Advanced", _ADVANCED_KEYS),
+                 make_category_with_actions("Custom", self.view.actions)])
         )
 
-        _, view_callable = self.parent.views[index]
-        self.view = view_callable(self.message)
-
-        self.content_widget = self.view.to_widget(self.parent, self.context, self.message)
         self.body = urwid.Pile([self.content_widget])
 
         if len(self.parent.view_names) > 1:

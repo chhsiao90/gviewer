@@ -2,6 +2,7 @@ import urwid
 import sys
 
 from gviewer.basic import BasicWidget, SearchableText
+from gviewer.action import Actions
 
 
 def try_decode(text):
@@ -126,7 +127,7 @@ class View(Base):
     """
     def __init__(self, groups, actions=None):
         self.groups = groups
-        self.actions = actions or dict()
+        self.actions = actions or Actions()
 
     def to_widget(self, parent, context, message):
         widgets = []
@@ -175,7 +176,7 @@ class ContentWidget(BasicWidget):
         self.prev_match = 0
 
         self.message = message
-        self.actions = actions or dict()
+        self.actions = actions or Actions()
 
     def search_next(self, keyword):
         curr_index = self._w.get_focus()[1]

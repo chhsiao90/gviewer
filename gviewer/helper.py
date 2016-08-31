@@ -3,6 +3,12 @@ import urwid
 from basic import BasicWidget
 
 
+def make_category_with_actions(category_name, actions):
+    mappings = dict([
+        (key, desc) for (key, desc, _) in actions])
+    return HelpCategory(category_name, mappings)
+
+
 class HelpWidget(BasicWidget):
     """Help widget that show help message
 
@@ -19,6 +25,8 @@ class HelpWidget(BasicWidget):
     def _widget(self, help_content):
         widgets = []
         for category in help_content.categories:
+            if not category.mappings:
+                continue
             widgets.append(TitleWidget(category.name))
             widgets.append(urwid.Text(""))
 

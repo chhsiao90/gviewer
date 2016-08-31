@@ -8,6 +8,7 @@ except:
 
 from util import render_to_content, render_widgets_to_content
 from gviewer.summary import SummaryItemWidget, SummaryListWalker, FilterSummaryListWalker, SummaryListWidget
+from gviewer.action import Actions
 
 
 class SummaryItemWidgetTest(unittest.TestCase):
@@ -154,6 +155,7 @@ class SummaryListWidgetTest(unittest.TestCase):
 
         self.context = mock.Mock()
         self.context.config.keys = dict()
+        self.context.summary_actions = Actions()
         self.context.displayer.match = mock.Mock(
             side_effect=lambda k, m, s: k in s)
 

@@ -1,6 +1,6 @@
 import json
 from gviewer import StaticDataStore, GViewer, BaseDisplayer
-from gviewer import Prop, PropsGroup, View
+from gviewer import Prop, PropsGroup, View, Actions
 
 
 with open("examples/panama-taiwan.json", "r") as data_file:
@@ -12,7 +12,7 @@ class PanamaDisplayer(BaseDisplayer):
         data_store = self.create_data_store(data)
         self.viewer = GViewer(
             data_store, self,
-            summary_actions=dict(m=self.notify),
+            summary_actions=Actions([("m", "notify a message", self.notify)]),
             palette=[("nodeid", "light cyan", "black")])
 
     def create_data_store(self, data):
@@ -39,7 +39,9 @@ class PanamaDisplayer(BaseDisplayer):
                 shareholder.get("name"),
                 [Prop(k, v) for k, v in shareholder.iteritems() if isinstance(v, str) or isinstance(v, unicode)]))
 
-        return View(detail_groups, actions=dict(E=self.export, m=self.notify))
+        return View(detail_groups, actions=Actions([
+            ("E", "export", self.export),
+            ("m", "notify", self.notify)]))
 
     def notify(self, parent, messag):
         parent.notify("yayaya")
