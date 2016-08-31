@@ -19,6 +19,12 @@ _ADVANCED_KEYS = OrderedDict([
 ])
 
 
+def _verify_keys(actions):
+    for key, _, _ in actions:
+        if key in _ADVANCED_KEYS:
+            raise ValueError("key '{0}' had defined by GViewer for {1}".format(key, _ADVANCED_KEYS[key]))
+
+
 class ViewWidget(BasicWidget):
     """ Display content for message
 
@@ -38,10 +44,11 @@ class ViewWidget(BasicWidget):
 
         self.content_widget = self.view.to_widget(self.parent, self.context, self.message)
 
+        _verify_keys(self.view.actions)
         self.search_widget = SearchWidget(self._search, self._clear_search)
         self.help_widget = HelpWidget(
             parent,
-            context,
+            self.context,
             HelpContent(
                 [HelpCategory("Basic", self.context.config.keys),
                  HelpCategory("Advanced", _ADVANCED_KEYS),

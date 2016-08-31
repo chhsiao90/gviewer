@@ -14,6 +14,12 @@ _ADVANCED_KEYS = OrderedDict([
 ])
 
 
+def _verify_keys(actions):
+    for key, _, _ in actions:
+        if key in _ADVANCED_KEYS:
+            raise ValueError("key '{0}' had defined by GViewer for {1}".format(key, _ADVANCED_KEYS[key]))
+
+
 class SummaryItemWidget(BasicWidget):
     """ Summary item widget
 
@@ -138,6 +144,8 @@ class SummaryListWidget(BasicWidget):
     def __init__(self, walker, parent, context):
         super(SummaryListWidget, self).__init__(
             parent=parent, context=context)
+        _verify_keys(self.context.summary_actions)
+
         self.base_walker = walker
         self.current_walker = walker
         self.list_box = urwid.ListBox(walker)
