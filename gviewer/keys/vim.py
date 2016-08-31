@@ -5,5 +5,7 @@ keys = OrderedDict([
     ("j", "down"),
     ("k", "up"),
     ("ctrl f", "page down"),
-    ("ctrl b", "page up")]
+    ("ctrl d", "page down"),
+    ("ctrl b", "page up"),
+    ("ctrl u", "page up")]
 )
