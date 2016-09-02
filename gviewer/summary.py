@@ -118,13 +118,13 @@ class FilterSummaryListWalker(SummaryListWalker):
 
         Will transform message into summary,
         and check message or summary is match by keyword or not,
-        generate a SummaryItemWidget and display it if matchj
+        generate a SummaryItemWidget and display it if match
         """
         try:
             summary = self.context.displayer.summary(message)
-            if self.context.displayer.match(self.keyword, message, summary):
-                self.append(SummaryItemWidget(
-                    self.parent, self.context, message, summary))
+            widget = SummaryItemWidget(self.parent, self.context, message, summary)
+            if self.context.displayer.match(self.keyword, message, widget.get_title()):
+                self.append(widget)
         except:
             self.parent.open_error(sys.exc_info())
 
