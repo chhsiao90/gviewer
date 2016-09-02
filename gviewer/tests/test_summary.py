@@ -258,6 +258,19 @@ class SummaryListWidgetTest(unittest.TestCase):
         self.assertIsNone(self.widget.keypress((0, 0), "?"))
         self.parent.open.assert_called_with(self.widget.help_widget)
 
+    def test_keypress_bottom_and_top(self):
+        self.widget.keypress((10, 10), "G")
+        self.assertEqual(self.widget.list_box.focus_position, 1)
+        self.widget.keypress((10, 10), "g")
+        self.assertEqual(self.widget.list_box.focus_position, 0)
+
+    def test_keypress_bottom_and_top_when_search(self):
+        self.widget._filter("summary")
+        self.widget.keypress((10, 10), "G")
+        self.assertEqual(self.widget.list_box.focus_position, 1)
+        self.widget.keypress((10, 10), "g")
+        self.assertEqual(self.widget.list_box.focus_position, 0)
+
 
 class SummaryTest(unittest.TestCase):
     def test_verify_keys(self):

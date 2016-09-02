@@ -10,6 +10,8 @@ from helper import (
 
 _ADVANCED_KEYS = OrderedDict([
     ("/", "search"),
+    ("g", "top"),
+    ("G", "bottom"),
     ("q", "quit")
 ])
 
@@ -180,8 +182,9 @@ class SummaryListWidget(BasicWidget):
             self.current_walker.close()
 
         self.current_walker = walker
+        self.list_box = urwid.ListBox(walker)
         self._w.contents.pop(0)
-        self._w.contents.insert(0, (urwid.ListBox(walker), self._w.options()))
+        self._w.contents.insert(0, (self.list_box, self._w.options()))
 
     def _open_search(self):
         self.search_widget.clear()
@@ -211,6 +214,13 @@ class SummaryListWidget(BasicWidget):
         if key == "q" and isinstance(self.current_walker, FilterSummaryListWalker):
             self._clear_search()
             return None
+        if key == "g":
+            # NOTE: not sure why it cannot return None here
+            self.list_box.set_focus(0)
+            super(SummaryListWidget, self).keypress(size, key)
+        if key == "G":
+            self.list_box.set_focus(len(self.current_walker) - 1)
+            super(SummaryListWidget, self).keypress(size, key)
         if key == "?":
             self.parent.open(self.help_widget)
             return None
