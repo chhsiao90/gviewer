@@ -1,8 +1,8 @@
 import urwid
 import sys
 
-from gviewer.basic import BasicWidget, SearchableText
-from gviewer.action import Actions
+from ..basic import BasicWidget, SearchableText
+from ..action import Actions
 
 
 def try_decode(text):

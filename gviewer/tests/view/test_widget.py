@@ -215,6 +215,3 @@ class TabsTest(unittest.TestCase):
                 urwid.AttrMap(urwid.Text("view3"), "tabs")
             ], (15,), inline=True)
         )
-
-if __name__ == "__main__":
-    unittest.main()

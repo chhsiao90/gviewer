@@ -275,9 +275,10 @@ class SummaryListWidgetTest(unittest.TestCase):
         self.widget.keypress((10, 10), "x")
         self.assertEqual(len(self.widget.current_walker), 1)
 
-    def test_keypress_clear_item(self):
+    def test_keypress_clear_items(self):
         self.widget.keypress((10, 10), "X")
         self.assertEqual(len(self.widget.current_walker), 0)
+
 
 class SummaryTest(unittest.TestCase):
     def test_verify_keys(self):
@@ -285,7 +286,3 @@ class SummaryTest(unittest.TestCase):
             _verify_keys(Actions([("/", "search", None)]))
 
         _verify_keys(Actions([("p", "pppp", None)]))
-
-
-if __name__ == "__main__":
-    unittest.main()

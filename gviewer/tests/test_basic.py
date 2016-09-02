@@ -159,7 +159,3 @@ class SearchableTextTest(unittest.TestCase):
         self.assertEqual(widget.prev_index, (16, 11))
         self.assertTrue(widget.search_prev("match"))
         self.assertEqual(widget.prev_index, (8, 3))
-
-
-if __name__ == "__main__":
-    unittest.main()

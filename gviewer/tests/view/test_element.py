@@ -344,6 +344,3 @@ class ElementTest(unittest.TestCase):
 
     def test_try_decode_bytes_to_utf8(self):
         self.assertEqual(try_decode(b"aaa"), u"aaa")
-
-if __name__ == "__main__":
-    unittest.main()

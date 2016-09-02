@@ -50,7 +50,3 @@ class ActionsTest(unittest.TestCase):
         action = self.actions["a"]
         self.assertIsInstance(action, Action)
         self.assertEqual(action.desc, "haha")
-
-
-if __name__ == "__main__":
-    unittest.main()

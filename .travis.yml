@@ -8,6 +8,6 @@ install:
   - pip install coveralls
 script:
   - python setup.py test
-  - PYTHONPATH=. coverage run --source gviewer gviewer/tests/run_tests.py
+  - coverage run --source=gviewer -m unittest discover
 after_success:
     coveralls

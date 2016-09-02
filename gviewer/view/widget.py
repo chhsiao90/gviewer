@@ -2,8 +2,8 @@ import urwid
 import time
 from collections import OrderedDict
 
-from gviewer.basic import BasicWidget, SearchWidget
-from gviewer.helper import (
+from ..basic import BasicWidget, SearchWidget
+from ..helper import (
     HelpWidget, HelpContent, HelpCategory,
     make_category_with_actions)
 

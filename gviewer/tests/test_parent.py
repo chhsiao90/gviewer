@@ -12,9 +12,10 @@ from gviewer.parent import ParentFrame, Footer, Helper, Notification
 from gviewer.config import Config
 from gviewer.summary import SummaryListWidget
 from gviewer.context import Context
-from gviewer.view import ViewWidget
+from gviewer.view.widget import ViewWidget
 from gviewer.error import ErrorWidget
-from gviewer import Line, Group, Groups, StaticDataStore
+from gviewer.view.element import Line, Group, Groups
+from gviewer.store import StaticDataStore
 
 
 class ParentFrameTest(unittest.TestCase):
@@ -142,7 +143,3 @@ class NotificationTest(unittest.TestCase):
         self.assertEqual(
             render_to_text(self.widget, (5,)),
             ["test "])
-
-
-if __name__ == "__main__":
-    unittest.main()

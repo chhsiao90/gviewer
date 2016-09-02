@@ -69,7 +69,3 @@ class MessageListenerTest(unittest.TestCase):
     def test_unregister(self):
         self.listener.unregister(self.walker)
         self.assertEquals(len(self.listener.walkers), 0)
-
-
-if __name__ == "__main__":
-    unittest.main()

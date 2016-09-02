@@ -52,7 +52,3 @@ class ErrorWidgetTest(unittest.TestCase):
             )
         self.assertEqual(widget.keypress(None, "q"), None)
         self.parent.back.assert_called_with()
-
-
-if __name__ == "__main__":
-    unittest.main()

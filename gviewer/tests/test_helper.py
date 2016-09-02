@@ -1,12 +1,11 @@
 import unittest
-import urwid
 
 try:
     import unittest.mock as mock
 except:
     import mock
 
-from gviewer.tests.util import render_to_content, render_widgets_to_content, render_to_text
+from gviewer.tests.util import render_to_text
 from gviewer.helper import HelpWidget, HelpCategory, HelpContent, TitleWidget, MappingWidget
 
 
@@ -64,6 +63,3 @@ class MappingWidgetTest(unittest.TestCase):
         self.assertEqual(
             render_to_text(widget, (14, )),
             ["     key value"])
-
-if __name__ == "__main__":
-    unittest.main()
