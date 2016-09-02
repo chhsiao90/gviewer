@@ -12,6 +12,8 @@ _ADVANCED_KEYS = OrderedDict([
     ("/", "search"),
     ("g", "top"),
     ("G", "bottom"),
+    ("x", "clear current item"),
+    ("X", "clear all items"),
     ("q", "quit")
 ])
 
@@ -114,6 +116,7 @@ class FilterSummaryListWalker(SummaryListWalker):
         content = [m for m in origin_walker if context.displayer.match(keyword, m.message, m.get_title())]
         super(FilterSummaryListWalker, self).__init__(parent, context, content=content)
         self.keyword = keyword
+        self.origin_walker = origin_walker
 
     def recv(self, message):
         """ Action when received message from data store
@@ -220,6 +223,12 @@ class SummaryListWidget(BasicWidget):
             super(SummaryListWidget, self).keypress(size, key)
         if key == "G":
             self.list_box.set_focus(len(self.current_walker) - 1)
+            super(SummaryListWidget, self).keypress(size, key)
+        if key == "x" and self.current_walker is self.base_walker:
+            del self.base_walker[self.list_box.focus_position]
+            super(SummaryListWidget, self).keypress(size, key)
+        if key == "X" and self.current_walker is self.base_walker:
+            del self.base_walker[:]
             super(SummaryListWidget, self).keypress(size, key)
         if key == "?":
             self.parent.open(self.help_widget)
