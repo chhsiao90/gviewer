@@ -2,8 +2,8 @@ import sys
 import urwid
 from collections import OrderedDict
 
-from basic import BasicWidget, FocusableText, SearchWidget
-from helper import (
+from ..basic_widget import BasicWidget, FocusableText, SearchWidget
+from ..helper import (
     HelpWidget, HelpContent, HelpCategory,
     make_category_with_actions)
 

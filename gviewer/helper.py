@@ -1,6 +1,6 @@
 import urwid
 
-from basic import BasicWidget
+from basic_widget import BasicWidget
 
 
 def make_category_with_actions(category_name, actions):

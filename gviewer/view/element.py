@@ -1,7 +1,7 @@
 import urwid
 import sys
 
-from ..basic import BasicWidget, SearchableText
+from ..basic_widget import BasicWidget, SearchableText
 from ..action import Actions
 
 

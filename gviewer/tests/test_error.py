@@ -6,7 +6,7 @@ try:
 except:
     import mock
 
-from util import render_to_content
+from .util import render_to_content
 from gviewer.error import ErrorWidget
 
 

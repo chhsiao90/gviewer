@@ -7,13 +7,13 @@ try:
 except:
     import mock
 
-from util import render_to_content, render_widgets_to_content, render_to_text
+from .util import render_to_content, render_widgets_to_content, render_to_text
 from gviewer.parent import ParentFrame, Footer, Helper, Notification
 from gviewer.config import Config
-from gviewer.summary import SummaryListWidget
 from gviewer.context import Context
-from gviewer.view.widget import ViewWidget
 from gviewer.error import ErrorWidget
+from gviewer.view.summary import SummaryListWidget
+from gviewer.view.detail import DetailWidget
 from gviewer.view.element import Line, Group, Groups
 from gviewer.store import StaticDataStore
 
@@ -76,7 +76,7 @@ class ParentFrameTest(unittest.TestCase):
         self.widget.display_view(self.messages[0], 0)
         self.assertIsInstance(
             self.widget.contents["body"][0],
-            ViewWidget
+            DetailWidget
         )
 
     def test_back(self):

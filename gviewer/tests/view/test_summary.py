@@ -6,11 +6,11 @@ try:
 except:
     import mock
 
-from util import render_to_content, render_widgets_to_content
-from gviewer.summary import (
+from ..util import render_to_content, render_widgets_to_content
+from gviewer.view.summary import (
     SummaryItemWidget, SummaryListWalker,
     FilterSummaryListWalker, SummaryListWidget)
-from gviewer.summary import _verify_keys
+from gviewer.view.summary import _verify_keys
 from gviewer.action import Actions
 
 

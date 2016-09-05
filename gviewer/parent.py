@@ -1,10 +1,10 @@
 import sys
 import urwid
-from summary import SummaryListWidget, SummaryListWalker
-from basic import BasicWidget
-from store import MessageListener
-from view import ViewWidget
-from error import ErrorWidget
+from .view.summary import SummaryListWidget, SummaryListWalker
+from .basic_widget import BasicWidget
+from .store import MessageListener
+from .view.detail import DetailWidget
+from .error import ErrorWidget
 
 
 class ParentFrame(urwid.Frame):
@@ -43,7 +43,7 @@ class ParentFrame(urwid.Frame):
             index: int represent which view to display
         """
         try:
-            widget = ViewWidget(message, index, self, self._context)
+            widget = DetailWidget(message, index, self, self._context)
             self.open(widget, push_prev)
         except:  # pragma: no cover
             self.open_error(sys.exc_info())

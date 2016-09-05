@@ -1,5 +1,5 @@
-from keys import vim
-from styles import default
+from .keys import vim
+from .styles import default
 
 
 class Config(object):

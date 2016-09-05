@@ -1,7 +1,7 @@
 import urwid
-from parent import ParentFrame
-from config import Config
-from context import Context
+from .parent import ParentFrame
+from .config import Config
+from .context import Context
 
 
 class GViewer(object):  # pragma: no cover

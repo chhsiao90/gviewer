@@ -7,11 +7,11 @@ except:
     import mock
 
 from gviewer.tests.util import render_to_content, render_widgets_to_content
-from gviewer.view.widget import ViewWidget, Tabs
+from gviewer.view.detail import DetailWidget, Tabs
 from gviewer.view.element import Text, Group, Groups
 
 
-class ViewWidgetTest(unittest.TestCase):
+class DetailWidgetTest(unittest.TestCase):
     def setUp(self):
         self.parent = mock.Mock()
 
@@ -39,7 +39,7 @@ class ViewWidgetTest(unittest.TestCase):
         return Groups([Group("Title", [Text(message)])])
 
     def test_render(self):
-        widget = ViewWidget(
+        widget = DetailWidget(
             self.test_message,
             0, self.parent, self.context)
 
@@ -52,21 +52,21 @@ class ViewWidgetTest(unittest.TestCase):
         )
 
     def test_next_view(self):
-        widget = ViewWidget(
+        widget = DetailWidget(
             self.test_message,
             0, self.parent, self.context)
         widget.keypress((0,), "tab")
         self.parent.display_view.assert_called_with(
             self.test_message, 1, push_prev=False)
 
-        widget = ViewWidget(
+        widget = DetailWidget(
             self.test_message,
             1, self.parent, self.context)
         widget.keypress((0,), "tab")
         self.parent.display_view.assert_called_with(
             self.test_message, 2, push_prev=False)
 
-        widget = ViewWidget(
+        widget = DetailWidget(
             self.test_message,
             2, self.parent, self.context)
         widget.keypress((0,), "tab")
@@ -74,21 +74,21 @@ class ViewWidgetTest(unittest.TestCase):
             self.test_message, 0, push_prev=False)
 
     def test_prev_view(self):
-        widget = ViewWidget(
+        widget = DetailWidget(
             self.test_message,
             0, self.parent, self.context)
         widget.keypress((0,), "shift tab")
         self.parent.display_view.assert_called_with(
             self.test_message, 2, push_prev=False)
 
-        widget = ViewWidget(
+        widget = DetailWidget(
             self.test_message,
             2, self.parent, self.context)
         widget.keypress((0,), "shift tab")
         self.parent.display_view.assert_called_with(
             self.test_message, 1, push_prev=False)
 
-        widget = ViewWidget(
+        widget = DetailWidget(
             self.test_message,
             1, self.parent, self.context)
         widget.keypress((0,), "shift tab")
@@ -97,7 +97,7 @@ class ViewWidgetTest(unittest.TestCase):
 
     def test_no_tab(self):
         self.parent.view_names = [self.parent.view_names[0]]
-        widget = ViewWidget(
+        widget = DetailWidget(
             self.test_message,
             0, self.parent, self.context)
 
@@ -105,7 +105,7 @@ class ViewWidgetTest(unittest.TestCase):
             widget._w.contents["header"]
 
     def test_open_search(self):
-        widget = ViewWidget(
+        widget = DetailWidget(
             self.test_message,
             0, self.parent, self.context)
 
@@ -116,7 +116,7 @@ class ViewWidgetTest(unittest.TestCase):
         self.assertIs(widget.body.focus, widget.search_widget)
 
     def test_close_search(self):
-        widget = ViewWidget(
+        widget = DetailWidget(
             self.test_message,
             0, self.parent, self.context)
 
@@ -129,7 +129,7 @@ class ViewWidgetTest(unittest.TestCase):
         self.assertEqual(len(widget.body.contents), 1)
 
     def test_clear_search(self):
-        widget = ViewWidget(
+        widget = DetailWidget(
             self.test_message,
             0, self.parent, self.context)
 
@@ -140,7 +140,7 @@ class ViewWidgetTest(unittest.TestCase):
         self.assertEqual(len(widget.body.contents), 1)
 
     def test_open_summary(self):
-        widget = ViewWidget(
+        widget = DetailWidget(
             self.test_message,
             0, self.parent, self.context)
 
@@ -148,7 +148,7 @@ class ViewWidgetTest(unittest.TestCase):
         self.parent.back.assert_called_with()
 
     def test_search(self):
-        widget = ViewWidget(
+        widget = DetailWidget(
             self.test_message,
             0, self.parent, self.context)
 
@@ -189,7 +189,7 @@ class ViewWidgetTest(unittest.TestCase):
             no_match)
 
     def test_editing(self):
-        widget = ViewWidget(
+        widget = DetailWidget(
             self.test_message,
             0, self.parent, self.context)
         widget._open_search()

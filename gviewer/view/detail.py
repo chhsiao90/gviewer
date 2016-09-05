@@ -2,7 +2,7 @@ import urwid
 import time
 from collections import OrderedDict
 
-from ..basic import BasicWidget, SearchWidget
+from ..basic_widget import BasicWidget, SearchWidget
 from ..helper import (
     HelpWidget, HelpContent, HelpCategory,
     make_category_with_actions)
@@ -25,7 +25,7 @@ def _verify_keys(actions):
             raise ValueError("key '{0}' had defined by GViewer for {1}".format(key, _ADVANCED_KEYS[key]))
 
 
-class ViewWidget(BasicWidget):
+class DetailWidget(BasicWidget):
     """ Display content for message
 
     Attributes:
@@ -34,7 +34,7 @@ class ViewWidget(BasicWidget):
         parent: ParentFrame instance
     """
     def __init__(self, message, index, parent, context):
-        super(ViewWidget, self).__init__(
+        super(DetailWidget, self).__init__(
             parent=parent, context=context)
         self.index = index
         self.message = message
@@ -114,7 +114,7 @@ class ViewWidget(BasicWidget):
 
     def keypress(self, size, key):
         if self.is_editing():
-            return super(ViewWidget, self).keypress(size, key)
+            return super(DetailWidget, self).keypress(size, key)
         if key == "q":
             self.parent.back()
             return None
@@ -146,7 +146,7 @@ class ViewWidget(BasicWidget):
             self.parent.open(self.help_widget)
             return None
 
-        return super(ViewWidget, self).keypress(size, key)  # pragma: no cover
+        return super(DetailWidget, self).keypress(size, key)  # pragma: no cover
 
 
 class Tabs(BasicWidget):

@@ -7,7 +7,7 @@ except:
     import mock
 
 from gviewer.tests.util import render_to_content, render_widgets_to_content
-from gviewer.basic import SearchableText
+from gviewer.basic_widget import SearchableText
 from gviewer.view.element import (
     Text, Prop, Group, PropsGroup, View,
     TitleWidget, ContentWidget, EmptyLine)

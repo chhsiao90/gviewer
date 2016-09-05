@@ -7,7 +7,7 @@ except:
 
 import urwid
 
-from gviewer.basic import BasicWidget, FocusableText, SearchWidget, SearchableText
+from gviewer.basic_widget import BasicWidget, FocusableText, SearchWidget, SearchableText
 
 
 class BasicWidgetTest(unittest.TestCase):

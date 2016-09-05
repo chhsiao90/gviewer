@@ -1,4 +1,4 @@
-from action import Actions
+from .action import Actions
 
 
 class Context(object):
