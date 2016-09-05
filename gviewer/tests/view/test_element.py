@@ -16,7 +16,7 @@ from gviewer.view.element import try_decode
 
 class TextTest(unittest.TestCase):
     def test_to_widget(self):
-        widget = Text("content").to_widget(None, None, None)
+        widget = Text("content").to_widget(None)
         self.assertTrue(isinstance(widget, SearchableText))
         self.assertEqual(
             widget.plain_text,
@@ -31,7 +31,7 @@ class TextTest(unittest.TestCase):
 
 class PropTest(unittest.TestCase):
     def test_to_widget(self):
-        widget = Prop("key", "value").to_widget(None, None, None)
+        widget = Prop("key", "value").to_widget(None)
         text, attr = widget.get_text()
         self.assertEqual(
             text,
@@ -47,7 +47,7 @@ class PropTest(unittest.TestCase):
         prop = Prop("key", "value")
         prop.max_key_length = 5
         self.assertEqual(
-            prop.to_widget(None, None, None).get_text()[0],
+            prop.to_widget(None).get_text()[0],
             "key   : value"
         )
 
@@ -71,7 +71,7 @@ class GroupTest(unittest.TestCase):
             items=[
                 Text("first line"),
                 Text("second line")]
-        ).to_widgets(None, None, None)
+        ).to_widgets(None)
 
         self.assertEqual(len(widgets), 3)
         self.assertTrue(isinstance(widgets[0], TitleWidget))
@@ -84,7 +84,7 @@ class GroupTest(unittest.TestCase):
             items=[
                 Text("first line"),
                 Text("second line")],
-            show_title=False).to_widgets(None, None, None)
+            show_title=False).to_widgets(None)
 
         self.assertEqual(len(widgets), 2)
         self.assertTrue(isinstance(widgets[0], SearchableText))
@@ -122,7 +122,7 @@ class ViewTest(unittest.TestCase):
             Group("group1", [Text("content1")]),
             Group("group2", [Text("content2")])]
         )
-        widget = view.to_widget(None, None, None)
+        widget = view.to_widget(None)
         self.assertTrue(isinstance(widget, ContentWidget))
 
         contents = widget._w.body
@@ -136,13 +136,13 @@ class ViewTest(unittest.TestCase):
 
     def test_empty_widget(self):
         view = View([])
-        contents = view.to_widget(None, None, None)._w.body
+        contents = view.to_widget(None)._w.body
         self.assertEqual(len(contents), 1)
         self.assertIsInstance(contents[0], EmptyLine)
 
     def test_actions(self):
         action = mock.Mock()
-        parent = mock.Mock()
+        controller = mock.Mock()
         context = mock.Mock()
         context.config.keys = dict()
 
@@ -151,9 +151,9 @@ class ViewTest(unittest.TestCase):
             Group("group2", [Text("content2")])],
             actions=dict(a=action)
         )
-        widget = view.to_widget(parent, context, "message")
+        widget = view.to_widget("message", controller=controller, context=context)
         widget.keypress((0, 0), "a")
-        action.assert_called_with(parent, "message")
+        action.assert_called_with(controller, "message")
 
         self.assertEqual(
             widget.keypress((0, 0), "b"),
@@ -184,7 +184,7 @@ class ContentWidgetTest(unittest.TestCase):
             SearchableText("this is aaa bbb"),
             SearchableText("this is ccc ddd"),
             SearchableText("this is eee aaa")
-        ], None, None, None)
+        ], None)
 
         no_match = render_widgets_to_content([
             urwid.Text("this is aaa bbb"),
@@ -251,7 +251,7 @@ class ContentWidgetTest(unittest.TestCase):
             SearchableText("this is aaa bbb"),
             SearchableText("this is ccc ddd"),
             SearchableText("this is eee aaa")
-        ], None, None, None)
+        ], None)
 
         no_match = render_widgets_to_content([
             urwid.Text("this is aaa bbb"),
@@ -296,7 +296,7 @@ class ContentWidgetTest(unittest.TestCase):
             SearchableText("this is aaa bbb"),
             SearchableText("this is ccc ddd"),
             SearchableText("this is eee aaa")
-        ], None, None, None)
+        ], None)
 
         no_match = render_widgets_to_content([
             urwid.Text("this is aaa bbb"),

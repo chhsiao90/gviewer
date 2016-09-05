@@ -11,85 +11,98 @@ from gviewer.view.summary import (
     SummaryItemWidget, SummaryListWalker,
     FilterSummaryListWalker, SummaryListWidget)
 from gviewer.view.summary import _verify_keys
+from gviewer.view.detail import DetailWidget
+from gviewer.view.element import Groups
 from gviewer.action import Actions
+from gviewer.store import StaticDataStore
+from gviewer.context import DisplayerContext
+from gviewer.displayer import BaseDisplayer
 
 
 class SummaryItemWidgetTest(unittest.TestCase):
     def setUp(self):
-        self.parent = mock.Mock()
-        self.parent.config.keys = dict()
+        self.controller = mock.Mock()
+        self.controller.open_view = mock.Mock(side_effect=self._open_view)
 
         self.context = mock.Mock()
+        self.context.config.keys = dict()
+
         self.action_a = mock.Mock()
-        self.context.summary_actions = Actions([("a", "aaaa", self.action_a)])
+        self.displayer_context = DisplayerContext(
+            None, self, Actions([("a", "aaaa", self.action_a)]))
+
+        self.widget = SummaryItemWidget(
+            "message", "summary", self.displayer_context, controller=self.controller,
+            context=self.context)
+
+        self.new_widget = None
+
+    def get_views(self):
+        return [("view", self.view1)]
+
+    def view1(self, message):
+        return Groups([])
+
+    def _open_view(self, widget, **kwargs):
+        self.new_widget = widget
 
     def test_render(self):
-        widget = SummaryItemWidget(
-            self.parent,
-            self.context,
-            None,
-            "summary"
-        )
         self.assertEqual(
-            render_to_content(widget, (7,)),
+            render_to_content(self.widget, (7,)),
             render_widgets_to_content(
                 [urwid.AttrMap(urwid.Text("summary"), "summary")],
                 (7, 1))
         )
 
     def test_keypress_enter(self):
-        widget = SummaryItemWidget(
-            self.parent,
-            self.context,
-            "message",
-            "summary"
-        )
-        self.assertIsNone(widget.keypress(None, "enter"))
-        self.parent.display_view.assert_called_with("message", 0)
+        self.assertIsNone(self.widget.keypress(None, "enter"))
+        self.assertIsNotNone(self.new_widget)
+        self.assertIsInstance(self.new_widget, DetailWidget)
 
     def test_keypress_custom_action(self):
-        widget = SummaryItemWidget(
-            self.parent,
-            self.context,
-            "message",
-            "summary"
-        )
-        self.assertIsNone(widget.keypress(None, "a"))
-        self.action_a.assert_called_with(self.parent, "message")
+        self.assertIsNone(self.widget.keypress(None, "a"))
+        self.action_a.assert_called_with(self.controller, "message")
 
 
 class SummaryListWalkerTest(unittest.TestCase):
     def setUp(self):
-        self.parent = mock.Mock()
-        self.parent.open_error = mock.Mock(
+        self.controller = mock.Mock()
+        self.controller.open_error = mock.Mock(
             side_effect=self._open_error)
 
         self.context = mock.Mock()
         self.context.config.keys = dict()
 
+        self.displayer_context = mock.Mock()
+        self.displayer_context.displayer.summary = mock.Mock(
+            side_effect=lambda m: m)
+        self.displayer_context.displayer.match = mock.Mock(
+            side_effect=lambda k, m, s: k in s)
+
         self.error = False
 
         self.walker = SummaryListWalker(
-            self.parent, self.context)
+            controller=self.controller, context=self.context,
+            displayer_context=self.displayer_context)
 
     def _open_error(self, *args, **kwargs):
         self.error = True
 
     def test_msg_listener_register(self):
-        self.parent.msg_listener.register.assert_called_once_with(
+        self.displayer_context.store.register.assert_called_once_with(
             self.walker)
 
     def test_recv(self):
-        self.context.displayer.summary = mock.Mock(return_value="message")
+        self.displayer_context.displayer.summary = mock.Mock(return_value="message")
 
         self.walker.recv("new message")
         self.assertEqual(len(self.walker), 1)
         self.assertFalse(self.error)
 
-        self.context.displayer.summary.assert_called_once_with("new message")
+        self.displayer_context.displayer.summary.assert_called_once_with("new message")
 
     def test_recv_failed(self):
-        self.context.displayer.summary = mock.Mock(
+        self.displayer_context.displayer.summary = mock.Mock(
             side_effect=ValueError("failed"))
 
         self.walker.recv("new message")
@@ -99,26 +112,37 @@ class SummaryListWalkerTest(unittest.TestCase):
 
 class FilterSummaryListWalkerTest(unittest.TestCase):
     def setUp(self):
-        self.parent = mock.Mock()
-        self.parent.open_error = mock.Mock(
+        self.controller = mock.Mock()
+        self.controller.open_error = mock.Mock(
             side_effect=self._open_error)
-        self.parent.config.keys = dict()
 
         self.context = mock.Mock()
-        self.context.displayer.match = mock.Mock(
+        self.context.config.keys = dict()
+
+        self.displayer_context = mock.Mock()
+        self.displayer_context.displayer.match = mock.Mock(
             side_effect=lambda k, m, s: k in s)
-        self.context.displayer.summary = mock.Mock(
+        self.displayer_context.displayer.summary = mock.Mock(
             side_effect=lambda m: m)
 
         self.error = False
 
-        self.origin_walker = SummaryListWalker(
-            self.parent,
-            self.context,
+        self.original_walker = SummaryListWalker(
             content=[
-                SummaryItemWidget(self.parent, self.context, "message 1", "summary 1"),
-                SummaryItemWidget(self.parent, self.context, "message 2", "summary 2")
-            ]
+                SummaryItemWidget(
+                    "message 1", "summary 1",
+                    self.displayer_context,
+                    controller=self.controller,
+                    context=self.context),
+                SummaryItemWidget(
+                    "message 2", "summary 2",
+                    self.displayer_context,
+                    controller=self.controller,
+                    context=self.context)
+            ],
+            controller=self.controller,
+            context=self.context,
+            displayer_context=self.displayer_context
         )
 
     def _open_error(self, *args, **kwargs):
@@ -126,31 +150,31 @@ class FilterSummaryListWalkerTest(unittest.TestCase):
 
     def test_construct(self):
         walker = FilterSummaryListWalker(
-            self.origin_walker, "summary 1")
+            self.original_walker, "summary 1")
         self.assertEqual(len(walker), 1)
 
-        self.context.displayer.match.assert_any_call(
+        self.displayer_context.displayer.match.assert_any_call(
             "summary 1", "message 1", "summary 1")
-        self.context.displayer.match.assert_any_call(
+        self.displayer_context.displayer.match.assert_any_call(
             "summary 1", "message 2", "summary 2")
 
     def test_recv_with_match(self):
         walker = FilterSummaryListWalker(
-            self.origin_walker, "summary 1")
+            self.original_walker, "summary 1")
         walker.recv("summary 1111")
         self.assertEqual(len(walker), 2)
 
     def test_recv_with_not_match(self):
         walker = FilterSummaryListWalker(
-            self.origin_walker, "summary 1")
+            self.original_walker, "summary 1")
         walker.recv("summary")
         self.assertEqual(len(walker), 1)
 
     def test_recv_failed(self):
-        self.context.displayer.summary.side_effect = ValueError("failed")
+        self.displayer_context.displayer.summary.side_effect = ValueError("failed")
 
         walker = FilterSummaryListWalker(
-            self.origin_walker, "summary 1")
+            self.original_walker, "summary 1")
 
         walker.recv("summary 1")
         self.assertEqual(len(walker), 1)
@@ -158,35 +182,28 @@ class FilterSummaryListWalkerTest(unittest.TestCase):
 
     def test_close(self):
         walker = FilterSummaryListWalker(
-            self.origin_walker, "summary 1")
+            self.original_walker, "summary 1")
         walker.close()
-        self.parent.msg_listener.unregister.assert_called_once_with(walker)
+        self.displayer_context.store.unregister.assert_called_once_with(walker)
 
 
 class SummaryListWidgetTest(unittest.TestCase):
     def setUp(self):
-        self.parent = mock.Mock()
+        self.controller = mock.Mock()
+
+        self.displayer_context = DisplayerContext(
+            StaticDataStore(["summary 1", "summary 2"]),
+            BaseDisplayer())
 
         self.context = mock.Mock()
         self.context.config.keys = dict()
-        self.context.summary_actions = Actions()
-        self.context.displayer.match = mock.Mock(
-            side_effect=lambda k, m, s: k in s)
-
-        self.walker = SummaryListWalker(
-            self.parent,
-            self.context,
-            content=[
-                SummaryItemWidget(self.parent, self.context, "message 1", "summary 1"),
-                SummaryItemWidget(self.parent, self.context, "message 2", "summary 2")
-            ]
-        )
 
         self.widget = SummaryListWidget(
-            self.walker,
-            self.parent,
-            self.context
-        )
+            self.displayer_context,
+            controller=self.controller,
+            context=self.context)
+
+        self.displayer_context.store.setup()
 
     def test_render(self):
         self.assertEqual(
@@ -256,7 +273,7 @@ class SummaryListWidgetTest(unittest.TestCase):
 
     def test_keypress_open_help(self):
         self.assertIsNone(self.widget.keypress((0, 0), "?"))
-        self.parent.open.assert_called_with(self.widget.help_widget)
+        self.controller.open_view.assert_called_with(self.widget.help_widget)
 
     def test_keypress_bottom_and_top(self):
         self.widget.keypress((10, 10), "G")

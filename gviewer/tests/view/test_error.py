@@ -11,7 +11,7 @@ from gviewer.view.error import ErrorWidget
 
 class ErrorWidgetTest(unittest.TestCase):
     def setUp(self):
-        self.parent = mock.Mock()
+        self.controller = mock.Mock()
         self.context = mock.Mock()
 
     def test_render(self):
@@ -19,8 +19,8 @@ class ErrorWidgetTest(unittest.TestCase):
             raise ValueError("wrong value")
         except:
             widget = ErrorWidget(
-                self.parent,
-                self.context
+                controller=self.controller,
+                context=self.context
             )
 
         contents = render_to_content(widget, (200, 4))
@@ -44,8 +44,8 @@ class ErrorWidgetTest(unittest.TestCase):
             raise ValueError("wrong value")
         except:
             widget = ErrorWidget(
-                self.parent,
-                self.context
+                controller=self.controller,
+                context=self.context
             )
         self.assertEqual(widget.keypress(None, "q"), None)
-        self.parent.back.assert_called_with()
+        self.controller.back.assert_called_with()

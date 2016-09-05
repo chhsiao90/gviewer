@@ -13,21 +13,24 @@ from gviewer.view.element import Text, Group, Groups
 
 class DetailWidgetTest(unittest.TestCase):
     def setUp(self):
-        self.parent = mock.Mock()
+        self.displayer_context = mock.Mock()
 
-        self.parent.views = [
-            ("View 1", lambda m: self._display(m["view1"])),
-            ("View 2", lambda m: self._display(m["view2"])),
-            ("View 3", lambda m: self._display(m["view3"]))
-        ]
-        self.parent.view_names = [
-            e[0] for e in self.parent.views
-        ]
+        self.displayer_context.displayer.get_views = mock.Mock(return_value=[
+            ("View 1", self._view1),
+            ("View 2", self._view2),
+            ("View 3", self._view3)
+        ])
 
         self.context = mock.Mock()
         self.context.config.keys = dict()
+        self.controller = mock.Mock()
+        self.controller.open_view = mock.Mock(side_effect=self._open_view)
 
         self.test_message = dict(view1="view1", view2="view2", view3="view3")
+
+        self.widget = DetailWidget(
+            self.test_message, self.displayer_context,
+            index=0, controller=self.controller, context=self.context)
 
     def _view1(self, message):
         return self._display(message["view1"])
@@ -35,16 +38,18 @@ class DetailWidgetTest(unittest.TestCase):
     def _view2(self, message):
         return self._display(message["view2"])
 
+    def _view3(self, message):
+        return self._display(message["view3"])
+
     def _display(self, message):
         return Groups([Group("Title", [Text(message)])])
 
-    def test_render(self):
-        widget = DetailWidget(
-            self.test_message,
-            0, self.parent, self.context)
+    def _open_view(self, widget, push_prev):
+        self.new_widget = widget
 
+    def test_render(self):
         self.assertEqual(
-            render_to_content(widget._w.contents["body"][0], (7, 2)),
+            render_to_content(self.widget._w.contents["body"][0], (7, 2)),
             render_widgets_to_content([
                 urwid.AttrMap(urwid.Text("Title"), "view-title"),
                 urwid.AttrMap(urwid.Text("view1"), "view-item")
@@ -52,111 +57,79 @@ class DetailWidgetTest(unittest.TestCase):
         )
 
     def test_next_view(self):
-        widget = DetailWidget(
-            self.test_message,
-            0, self.parent, self.context)
-        widget.keypress((0,), "tab")
-        self.parent.display_view.assert_called_with(
-            self.test_message, 1, push_prev=False)
+        self.widget.keypress((0,), "tab")
+        self.assertIsNotNone(self.new_widget)
+        self.assertEqual(self.new_widget.index, 1)
 
-        widget = DetailWidget(
-            self.test_message,
-            1, self.parent, self.context)
-        widget.keypress((0,), "tab")
-        self.parent.display_view.assert_called_with(
-            self.test_message, 2, push_prev=False)
+        self.widget = self.new_widget
+        self.widget.keypress((0,), "tab")
+        self.assertIsNot(self.new_widget, self.widget)
+        self.assertEqual(self.new_widget.index, 2)
 
-        widget = DetailWidget(
-            self.test_message,
-            2, self.parent, self.context)
-        widget.keypress((0,), "tab")
-        self.parent.display_view.assert_called_with(
-            self.test_message, 0, push_prev=False)
+        self.widget = self.new_widget
+        self.widget.keypress((0,), "tab")
+        self.assertIsNot(self.new_widget, self.widget)
+        self.assertEqual(self.new_widget.index, 0)
 
     def test_prev_view(self):
-        widget = DetailWidget(
-            self.test_message,
-            0, self.parent, self.context)
-        widget.keypress((0,), "shift tab")
-        self.parent.display_view.assert_called_with(
-            self.test_message, 2, push_prev=False)
+        self.widget.keypress((0,), "shift tab")
+        self.assertIsNotNone(self.new_widget)
+        self.assertEqual(self.new_widget.index, 2)
 
-        widget = DetailWidget(
-            self.test_message,
-            2, self.parent, self.context)
-        widget.keypress((0,), "shift tab")
-        self.parent.display_view.assert_called_with(
-            self.test_message, 1, push_prev=False)
+        self.widget = self.new_widget
+        self.widget.keypress((0,), "shift tab")
+        self.assertIsNot(self.new_widget, self.widget)
+        self.assertEqual(self.new_widget.index, 1)
 
-        widget = DetailWidget(
-            self.test_message,
-            1, self.parent, self.context)
-        widget.keypress((0,), "shift tab")
-        self.parent.display_view.assert_called_with(
-            self.test_message, 0, push_prev=False)
+        self.widget = self.new_widget
+        self.widget.keypress((0,), "shift tab")
+        self.assertIsNot(self.new_widget, self.widget)
+        self.assertEqual(self.new_widget.index, 0)
 
     def test_no_tab(self):
-        self.parent.view_names = [self.parent.view_names[0]]
-        widget = DetailWidget(
-            self.test_message,
-            0, self.parent, self.context)
+        self.displayer_context.displayer.get_views = mock.Mock(return_value=[
+            ("View 1", lambda m: self._display(m["view1"]))
+        ])
+        self.widget = DetailWidget(
+            self.test_message, self.displayer_context,
+            index=0, controller=self.controller, context=self.context)
 
         with self.assertRaises(KeyError):
-            widget._w.contents["header"]
+            self.widget._w.contents["header"]
 
     def test_open_search(self):
-        widget = DetailWidget(
-            self.test_message,
-            0, self.parent, self.context)
-
-        widget.keypress((0,), "/")
+        self.widget.keypress((0,), "/")
         self.assertEqual(
-            widget.body.contents[1][0],
-            widget.search_widget)
-        self.assertIs(widget.body.focus, widget.search_widget)
+            self.widget.body.contents[1][0],
+            self.widget.search_widget)
+        self.assertIs(self.widget.body.focus, self.widget.search_widget)
 
     def test_close_search(self):
-        widget = DetailWidget(
-            self.test_message,
-            0, self.parent, self.context)
-
-        self.assertEqual(len(widget.body.contents), 1)
-        widget._close_search()
-        self.assertEqual(len(widget.body.contents), 1)
-        widget._open_search()
-        self.assertEqual(len(widget.body.contents), 2)
-        widget._close_search()
-        self.assertEqual(len(widget.body.contents), 1)
+        self.assertEqual(len(self.widget.body.contents), 1)
+        self.widget._close_search()
+        self.assertEqual(len(self.widget.body.contents), 1)
+        self.widget._open_search()
+        self.assertEqual(len(self.widget.body.contents), 2)
+        self.widget._close_search()
+        self.assertEqual(len(self.widget.body.contents), 1)
 
     def test_clear_search(self):
-        widget = DetailWidget(
-            self.test_message,
-            0, self.parent, self.context)
-
-        self.assertEqual(len(widget.body.contents), 1)
-        widget._open_search()
-        self.assertEqual(len(widget.body.contents), 2)
-        widget._clear_search()
-        self.assertEqual(len(widget.body.contents), 1)
+        self.assertEqual(len(self.widget.body.contents), 1)
+        self.widget._open_search()
+        self.assertEqual(len(self.widget.body.contents), 2)
+        self.widget._clear_search()
+        self.assertEqual(len(self.widget.body.contents), 1)
 
     def test_open_summary(self):
-        widget = DetailWidget(
-            self.test_message,
-            0, self.parent, self.context)
-
-        widget.keypress((0,), "q")
-        self.parent.back.assert_called_with()
+        self.widget.keypress((0,), "q")
+        self.controller.back.assert_called_with()
 
     def test_search(self):
-        widget = DetailWidget(
-            self.test_message,
-            0, self.parent, self.context)
-
-        widget.search_widget.keypress((4,), "v")
-        widget.search_widget.keypress((4,), "i")
-        widget.search_widget.keypress((4,), "e")
-        widget.search_widget.keypress((4,), "w")
-        widget.search_widget.keypress((4,), "enter")
+        self.widget.search_widget.keypress((4,), "v")
+        self.widget.search_widget.keypress((4,), "i")
+        self.widget.search_widget.keypress((4,), "e")
+        self.widget.search_widget.keypress((4,), "w")
+        self.widget.search_widget.keypress((4,), "enter")
 
         match = render_widgets_to_content(
             [urwid.Text(("view-title", "Title")),
@@ -170,43 +143,37 @@ class DetailWidgetTest(unittest.TestCase):
         )
 
         self.assertEqual(
-            render_to_content(widget.content_widget, (5, 3)),
+            render_to_content(self.widget.content_widget, (5, 3)),
             match)
 
-        widget.keypress((0,), "n")
+        self.widget.keypress((0,), "n")
         self.assertEqual(
-            render_to_content(widget.content_widget, (5, 3)),
+            render_to_content(self.widget.content_widget, (5, 3)),
             no_match)
 
-        widget.keypress((0,), "N")
+        self.widget.keypress((0,), "N")
         self.assertEqual(
-            render_to_content(widget.content_widget, (5, 3)),
+            render_to_content(self.widget.content_widget, (5, 3)),
             match)
 
-        widget.keypress((0,), "N")
+        self.widget.keypress((0,), "N")
         self.assertEqual(
-            render_to_content(widget.content_widget, (5, 3)),
+            render_to_content(self.widget.content_widget, (5, 3)),
             no_match)
 
     def test_editing(self):
-        widget = DetailWidget(
-            self.test_message,
-            0, self.parent, self.context)
-        widget._open_search()
-        self.assertTrue(widget.is_editing())
+        self.widget._open_search()
+        self.assertTrue(self.widget.is_editing())
 
-        keypress_result = widget.keypress((0, 0), "a")
+        keypress_result = self.widget.keypress((0, 0), "a")
         self.assertEqual(keypress_result, "a")
-        keypress_result = widget.keypress((0, 0), "q")
+        keypress_result = self.widget.keypress((0, 0), "q")
         self.assertEqual(keypress_result, "q")
 
 
 class TabsTest(unittest.TestCase):
     def test_render(self):
-        widget = Tabs(
-            ["view1", "view2", "view3"],
-            0
-        )
+        widget = Tabs(["view1", "view2", "view3"], 0)
         self.assertEqual(
             render_to_content(widget, (15,)),
             render_widgets_to_content([

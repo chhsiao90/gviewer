@@ -9,7 +9,7 @@ class BaseDisplayer(object):  # pragma: no cover
         Returns:
             str or unicode or text markup
         """
-        raise NotImplementedError
+        return message
 
     def match(self, keyword, message, summary):
         """ Define is that the message match the keyword
@@ -31,4 +31,4 @@ class BaseDisplayer(object):  # pragma: no cover
         Returns:
             A Groups
         """
-        raise NotImplementedError
+        return []

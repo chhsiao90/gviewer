@@ -2,22 +2,26 @@ class BaseDataStore(object):
     """ Base absctract class for data store
 
     Attributes:
-        msg_listener: MessageListener instance
+        walkers
     """
     def __init__(self):
-        self.msg_listener = None  # pragma: no cover
+        self.walkers = []
 
-    def register_listener(self, msg_listener):
-        """ Register msg_listener
+    def on_message(self, message):
+        transformed_msg = self.transform(message)
+        for walker in self.walkers:
+            walker.recv(transformed_msg)
 
-        Register msg_listener, will be called before GViewer start
-        """
-        self.msg_listener = msg_listener
+    def register(self, walker):
+        self.walkers.append(walker)
+
+    def unregister(self, walker):
+        self.walkers.remove(walker)
 
     def transform(self, msg):
         return msg
 
-    def set_up(self):
+    def setup(self):
         raise NotImplementedError
 
 
@@ -29,42 +33,24 @@ class StaticDataStore(BaseDataStore):
     :type message: iterable for any type data
     """
     def __init__(self, messages):
+        super(StaticDataStore, self).__init__()
         self.messages = messages
-        super(BaseDataStore, self).__init__()
 
-    def set_up(self):
+    def setup(self):
         for message in self.messages:
-            self.msg_listener.on_message(message)
+            self.on_message(message)
 
 
 class AsyncDataStore(BaseDataStore):
     """
     Used for async data
 
-    :param register_func: register function that would be called while set_up
+    :param register_func: register function that would be called while setup
     :type register_func: function accept one parameter with function(message)
     """
     def __init__(self, register_func):
+        super(AsyncDataStore, self).__init__()
         self.register_func = register_func
-        super(BaseDataStore, self).__init__()
 
-    def set_up(self):
-        self.register_func(self.msg_listener.on_message)
-
-
-class MessageListener(object):
-    def __init__(self, store):
-        self._store = store
-        self.walkers = []
-        self._store.register_listener(self)
-
-    def on_message(self, message):
-        transformed_msg = self._store.transform(message)
-        for walker in self.walkers:
-            walker.recv(transformed_msg)
-
-    def register(self, walker):
-        self.walkers.append(walker)
-
-    def unregister(self, walker):
-        self.walkers.remove(walker)
+    def setup(self):
+        self.register_func(self.on_message)

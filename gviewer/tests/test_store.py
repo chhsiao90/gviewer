@@ -5,67 +5,51 @@ try:
 except:
     import mock
 
-from gviewer.store import StaticDataStore, AsyncDataStore, MessageListener
+from gviewer.store import StaticDataStore, AsyncDataStore
 
 
 class StaticDataStoreTest(unittest.TestCase):
     def setUp(self):
-        self.listener = mock.Mock()
+        self.walker = mock.Mock()
 
         self.data_store = StaticDataStore([
             "message 1", "message 2"])
-        self.data_store.register_listener(self.listener)
+        self.data_store.register(self.walker)
 
-    def test_set_up(self):
-        self.data_store.set_up()
-        self.listener.on_message.assert_has_calls(
+    def test_setup(self):
+        self.assertEqual(len(self.data_store.walkers), 1)
+
+        self.data_store.setup()
+        self.walker.recv.assert_has_calls(
             [mock.call("message 1"), mock.call("message 2")], any_order=True)
+
+    def test_register_new_walker(self):
+        walker2 = mock.Mock()
+        self.data_store.register(walker2)
+
+        self.assertEqual(len(self.data_store.walkers), 2)
+
+        self.data_store.setup()
+        self.walker.recv.assert_has_calls(
+            [mock.call("message 1"), mock.call("message 2")], any_order=True)
+        walker2.recv.assert_has_calls(
+            [mock.call("message 1"), mock.call("message 2")], any_order=True)
+
+    def test_unregister(self):
+        self.data_store.unregister(self.walker)
+        self.assertEqual(len(self.data_store.walkers), 0)
 
 
 class AsyncDataStoreTest(unittest.TestCase):
     def setUp(self):
-        self.listener = mock.Mock()
+        self.walker = mock.Mock()
 
         self.register_func = mock.Mock()
 
         self.data_store = AsyncDataStore(self.register_func)
-        self.data_store.register_listener(self.listener)
+        self.data_store.register(self.walker)
 
-    def test_set_up(self):
-        self.data_store.set_up()
+    def test_setup(self):
+        self.data_store.setup()
         self.register_func.assert_called_with(
-            self.listener.on_message)
-
-
-class MessageListenerTest(unittest.TestCase):
-    def setUp(self):
-        self.data_store = mock.Mock()
-        self.data_store.register_listener = mock.Mock()
-        self.data_store.transform = mock.Mock(
-            side_effect=lambda m: m)
-
-        self.walker = mock.Mock()
-        self.walker.recv = mock.Mock()
-
-        self.listener = MessageListener(self.data_store)
-        self.listener.register(self.walker)
-
-    def test_init_with_register_listener(self):
-        self.data_store.register_listener.assert_called_with(
-            self.listener)
-
-    def test_on_message(self):
-        self.listener.on_message("message")
-        self.walker.recv.assert_called_with(
-            "message")
-
-    def test_register(self):
-        self.listener.register("another walker")
-        self.assertEqual(
-            self.listener.walkers,
-            [self.walker, "another walker"]
-        )
-
-    def test_unregister(self):
-        self.listener.unregister(self.walker)
-        self.assertEquals(len(self.listener.walkers), 0)
+            self.data_store.on_message)

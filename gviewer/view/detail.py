@@ -31,56 +31,62 @@ class DetailWidget(BasicWidget):
     Attributes:
         message: message generate by DataStore
         index: view's index
-        parent: ParentFrame instance
+        controller: ParentFrame instance
     """
-    def __init__(self, message, index, parent, context):
-        super(DetailWidget, self).__init__(
-            parent=parent, context=context)
+    def __init__(self, message, displayer_context, index=0, **kwargs):
+        super(DetailWidget, self).__init__(**kwargs)
         self.index = index
         self.message = message
+        self.displayer_context = displayer_context
 
-        _, view_callable = self.parent.views[index]
-        self.view = view_callable(self.message)
+        self.views = self.displayer_context.displayer.get_views()
+        self.view = self.views[index][1].__call__(self.message)
 
-        self.content_widget = self.view.to_widget(self.parent, self.context, self.message)
+        self.content_widget = self.view.to_widget(
+            self.message, **kwargs)
 
         _verify_keys(self.view.actions)
         self.search_widget = SearchWidget(self._search, self._clear_search)
         self.help_widget = HelpWidget(
-            parent,
-            self.context,
             HelpContent(
                 [HelpCategory("Basic", self.context.config.keys),
                  HelpCategory("Advanced", _ADVANCED_KEYS),
-                 make_category_with_actions("Custom", self.view.actions)])
+                 make_category_with_actions("Custom", self.view.actions)]),
+            **kwargs
         )
 
         self.body = urwid.Pile([self.content_widget])
 
-        if len(self.parent.view_names) > 1:
-            header = Tabs(self.parent.view_names, self.index)
+        if len(self.views) > 1:
+            header = Tabs([k for k, _ in self.views], self.index)
         else:
             header = None
 
         widget = urwid.Frame(self.body, header=header)
         self.display(widget)
 
+    def _open(self, index):
+        self.controller.open_view(DetailWidget(
+            self.message, self.displayer_context, index=index,
+            controller=self.controller, context=self.context),
+            push_prev=False)
+
     def _next_view(self):
-        if len(self.parent.view_names) == 1:
+        if len(self.views) == 1:
             return
 
-        if len(self.parent.view_names) > self.index + 1:
+        if len(self.views) > self.index + 1:
             next_index = self.index + 1
         else:
             next_index = 0
-        self.parent.display_view(self.message, next_index, push_prev=False)
+        self._open(next_index)
 
     def _prev_view(self):
-        if len(self.parent.view_names) == 1:
+        if len(self.views) == 1:
             return
 
-        next_index = len(self.parent.view_names) - 1 if self.index == 0 else self.index - 1
-        self.parent.display_view(self.message, next_index, push_prev=False)
+        next_index = len(self.views) - 1 if self.index == 0 else self.index - 1
+        self._open(next_index)
 
     def _open_search(self):
         self.search_widget.clear()
@@ -110,13 +116,13 @@ class DetailWidget(BasicWidget):
         file_name = "export-%13d" % (time.time() * 1000)
         with open(file_name, "w") as f:
             f.write(self.view.text().encode("utf8"))
-        self.parent.notify("Export to file {0}".format(file_name))
+        self.controller.notify("Export to file {0}".format(file_name))
 
     def keypress(self, size, key):
         if self.is_editing():
             return super(DetailWidget, self).keypress(size, key)
         if key == "q":
-            self.parent.back()
+            self.controller.back()
             return None
         if key == "tab":
             self._next_view()
@@ -143,7 +149,7 @@ class DetailWidget(BasicWidget):
             self._export()
             return None
         if key == "?":  # pragma: no cover
-            self.parent.open(self.help_widget)
+            self.controller.open_view(self.help_widget)
             return None
 
         return super(DetailWidget, self).keypress(size, key)  # pragma: no cover

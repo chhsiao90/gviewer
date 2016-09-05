@@ -11,17 +11,17 @@ from gviewer.view.helper import HelpWidget, HelpCategory, HelpContent, TitleWidg
 
 class HelpWidgetTest(unittest.TestCase):
     def setUp(self):
-        self.parent = mock.Mock()
+        self.controller = mock.Mock()
         self.context = mock.Mock()
-
-    def test_render(self):
-        widget = HelpWidget(
-            self.parent, self.context,
+        self.widget = HelpWidget(
             HelpContent([
                 HelpCategory("category1", dict(a="aaa", b="bbb")),
-                HelpCategory("category2", dict(c="ccc", d="ddd"))]))
+                HelpCategory("category2", dict(c="ccc", d="ddd"))]),
+            controller=self.controller, context=self.context,)
+
+    def test_render(self):
         self.assertEqual(
-            render_to_text(widget, (20, 10)),
+            render_to_text(self.widget, (20, 10)),
             ["category1           ",
              "                    ",
              "     a   aaa        ",
@@ -34,13 +34,8 @@ class HelpWidgetTest(unittest.TestCase):
              "                    "])
 
     def test_quit(self):
-        widget = HelpWidget(
-            self.parent, self.context,
-            HelpContent([
-                HelpCategory("category1", dict(a="aaa", b="bbb")),
-                HelpCategory("category2", dict(c="ccc", d="ddd"))]))
-        widget.keypress((0, ), "q")
-        self.parent.back.assert_called_with()
+        self.widget.keypress((0, ), "q")
+        self.controller.back.assert_called_with()
 
 
 class HelpCategoryTest(unittest.TestCase):

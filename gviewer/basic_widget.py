@@ -8,18 +8,18 @@ class BasicWidget(urwid.WidgetWrap):
     Define the basic attr and basic behavior how GViewer widget to display or act
 
     Attributes:
-        parent: a ParentFrame instance
+        controller: a Controller instance
         widget: a urwid Widget
         attr_map: non-focus attribute
         focus_map: focus attribute
     """
-    def __init__(self, parent=None, context=None, widget=None,
+    def __init__(self, controller=None, context=None, widget=None,
                  attr_map=None, focus_map=None):
         widget = widget or urwid.Text("")
         if attr_map:
             widget = urwid.AttrMap(widget, attr_map, focus_map=focus_map)
         super(BasicWidget, self).__init__(widget)
-        self.parent = parent
+        self.controller = controller
         self.context = context
 
     def display(self, widget):
@@ -35,8 +35,8 @@ class BasicWidget(urwid.WidgetWrap):
 
     def keypress(self, size, key):
         """ Define default keypress action for GViewer """
-        if self.parent:
-            self.parent.run_before_keypress()
+        if self.controller:
+            self.controller._run_before_keypress()
 
         if (not self.is_editing() and self.context and
                 key in self.context.config.keys):

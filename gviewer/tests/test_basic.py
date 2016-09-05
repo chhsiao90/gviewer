@@ -13,7 +13,7 @@ from gviewer.basic_widget import BasicWidget, FocusableText, SearchWidget, Searc
 class BasicWidgetTest(unittest.TestCase):
     def setUp(self):
         self.context = mock.Mock()
-        self.parent = mock.Mock()
+        self.controller = mock.Mock()
         self.context.config.keys = dict()
 
     def test_display(self):
@@ -39,7 +39,7 @@ class BasicWidgetTest(unittest.TestCase):
         widget = mock.Mock()
         widget.keypress = lambda size, key: key
         widget = BasicWidget(
-            parent=self.parent,
+            controller=self.controller,
             context=self.context,
             widget=widget)
 

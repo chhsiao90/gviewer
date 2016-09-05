@@ -1,5 +1,4 @@
 import urwid
-import sys
 
 from ..basic_widget import BasicWidget, SearchableText
 from ..action import Actions
@@ -15,7 +14,7 @@ def try_decode(text):
 
 class Base(object):  # pragma: no cover
     """Abstract class for view displayer eleemnt"""
-    def to_widget(self, parent, context, message):
+    def to_widget(self, message, controller=None, context=None):
         raise NotImplementedError
 
     def text(self):
@@ -31,7 +30,7 @@ class Text(Base):
     def __init__(self, content):
         self.content = content
 
-    def to_widget(self, parent, context, message):
+    def to_widget(self, message, controller=None, context=None):
         return SearchableText(self.content, attr_map="view-item")
 
     def text(self):
@@ -59,7 +58,7 @@ class Prop(Base):
         self.kv = (key, value)
         self.max_key_length = 0
 
-    def to_widget(self, parent, context, message):
+    def to_widget(self, message, controller=None, context=None):
         if self.max_key_length:
             format_str = "{0:" + str(self.max_key_length + 1) + "}: "
             return urwid.Text(
@@ -90,11 +89,11 @@ class Group(object):
         self.items = items
         self.show_title = show_title
 
-    def to_widgets(self, parent, context, message):
+    def to_widgets(self, message, controller=None, context=None):
         widgets = []
         if self.show_title:
             widgets.append(TitleWidget(self.title))
-        widgets += [e.to_widget(parent, context, message) for e in self.items]
+        widgets += [e.to_widget(message, controller=controller, context=context) for e in self.items]
         return widgets
 
     def text(self):
@@ -129,16 +128,18 @@ class View(Base):
         self.groups = groups
         self.actions = actions or Actions()
 
-    def to_widget(self, parent, context, message):
+    def to_widget(self, message, controller=None, context=None):
         widgets = []
         for group in self.groups:
-            widgets += group.to_widgets(parent, context, message)
+            widgets += group.to_widgets(message, controller=controller, context=context)
             widgets.append(EmptyLine())
 
         if not widgets:
             widgets.append(EmptyLine())
 
-        return ContentWidget(widgets, parent, context, message, self.actions)
+        return ContentWidget(
+            widgets, message, self.actions, controller=controller,
+            context=context)
 
     def text(self):
         return u"\n".join([g.text() + u"\n" for g in self.groups])
@@ -165,12 +166,11 @@ class TitleWidget(BasicWidget):
 
 class ContentWidget(BasicWidget):
     """Widget for view items"""
-    def __init__(self, widgets, parent, context, message, actions=None):
+    def __init__(self, widgets, message, actions=None, controller=None, context=None):
         walker = urwid.SimpleFocusListWalker(widgets)
         widget = urwid.ListBox(walker)
         super(ContentWidget, self).__init__(
-            parent=parent,
-            context=context,
+            controller=controller, context=context,
             widget=widget)
 
         self.prev_match = 0
@@ -221,9 +221,9 @@ class ContentWidget(BasicWidget):
     def keypress(self, size, key):
         if key in self.actions:
             try:
-                self.actions[key].__call__(self.parent, self.message)
+                self.actions[key].__call__(self.controller, self.message)
             except:  # pragma: no cover
-                self.parent.open_error(sys.exc_info())
+                self.controller.open_error()
             return None
         return super(ContentWidget, self).keypress(size, key)
 

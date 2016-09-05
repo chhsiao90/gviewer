@@ -1,15 +1,10 @@
 import unittest
 import urwid
 
-try:
-    import unittest.mock as mock
-except:
-    import mock
-
 from .util import render_to_content, render_widgets_to_content, render_to_text
 from gviewer.parent import ParentFrame, Footer, Helper, Notification
 from gviewer.config import Config
-from gviewer.context import Context
+from gviewer.context import Context, DisplayerContext
 from gviewer.view.error import ErrorWidget
 from gviewer.view.summary import SummaryListWidget
 from gviewer.view.detail import DetailWidget
@@ -28,10 +23,10 @@ class ParentFrameTest(unittest.TestCase):
         store = StaticDataStore(self.messages)
 
         context = Context(
-            store, self, Config())
+            Config(), main_displayer_context=DisplayerContext(store, self))
         self.widget = ParentFrame(context)
 
-        store.set_up()
+        store.setup()
 
     def summary(self, message):
         return ";".join(message)
@@ -57,36 +52,29 @@ class ParentFrameTest(unittest.TestCase):
                 urwid.Text(""),
                 urwid.Text(""),
                 urwid.Text(""),
-                Footer(self)
+                Footer()
             ], (30, 10))
         )
 
     def test_initial_with_summary(self):
         self.assertIs(
             self.widget.contents["body"][0],
-            self.widget._summary
+            self.widget.summary
         )
         self.assertIsInstance(
-            self.widget._summary,
+            self.widget.summary,
             SummaryListWidget
         )
 
-    def test_display_view(self):
-        self.widget.display_view(self.messages[0], 0)
-        self.assertIsInstance(
-            self.widget.contents["body"][0],
-            DetailWidget
-        )
-
     def test_back(self):
-        self.widget.display_view(self.messages[0], 0)
+        self.widget.open_view(urwid.Text(""))
         self.widget.back()
         self.assertIs(
             self.widget.contents["body"][0],
-            self.widget._summary
+            self.widget.summary
         )
         self.assertIsInstance(
-            self.widget._summary,
+            self.widget.summary,
             SummaryListWidget
         )
 
@@ -111,15 +99,15 @@ class ParentFrameTest(unittest.TestCase):
 
 class FooterTest(unittest.TestCase):
     def test_render(self):
-        widget = Footer(None)
+        widget = Footer()
         self.assertEqual(
             render_to_content(widget, (20, 2)),
             render_widgets_to_content(
-                [Helper(), Notification(None)],
+                [Helper(), Notification()],
                 (20, 2)))
 
     def test_notify(self):
-        widget = Footer(None)
+        widget = Footer()
         widget.notify("test")
         self.assertEqual(
             render_to_text(widget.notification, (5,)),
@@ -128,9 +116,7 @@ class FooterTest(unittest.TestCase):
 
 class NotificationTest(unittest.TestCase):
     def setUp(self):
-        self.parent = mock.Mock()
-        self.widget = Notification(
-            self.parent)
+        self.widget = Notification()
 
     def test_render_default(self):
         self.assertEqual(

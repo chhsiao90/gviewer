@@ -1,9 +1,8 @@
 import urwid
 
 from .basic_widget import BasicWidget
-from .store import MessageListener
-from .view.summary import SummaryListWidget, SummaryListWalker
-from .view.detail import DetailWidget
+from .controller import Controller
+from .view.summary import SummaryListWidget
 from .view.error import ErrorWidget
 
 
@@ -14,41 +13,25 @@ class ParentFrame(urwid.Frame):
         context: Context
     """
     def __init__(self, context):
-        self._context = context
+        self.context = context
+        self.controller = Controller(self, context)
 
-        self.views = context.displayer.get_views()
-        self.view_names = [k for k, _ in self.views]
-
-        self.msg_listener = MessageListener(context.store)
-
-        walker = SummaryListWalker(self, context)
-        self._summary = SummaryListWidget(walker, self, context)
+        self.summary = SummaryListWidget(
+            context.main_displayer_context, controller=self.controller,
+            context=self.context)
 
         header = urwid.Text(context.config.header)
         header = urwid.AttrMap(header, "header")
-        self._footer = Footer(self)
+        self.footer = Footer(controller=self.controller)
 
-        self._prev_views = []
+        self.prev_views = []
 
         super(ParentFrame, self).__init__(
-            body=self._summary,
+            body=self.summary,
             header=header,
-            footer=self._footer)
+            footer=self.footer)
 
-    def display_view(self, message, index, push_prev=True):
-        """ Display view for message
-
-        Args:
-            message: Message generate by DataStore
-            index: int represent which view to display
-        """
-        try:
-            widget = DetailWidget(message, index, self, self._context)
-            self.open(widget, push_prev)
-        except:  # pragma: no cover
-            self.open_error()
-
-    def open(self, widget, push_prev=True):
+    def open_view(self, widget, push_prev=True):
         """Open widget
 
         Args:
@@ -61,39 +44,38 @@ class ParentFrame(urwid.Frame):
             return
 
         if push_prev:
-            self._prev_views.append(curr_widget)
+            self.prev_views.append(curr_widget)
 
         self.set_body(widget)
 
     def back(self):
         """Back to previous view"""
-        self.set_body(self._prev_views.pop())
+        self.set_body(self.prev_views.pop())
 
     def open_error(self):
         """Open ErrorWidget"""
-        widget = ErrorWidget(self, self._context)
-        self.open(widget, True)
+        widget = ErrorWidget(controller=self.controller, context=self.context)
+        self.open_view(widget, True)
 
     def notify(self, message):
         """Notify message"""
-        self._footer.notify(message)
+        self.footer.notify(message)
 
     def run_before_keypress(self):
-        self._footer.notify("")
+        self.footer.notify("")
 
 
 class Footer(BasicWidget):
     """Footer widget for ParentFrame"""
-    def __init__(self, parent):
-        self.notification = Notification(parent)
+    def __init__(self, **kwargs):
+        self.notification = Notification(**kwargs)
         widgets = [
             ("pack", Helper()),
             ("pack", self.notification)
         ]
         widget = urwid.Pile(widgets)
         super(Footer, self).__init__(
-            parent=parent,
-            widget=widget)
+            widget=widget, **kwargs)
 
     def notify(self, message):
         """Notify message"""
@@ -111,12 +93,11 @@ class Helper(BasicWidget):
 
 
 class Notification(BasicWidget):
-    def __init__(self, parent):
+    def __init__(self, **kwargs):
         self.message = ""
         super(Notification, self).__init__(
-            parent=parent,
             widget=urwid.Text(""),
-            attr_map="footer info")
+            attr_map="footer info", **kwargs)
 
     def notify(self, message):
         """Notify message"""

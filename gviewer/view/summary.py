@@ -1,4 +1,3 @@
-import sys
 import urwid
 from collections import OrderedDict
 
@@ -6,6 +5,7 @@ from ..basic_widget import BasicWidget, FocusableText, SearchWidget
 from .helper import (
     HelpWidget, HelpContent, HelpCategory,
     make_category_with_actions)
+from .detail import DetailWidget
 
 
 _ADVANCED_KEYS = OrderedDict([
@@ -30,21 +30,19 @@ class SummaryItemWidget(BasicWidget):
     Summary item widget that display summary and defined action to open other view
 
     Attributes:
-        parent: ParentFrame
+        controller: Controller
         context: Context
         message: Original message genrate by BaseDataStore
         summary: Format message by displayer
     """
-    def __init__(self, parent, context, message, summary):
+    def __init__(self, message, summary, displayer_context, **kwargs):
         super(SummaryItemWidget, self).__init__(
-            parent=parent,
-            context=context,
             widget=FocusableText(
-                summary,
-                attr_map="summary",
-                focus_map="summary focus")
-        )
+                summary, attr_map="summary",
+                focus_map="summary focus"),
+            **kwargs)
 
+        self.displayer_context = displayer_context
         self.message = message
 
     def get_title(self):
@@ -57,14 +55,16 @@ class SummaryItemWidget(BasicWidget):
 
     def keypress(self, size, key):
         if key == "enter":
-            self.parent.display_view(self.message, 0)
+            self.controller.open_view(DetailWidget(
+                self.message, self.displayer_context, controller=self.controller,
+                context=self.context))
             return None
-        if key in self.context.summary_actions:
+        if key in self.displayer_context.actions:
             try:
-                self.context.summary_actions[key].__call__(
-                    self.parent, self.message)
+                self.displayer_context.actions[key].__call__(
+                    self.controller, self.message)
             except:  # pragma: no cover
-                self.parent.open_error(sys.exc_info())
+                self.controller.open_error()
             return None
 
         return super(SummaryItemWidget, self).keypress(size, key)  # pragma: no cover
@@ -77,16 +77,19 @@ class SummaryListWalker(urwid.SimpleFocusListWalker):
     and used to receive message from data store
 
     Attributes:
-        parent: ParentFrame
-        context: Context
-        context: Context
         content: list of SummaryItemWidget
+        controller: Controller
+        context: Context
+        msg_listener: MessageListener
     """
-    def __init__(self, parent, context, content=None):
+    def __init__(self, content=None, displayer_context=None,
+                 base_walker=None, controller=None, context=None):
         super(SummaryListWalker, self).__init__(content or [])
-        self.parent = parent
-        self.context = context
-        self.parent.msg_listener.register(self)
+        self.controller = controller or base_walker.controller
+        self.context = context or base_walker.context
+        self.displayer_context = displayer_context or base_walker.displayer_context
+        self.base_walker = base_walker
+        self.displayer_context.store.register(self)
 
     def recv(self, message):
         """ Action when received message from data store
@@ -95,10 +98,14 @@ class SummaryListWalker(urwid.SimpleFocusListWalker):
         and generate a SummaryItemWidget into its content
         """
         try:
-            summary = self.context.displayer.summary(message)
-            self.append(SummaryItemWidget(self.parent, self.context, message, summary))
+            self.append(self._create_widget(message))
         except:
-            self.parent.open_error(sys.exc_info())
+            self.controller.open_error()
+
+    def _create_widget(self, message):
+            summary = self.displayer_context.displayer.summary(message)
+            return SummaryItemWidget(
+                message, summary, self.displayer_context, controller=self.controller, context=self.context)
 
 
 class FilterSummaryListWalker(SummaryListWalker):
@@ -107,16 +114,14 @@ class FilterSummaryListWalker(SummaryListWalker):
     Optional display SummaryItemWidget depend on summary is match by keyword or not
 
     Attributes:
-        origin_walker: Original SummaryListWalker
+        base_walker: Original SummaryListWalker
         keyword: Filter keyword
     """
-    def __init__(self, origin_walker, keyword):
-        parent = origin_walker.parent
-        context = origin_walker.context
-        content = [m for m in origin_walker if context.displayer.match(keyword, m.message, m.get_title())]
-        super(FilterSummaryListWalker, self).__init__(parent, context, content=content)
+    def __init__(self, base_walker, keyword):
+        content = [m for m in base_walker if base_walker.displayer_context.displayer.match(keyword, m.message, m.get_title())]
+        super(FilterSummaryListWalker, self).__init__(
+            content=content, base_walker=base_walker)
         self.keyword = keyword
-        self.origin_walker = origin_walker
 
     def recv(self, message):
         """ Action when received message from data store
@@ -126,42 +131,39 @@ class FilterSummaryListWalker(SummaryListWalker):
         generate a SummaryItemWidget and display it if match
         """
         try:
-            summary = self.context.displayer.summary(message)
-            widget = SummaryItemWidget(self.parent, self.context, message, summary)
-            if self.context.displayer.match(self.keyword, message, widget.get_title()):
+            widget = self._create_widget(message)
+            if self.displayer_context.displayer.match(self.keyword, message, widget.get_title()):
                 self.append(widget)
         except:
-            self.parent.open_error(sys.exc_info())
+            self.controller.open_error()
 
     def close(self):
         """ Unregister listener if quit search mode """
-        self.parent.msg_listener.unregister(self)
+        self.displayer_context.store.unregister(self)
 
 
 class SummaryListWidget(BasicWidget):
     """ ListBox widget to contains the content of SummaryItemWidget
 
     Attributes:
-        walker: SummaryListWalker instance
-        parent: ParentFrame instance
-        context: Context
+        displayer_context: DisplayerContext
     """
-    def __init__(self, walker, parent, context):
-        super(SummaryListWidget, self).__init__(
-            parent=parent, context=context)
-        _verify_keys(self.context.summary_actions)
+    def __init__(self, displayer_context, **kwargs):
+        super(SummaryListWidget, self).__init__(**kwargs)
+        _verify_keys(displayer_context.actions)
 
-        self.base_walker = walker
-        self.current_walker = walker
-        self.list_box = urwid.ListBox(walker)
+        self.base_walker = SummaryListWalker(
+            displayer_context=displayer_context, **kwargs)
+        self.current_walker = self.base_walker
+        self.list_box = urwid.ListBox(self.base_walker)
 
         self.search_widget = SearchWidget(self._filter, self._clear_search)
         self.help_widget = HelpWidget(
-            parent, context,
             HelpContent(
                 [HelpCategory("Basic", self.context.config.keys),
                  HelpCategory("Advanced", _ADVANCED_KEYS),
-                 make_category_with_actions("Custom", self.context.summary_actions)])
+                 make_category_with_actions("Custom", displayer_context.actions)]),
+            **kwargs
         )
 
         widget_list = [self.list_box]
@@ -175,12 +177,12 @@ class SummaryListWidget(BasicWidget):
             new_walker = self.base_walker
 
         if new_walker is not self.current_walker:
-            self._update(new_walker)
+            self._update_content(new_walker)
 
         self._close_search()
         self._w.focus_position = 0
 
-    def _update(self, walker):
+    def _update_content(self, walker):
         if self.current_walker is not self.base_walker:
             self.current_walker.close()
 
@@ -218,7 +220,6 @@ class SummaryListWidget(BasicWidget):
             self._clear_search()
             return None
         if key == "g":
-            # NOTE: not sure why it cannot return None here
             self.list_box.set_focus(0)
             super(SummaryListWidget, self).keypress(size, key)
         if key == "G":
@@ -231,7 +232,7 @@ class SummaryListWidget(BasicWidget):
             del self.base_walker[:]
             super(SummaryListWidget, self).keypress(size, key)
         if key == "?":
-            self.parent.open(self.help_widget)
+            self.controller.open_view(self.help_widget)
             return None
 
         return super(SummaryListWidget, self).keypress(size, key)  # pragma: no cover

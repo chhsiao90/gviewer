@@ -9,11 +9,9 @@ class ErrorWidget(BasicWidget):
     """Widget for displaying exception info
 
     Attributes:
-        parent: ParentFrame instance
-        context: Context
         exc_info: sys.exc_info()
     """
-    def __init__(self, parent, context):
+    def __init__(self, **kwargs):
         exc_info = sys.exc_info()
         contents = [
             urwid.Text(s.rstrip()) for s in traceback.format_exception(
@@ -21,13 +19,10 @@ class ErrorWidget(BasicWidget):
         walker = urwid.SimpleFocusListWalker(contents)
         widget = urwid.ListBox(walker)
         super(ErrorWidget, self).__init__(
-            parent=parent,
-            context=context,
-            widget=widget,
-            attr_map="error")
+            widget=widget, attr_map="error", **kwargs)
 
     def keypress(self, size, key):
         if key == "q":
-            self.parent.back()
+            self.controller.back()
             return None
         return super(ErrorWidget, self).keypress(size, key)  # pragma: no cover

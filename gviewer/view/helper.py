@@ -13,12 +13,11 @@ class HelpWidget(BasicWidget):
     """Help widget that show help message
 
     Attributes:
-        parent: ParentFrame
+        controller: Controller
         widget: ListBox widget contains help messages
     """
-    def __init__(self, parent, context, help_content):
-        super(HelpWidget, self).__init__(
-            parent=parent, context=context)
+    def __init__(self, help_content, **kwargs):
+        super(HelpWidget, self).__init__(**kwargs)
         widget = self._widget(help_content)
         self.display(widget)
 
@@ -40,7 +39,7 @@ class HelpWidget(BasicWidget):
 
     def keypress(self, size, key):
         if key == "q":
-            self.parent.back()
+            self.controller.back()
             return None
         return super(HelpWidget, self).keypress(size, key)  # pragma: no cover
 
