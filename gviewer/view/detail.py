@@ -42,7 +42,7 @@ class DetailWidget(BasicWidget):
         self.views = self.displayer_context.displayer.get_views()
         self.view = self.views[index][1].__call__(self.message)
 
-        self.content_widget = self.view.to_widget(
+        self.content_widget = self.view.widget(
             self.message, **kwargs)
 
         _verify_keys(self.view.actions)
@@ -115,7 +115,7 @@ class DetailWidget(BasicWidget):
     def _export(self):  # pragma: no cover
         file_name = "export-%13d" % (time.time() * 1000)
         with open(file_name, "w") as f:
-            f.write(self.view.text().encode("utf8"))
+            f.write(str(self.view).encode("utf8"))
         self.controller.notify("Export to file {0}".format(file_name))
 
     def keypress(self, size, key):

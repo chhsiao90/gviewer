@@ -15,8 +15,8 @@ from gviewer.view.element import try_decode
 
 
 class TextTest(unittest.TestCase):
-    def test_to_widget(self):
-        widget = Text("content").to_widget(None)
+    def test_widget(self):
+        widget = Text("content").widget(None)
         self.assertTrue(isinstance(widget, SearchableText))
         self.assertEqual(
             widget.plain_text,
@@ -24,14 +24,14 @@ class TextTest(unittest.TestCase):
 
     def test_to_text(self):
         self.assertEqual(
-            Text(b"content").text(), u"content")
+            str(Text(b"content")), u"content")
         self.assertEqual(
-            Text(u"content").text(), u"content")
+            str(Text(u"content")), u"content")
 
 
 class PropTest(unittest.TestCase):
-    def test_to_widget(self):
-        widget = Prop("key", "value").to_widget(None)
+    def test_widget(self):
+        widget = Prop("key", "value").widget(None)
         text, attr = widget.get_text()
         self.assertEqual(
             text,
@@ -43,48 +43,48 @@ class PropTest(unittest.TestCase):
              ("view-item value", 5)]
         )
 
-    def test_to_widget_with_padding(self):
+    def test_widget_with_padding(self):
         prop = Prop("key", "value")
         prop.max_key_length = 5
         self.assertEqual(
-            prop.to_widget(None).get_text()[0],
+            prop.widget(None).get_text()[0],
             "key   : value"
         )
 
     def test_to_text(self):
         self.assertEqual(
-            Prop("key", "value").text(),
+            str(Prop("key", "value")),
             u"key: value")
 
     def test_to_text_with_padding(self):
         prop = Prop("key", "value")
         prop.max_key_length = 5
         self.assertEqual(
-            prop.text(),
+            str(prop),
             u"key   : value")
 
 
 class GroupTest(unittest.TestCase):
-    def test_to_widget_with_title(self):
+    def test_widget_with_title(self):
         widgets = Group(
             "title",
             items=[
                 Text("first line"),
                 Text("second line")]
-        ).to_widgets(None)
+        ).widgets(None)
 
         self.assertEqual(len(widgets), 3)
         self.assertTrue(isinstance(widgets[0], TitleWidget))
         self.assertTrue(isinstance(widgets[1], SearchableText))
         self.assertTrue(isinstance(widgets[2], SearchableText))
 
-    def test_to_widget_without_title(self):
+    def test_widget_without_title(self):
         widgets = Group(
             "title",
             items=[
                 Text("first line"),
                 Text("second line")],
-            show_title=False).to_widgets(None)
+            show_title=False).widgets(None)
 
         self.assertEqual(len(widgets), 2)
         self.assertTrue(isinstance(widgets[0], SearchableText))
@@ -92,13 +92,13 @@ class GroupTest(unittest.TestCase):
 
     def test_to_text(self):
         self.assertEqual(
-            Group("title", items=[Text("first line"), Text("second line")],
-                  show_title=True).text(),
+            str(Group("title", items=[Text("first line"), Text("second line")],
+                show_title=True)),
             u"title\nfirst line\nsecond line")
 
         self.assertEqual(
-            Group("title", items=[Text("first line"), Text("second line")],
-                  show_title=False).text(),
+            str(Group("title", items=[Text("first line"), Text("second line")],
+                show_title=False)),
             u"first line\nsecond line")
 
 
@@ -117,12 +117,12 @@ class PropsGroupTest(unittest.TestCase):
 
 
 class ViewTest(unittest.TestCase):
-    def test_to_widget(self):
+    def test_widget(self):
         view = View([
             Group("group1", [Text("content1")]),
             Group("group2", [Text("content2")])]
         )
-        widget = view.to_widget(None)
+        widget = view.widget(None)
         self.assertTrue(isinstance(widget, ContentWidget))
 
         contents = widget._w.body
@@ -136,7 +136,7 @@ class ViewTest(unittest.TestCase):
 
     def test_empty_widget(self):
         view = View([])
-        contents = view.to_widget(None)._w.body
+        contents = view.widget(None)._w.body
         self.assertEqual(len(contents), 1)
         self.assertIsInstance(contents[0], EmptyLine)
 
@@ -151,7 +151,7 @@ class ViewTest(unittest.TestCase):
             Group("group2", [Text("content2")])],
             actions=dict(a=action)
         )
-        widget = view.to_widget("message", controller=controller, context=context)
+        widget = view.widget("message", controller=controller, context=context)
         widget.keypress((0, 0), "a")
         action.assert_called_with(controller, "message")
 
@@ -165,7 +165,7 @@ class ViewTest(unittest.TestCase):
             Group("group2", [Text("content2")])]
         )
         self.assertEqual(
-            view.text(),
+            str(view),
             u"group1\ncontent1\n\ngroup2\ncontent2\n")
 
 

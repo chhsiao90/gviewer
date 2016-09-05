@@ -14,11 +14,8 @@ def try_decode(text):
 
 class Base(object):  # pragma: no cover
     """Abstract class for view displayer eleemnt"""
-    def to_widget(self, message, controller=None, context=None):
+    def widget(self, message, controller=None, context=None):
         raise NotImplementedError
-
-    def text(self):
-        return ""
 
 
 class Text(Base):
@@ -30,10 +27,10 @@ class Text(Base):
     def __init__(self, content):
         self.content = content
 
-    def to_widget(self, message, controller=None, context=None):
+    def widget(self, message, controller=None, context=None):
         return SearchableText(self.content, attr_map="view-item")
 
-    def text(self):
+    def __str__(self):
         return try_decode(self.content)
 
 
@@ -58,7 +55,7 @@ class Prop(Base):
         self.kv = (key, value)
         self.max_key_length = 0
 
-    def to_widget(self, message, controller=None, context=None):
+    def widget(self, message, controller=None, context=None):
         if self.max_key_length:
             format_str = "{0:" + str(self.max_key_length + 1) + "}: "
             return urwid.Text(
@@ -68,7 +65,7 @@ class Prop(Base):
             [("view-item key", self.kv[0] + ": "),
              ("view-item value", self.kv[1])])
 
-    def text(self):
+    def __str__(self):
         if self.max_key_length:
             format_str = "{0:" + str(self.max_key_length + 1) + "}: {1}"
             text = format_str.format(self.kv[0], self.kv[1])
@@ -89,15 +86,15 @@ class Group(object):
         self.items = items
         self.show_title = show_title
 
-    def to_widgets(self, message, controller=None, context=None):
+    def widgets(self, message, controller=None, context=None):
         widgets = []
         if self.show_title:
             widgets.append(TitleWidget(self.title))
-        widgets += [e.to_widget(message, controller=controller, context=context) for e in self.items]
+        widgets += [e.widget(message, controller=controller, context=context) for e in self.items]
         return widgets
 
-    def text(self):
-        text = u"\n".join([e.text() for e in self.items])
+    def __str__(self):
+        text = u"\n".join([str(e) for e in self.items])
         if self.show_title:
             text = try_decode(self.title) + u"\n" + text
         return text
@@ -128,10 +125,10 @@ class View(Base):
         self.groups = groups
         self.actions = actions or Actions()
 
-    def to_widget(self, message, controller=None, context=None):
+    def widget(self, message, controller=None, context=None):
         widgets = []
         for group in self.groups:
-            widgets += group.to_widgets(message, controller=controller, context=context)
+            widgets += group.widgets(message, controller=controller, context=context)
             widgets.append(EmptyLine())
 
         if not widgets:
@@ -141,8 +138,8 @@ class View(Base):
             widgets, message, self.actions, controller=controller,
             context=context)
 
-    def text(self):
-        return u"\n".join([g.text() + u"\n" for g in self.groups])
+    def __str__(self):
+        return u"\n".join([str(g) + u"\n" for g in self.groups])
 
 
 class Groups(View):
