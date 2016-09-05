@@ -3,7 +3,7 @@ import urwid
 from collections import OrderedDict
 
 from ..basic_widget import BasicWidget, FocusableText, SearchWidget
-from ..helper import (
+from .helper import (
     HelpWidget, HelpContent, HelpCategory,
     make_category_with_actions)
 

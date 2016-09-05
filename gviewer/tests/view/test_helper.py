@@ -5,8 +5,8 @@ try:
 except:
     import mock
 
-from .util import render_to_text
-from gviewer.helper import HelpWidget, HelpCategory, HelpContent, TitleWidget, MappingWidget
+from ..util import render_to_text
+from gviewer.view.helper import HelpWidget, HelpCategory, HelpContent, TitleWidget, MappingWidget
 
 
 class HelpWidgetTest(unittest.TestCase):

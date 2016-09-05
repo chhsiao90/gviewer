@@ -11,7 +11,7 @@ from .util import render_to_content, render_widgets_to_content, render_to_text
 from gviewer.parent import ParentFrame, Footer, Helper, Notification
 from gviewer.config import Config
 from gviewer.context import Context
-from gviewer.error import ErrorWidget
+from gviewer.view.error import ErrorWidget
 from gviewer.view.summary import SummaryListWidget
 from gviewer.view.detail import DetailWidget
 from gviewer.view.element import Line, Group, Groups

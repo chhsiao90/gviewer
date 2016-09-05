@@ -6,8 +6,8 @@ try:
 except:
     import mock
 
-from .util import render_to_content
-from gviewer.error import ErrorWidget
+from ..util import render_to_content
+from gviewer.view.error import ErrorWidget
 
 
 class ErrorWidgetTest(unittest.TestCase):
@@ -25,7 +25,7 @@ class ErrorWidgetTest(unittest.TestCase):
                 sys.exc_info()
             )
 
-        contents = render_to_content(widget, (100, 4))
+        contents = render_to_content(widget, (200, 4))
         self.assertEqual(len(contents), 4)
 
         self.assertEqual(contents[0][0][0], "error")

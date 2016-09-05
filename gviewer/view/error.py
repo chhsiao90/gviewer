@@ -1,7 +1,7 @@
 import traceback
 import urwid
 
-from .basic_widget import BasicWidget
+from ..basic_widget import BasicWidget
 
 
 class ErrorWidget(BasicWidget):

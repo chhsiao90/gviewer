@@ -1,10 +1,11 @@
 import sys
 import urwid
-from .view.summary import SummaryListWidget, SummaryListWalker
+
 from .basic_widget import BasicWidget
 from .store import MessageListener
+from .view.summary import SummaryListWidget, SummaryListWalker
 from .view.detail import DetailWidget
-from .error import ErrorWidget
+from .view.error import ErrorWidget
 
 
 class ParentFrame(urwid.Frame):

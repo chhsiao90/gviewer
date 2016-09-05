@@ -1,4 +1,5 @@
 import urwid
+
 from .parent import ParentFrame
 from .config import Config
 from .context import Context
