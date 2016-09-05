@@ -8,9 +8,10 @@ class Context(object):
         config: Config instance
         main_displayer_context: DisplayerContext instance for main view
     """
-    def __init__(self, config, main_displayer_context):
+    def __init__(self, config, main_context, other_contexts=None):
         self.config = config
-        self.main_displayer_context = main_displayer_context
+        self.main_context = main_context
+        self.other_contexts = other_contexts or []
 
 
 class DisplayerContext(object):

@@ -17,6 +17,14 @@ class Controller(object):
         """
         self.parent.open_view(widget, push_prev)
 
+    def open_view_by_context(self, context):
+        """Open view by defined context
+
+        Args:
+            context: DisplayerContext
+        """
+        self.parent.open_view_by_context(context)
+
     def notify(self, message):
         """Notify a message"""
         self.parent.notify(message)

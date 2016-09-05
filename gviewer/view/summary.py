@@ -216,18 +216,21 @@ class SummaryListWidget(BasicWidget):
         if key == "q" and isinstance(self.current_walker, FilterSummaryListWalker):
             self._clear_search()
             return None
+        if key == "q":
+            self.controller.back()
+            return None
         if key == "g":
             self.list_box.set_focus(0)
-            super(SummaryListWidget, self).keypress(size, key)
+            return super(SummaryListWidget, self).keypress(size, key)
         if key == "G":
             self.list_box.set_focus(len(self.current_walker) - 1)
-            super(SummaryListWidget, self).keypress(size, key)
+            return super(SummaryListWidget, self).keypress(size, key)
         if key == "x" and self.current_walker is self.base_walker:
             del self.base_walker[self.list_box.focus_position]
-            super(SummaryListWidget, self).keypress(size, key)
+            return super(SummaryListWidget, self).keypress(size, key)
         if key == "X" and self.current_walker is self.base_walker:
             del self.base_walker[:]
-            super(SummaryListWidget, self).keypress(size, key)
+            return super(SummaryListWidget, self).keypress(size, key)
         if key == "?":
             self.controller.open_view(self.help_widget)
             return None

@@ -16,18 +16,21 @@ class ParentFrame(urwid.Frame):
         self.context = context
         self.controller = Controller(self)
 
-        self.summary = SummaryListWidget(
-            context.main_displayer_context, controller=self.controller,
+        self.main = SummaryListWidget(
+            context.main_context, controller=self.controller,
             context=self.context)
+        self.others = {
+            ctx: SummaryListWidget(ctx, controller=self.controller,
+                                   context=self.context) for ctx in context.other_contexts}
 
         header = urwid.Text(context.config.header)
         header = urwid.AttrMap(header, "header")
         self.footer = Footer(controller=self.controller)
 
-        self.prev_views = []
+        self.histories = []
 
         super(ParentFrame, self).__init__(
-            body=self.summary,
+            body=self.main,
             header=header,
             footer=self.footer)
 
@@ -44,13 +47,27 @@ class ParentFrame(urwid.Frame):
             return
 
         if push_prev:
-            self.prev_views.append(curr_widget)
+            self.histories.append(curr_widget)
 
         self.set_body(widget)
 
+    def open_view_by_context(self, context):
+        """Open view by defined context
+
+        Args:
+            context: DisplayerContext
+        """
+        try:
+            self.open_view(self.others[context])
+        except:
+            self.open_error()
+
     def back(self):
         """Back to previous view"""
-        self.set_body(self.prev_views.pop())
+        if self.histories:
+            self.set_body(self.histories.pop())
+        else:
+            raise urwid.ExitMainLoop()
 
     def open_error(self):
         """Open ErrorWidget"""

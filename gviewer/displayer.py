@@ -34,4 +34,4 @@ class BaseDisplayer(object):  # pragma: no cover
         Returns:
             A Groups
         """
-        return [("Undefined", Groups())]
+        return [("Undefined", lambda m: Groups([]))]

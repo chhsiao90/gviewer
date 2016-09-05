@@ -2,23 +2,21 @@ import urwid
 
 from .parent import ParentFrame
 from .config import Config
-from .context import Context, DisplayerContext
+from .context import Context
 
 
 class GViewer(object):  # pragma: no cover
     """ General viewer main class
 
     Attributes:
-        store: a BaseDataStore implementation instance
-        displayer: a BaseDisplayer implementation instance
+        main_context: DisplayerContext
         config: a Config instance
         others: any other args defined in urwid.MainLoop
     """
-    def __init__(self, store, displayer, summary_actions=None, config=None, **kwargs):
+    def __init__(self, main_context, config=None, other_contexts=None, **kwargs):
         config = config or Config()
-        main_displayer_context = DisplayerContext(store, displayer, summary_actions)
 
-        self.context = Context(config, main_displayer_context)
+        self.context = Context(config, main_context, other_contexts)
         self.view = ParentFrame(self.context)
 
         self._default_urwid_options(kwargs)
@@ -52,5 +50,8 @@ class GViewer(object):  # pragma: no cover
     def start(self):
         """ Start the gviewer tui
         """
-        self.context.main_displayer_context.store.setup()
+        self.context.main_context.store.setup()
+        for displayer_context in self.context.other_contexts:
+            displayer_context.store.setup()
+
         self.loop.run()

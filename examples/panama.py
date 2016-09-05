@@ -1,5 +1,5 @@
 import json
-from gviewer import StaticDataStore, GViewer, BaseDisplayer
+from gviewer import StaticDataStore, GViewer, BaseDisplayer, DisplayerContext
 from gviewer import Prop, PropsGroup, View, Actions
 
 
@@ -10,9 +10,12 @@ with open("examples/panama-taiwan.json", "r") as data_file:
 class PanamaDisplayer(BaseDisplayer):
     def __init__(self, data):
         data_store = self.create_data_store(data)
+        self.child_context = ChildDisplayer().context
         self.viewer = GViewer(
-            data_store, self,
-            summary_actions=Actions([("m", "notify a message", self.notify)]),
+            DisplayerContext(data_store, self, actions=Actions(
+                [("m", "notify a message", self.notify),
+                 ("L", "log view", self.log)])),
+            other_contexts=[self.child_context],
             palette=[("nodeid", "light cyan", "black")])
 
     def create_data_store(self, data):
@@ -43,16 +46,27 @@ class PanamaDisplayer(BaseDisplayer):
             ("E", "export", self.export),
             ("m", "notify", self.notify)]))
 
-    def notify(self, parent, messag):
-        parent.notify("yayaya")
+    def notify(self, controller, messag):
+        controller.notify("yayaya")
 
-    def export(self, parent, message):
+    def export(self, controller, message):
         with open("panama-export.json", "w") as w:
             w.write(json.dumps(message))
-        parent.notify("export to file panama-export.json")
+        controller.notify("export to file panama-export.json")
+
+    def log(self, controller, message):
+        controller.open_view_by_context(self.child_context)
 
     def run(self):
         self.viewer.start()
+
+
+class ChildDisplayer(BaseDisplayer):
+    def __init__(self):
+        store = StaticDataStore(["log1: aaabbbccc",
+                                 "log2: hahahaha",
+                                 "log3: yayayayaya"])
+        self.context = DisplayerContext(store, self)
 
 
 def main():

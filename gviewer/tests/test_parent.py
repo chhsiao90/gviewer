@@ -6,9 +6,8 @@ from gviewer.parent import ParentFrame, Footer, Helper, Notification
 from gviewer.config import Config
 from gviewer.context import Context, DisplayerContext
 from gviewer.view.error import ErrorWidget
-from gviewer.view.summary import SummaryListWidget
-from gviewer.view.detail import DetailWidget
 from gviewer.view.element import Line, Group, Groups
+from gviewer.view.summary import SummaryListWidget
 from gviewer.store import StaticDataStore
 
 
@@ -19,11 +18,20 @@ class ParentFrameTest(unittest.TestCase):
             ["bbb1", "bbb2", "bbb3"],
             ["ccc1", "ccc2", "ccc3"]
         ]
-
         store = StaticDataStore(self.messages)
+        main_context = DisplayerContext(store, self)
+
+        messages2 = [
+            ["ddd1", "ddd2", "ddd3"],
+            ["eee1", "eee2", "eee3"],
+            ["fff1", "fff2", "fff3"]
+        ]
+        store2 = StaticDataStore(messages2)
+        self.other_context = DisplayerContext(store2, self)
 
         context = Context(
-            Config(), main_displayer_context=DisplayerContext(store, self))
+            Config(), main_context=main_context,
+            other_contexts=[self.other_context])
         self.widget = ParentFrame(context)
 
         store.setup()
@@ -56,14 +64,10 @@ class ParentFrameTest(unittest.TestCase):
             ], (30, 10))
         )
 
-    def test_initial_with_summary(self):
+    def test_initial_with_main(self):
         self.assertIs(
             self.widget.contents["body"][0],
-            self.widget.summary
-        )
-        self.assertIsInstance(
-            self.widget.summary,
-            SummaryListWidget
+            self.widget.main
         )
 
     def test_back(self):
@@ -71,11 +75,7 @@ class ParentFrameTest(unittest.TestCase):
         self.widget.back()
         self.assertIs(
             self.widget.contents["body"][0],
-            self.widget.summary
-        )
-        self.assertIsInstance(
-            self.widget.summary,
-            SummaryListWidget
+            self.widget.main
         )
 
     def test_open_error(self):
@@ -95,6 +95,24 @@ class ParentFrameTest(unittest.TestCase):
         self.assertEqual(
             render_to_text(self.widget.footer.notification, (5,)),
             ["test "])
+
+    def test_open_view_by_context(self):
+        self.assertEqual(len(self.widget.others), 1)
+        other_widget = self.widget.others[self.other_context]
+        self.assertIsInstance(other_widget, SummaryListWidget)
+
+        self.widget.open_view_by_context(self.other_context)
+        self.assertIs(
+            self.widget.contents["body"][0], other_widget)
+        self.assertEqual(len(self.widget.histories), 1)
+        self.assertIs(self.widget.histories[0], self.widget.main)
+
+    def test_open_view_by_context_failed(self):
+        self.widget.open_view_by_context(DisplayerContext(None, None))
+        self.assertIsInstance(
+            self.widget.contents["body"][0], ErrorWidget)
+        self.assertEqual(len(self.widget.histories), 1)
+        self.assertIs(self.widget.histories[0], self.widget.main)
 
 
 class FooterTest(unittest.TestCase):
