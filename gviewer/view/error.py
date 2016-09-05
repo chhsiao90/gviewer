@@ -1,5 +1,6 @@
 import traceback
 import urwid
+import sys
 
 from ..basic_widget import BasicWidget
 
@@ -12,7 +13,8 @@ class ErrorWidget(BasicWidget):
         context: Context
         exc_info: sys.exc_info()
     """
-    def __init__(self, parent, context, exc_info):
+    def __init__(self, parent, context):
+        exc_info = sys.exc_info()
         contents = [
             urwid.Text(s.rstrip()) for s in traceback.format_exception(
                 exc_info[0], exc_info[1], exc_info[2])]

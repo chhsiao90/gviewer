@@ -1,6 +1,5 @@
 import unittest
 import urwid
-import sys
 
 try:
     import unittest.mock as mock
@@ -95,8 +94,8 @@ class ParentFrameTest(unittest.TestCase):
         try:
             raise ValueError("error")
         except:
-            exc_info = sys.exc_info()
-        self.widget.open_error(exc_info)
+            self.widget.open_error()
+
         self.assertIsInstance(
             self.widget.contents["body"][0],
             ErrorWidget

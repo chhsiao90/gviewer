@@ -1,4 +1,3 @@
-import sys
 import urwid
 
 from .basic_widget import BasicWidget
@@ -47,7 +46,7 @@ class ParentFrame(urwid.Frame):
             widget = DetailWidget(message, index, self, self._context)
             self.open(widget, push_prev)
         except:  # pragma: no cover
-            self.open_error(sys.exc_info())
+            self.open_error()
 
     def open(self, widget, push_prev=True):
         """Open widget
@@ -70,13 +69,9 @@ class ParentFrame(urwid.Frame):
         """Back to previous view"""
         self.set_body(self._prev_views.pop())
 
-    def open_error(self, exc_info):
-        """ Open ErrorWidget
-
-        Args:
-            exc_info: sys.exc_info()
-        """
-        widget = ErrorWidget(self, self._context, exc_info)
+    def open_error(self):
+        """Open ErrorWidget"""
+        widget = ErrorWidget(self, self._context)
         self.open(widget, True)
 
     def notify(self, message):

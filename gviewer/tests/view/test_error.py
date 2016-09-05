@@ -1,5 +1,4 @@
 import unittest
-import sys
 
 try:
     import unittest.mock as mock
@@ -21,8 +20,7 @@ class ErrorWidgetTest(unittest.TestCase):
         except:
             widget = ErrorWidget(
                 self.parent,
-                self.context,
-                sys.exc_info()
+                self.context
             )
 
         contents = render_to_content(widget, (200, 4))
@@ -47,8 +45,7 @@ class ErrorWidgetTest(unittest.TestCase):
         except:
             widget = ErrorWidget(
                 self.parent,
-                self.context,
-                sys.exc_info()
+                self.context
             )
         self.assertEqual(widget.keypress(None, "q"), None)
         self.parent.back.assert_called_with()
