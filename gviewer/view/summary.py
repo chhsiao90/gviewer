@@ -30,10 +30,9 @@ class SummaryItemWidget(BasicWidget):
     Summary item widget that display summary and defined action to open other view
 
     Attributes:
-        controller: Controller
-        context: Context
         message: Original message genrate by BaseDataStore
         summary: Format message by displayer
+        displayer_context: DisplayerContext instance
     """
     def __init__(self, message, summary, displayer_context, **kwargs):
         super(SummaryItemWidget, self).__init__(
@@ -78,9 +77,7 @@ class SummaryListWalker(urwid.SimpleFocusListWalker):
 
     Attributes:
         content: list of SummaryItemWidget
-        controller: Controller
-        context: Context
-        msg_listener: MessageListener
+        displayer_context: DisplayerContext instance
     """
     def __init__(self, content=None, displayer_context=None,
                  base_walker=None, controller=None, context=None):

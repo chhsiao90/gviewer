@@ -9,6 +9,7 @@ class BasicWidget(urwid.WidgetWrap):
 
     Attributes:
         controller: a Controller instance
+        context: a Context instance
         widget: a urwid Widget
         attr_map: non-focus attribute
         focus_map: focus attribute

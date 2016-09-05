@@ -14,7 +14,7 @@ class ParentFrame(urwid.Frame):
     """
     def __init__(self, context):
         self.context = context
-        self.controller = Controller(self, context)
+        self.controller = Controller(self)
 
         self.summary = SummaryListWidget(
             context.main_displayer_context, controller=self.controller,
@@ -62,6 +62,7 @@ class ParentFrame(urwid.Frame):
         self.footer.notify(message)
 
     def run_before_keypress(self):
+        """Some UI cleanup actions to make sure GViewer in a consist state"""
         self.footer.notify("")
 
 
@@ -93,6 +94,7 @@ class Helper(BasicWidget):
 
 
 class Notification(BasicWidget):
+    """Notification widget"""
     def __init__(self, **kwargs):
         self.message = ""
         super(Notification, self).__init__(

@@ -1,3 +1,6 @@
+from view.element import Groups
+
+
 class BaseDisplayer(object):  # pragma: no cover
     """ Absctract class for displayer """
     def summary(self, message):
@@ -31,4 +34,4 @@ class BaseDisplayer(object):  # pragma: no cover
         Returns:
             A Groups
         """
-        return []
+        return [("Undefined", Groups())]

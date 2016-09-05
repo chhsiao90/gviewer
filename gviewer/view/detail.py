@@ -30,8 +30,8 @@ class DetailWidget(BasicWidget):
 
     Attributes:
         message: message generate by DataStore
+        displayer_context: DisplayerContext instance
         index: view's index
-        controller: ParentFrame instance
     """
     def __init__(self, message, displayer_context, index=0, **kwargs):
         super(DetailWidget, self).__init__(**kwargs)

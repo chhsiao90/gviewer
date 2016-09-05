@@ -1,18 +1,32 @@
 class Controller(object):
-    def __init__(self, parent, context):
+    """Controller provide UI interaction API
+
+    Attributes:
+        parent: ParentFrame instance
+    """
+    def __init__(self, parent):
         self.parent = parent
-        self.context = context
 
     def open_view(self, widget, push_prev=True):
+        """Open view
+
+        Args:
+            widget: a urwid Widget implementation
+            push_prev: bool defined that should push previous widget
+                       into history
+        """
         self.parent.open_view(widget, push_prev)
 
     def notify(self, message):
+        """Notify a message"""
         self.parent.notify(message)
 
     def open_error(self):
+        """Open error stacktrace view"""
         self.parent.open_error()
 
     def back(self):
+        """Back to previous view"""
         self.parent.back()
 
     def _run_before_keypress(self):

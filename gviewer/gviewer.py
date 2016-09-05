@@ -9,7 +9,7 @@ class GViewer(object):  # pragma: no cover
     """ General viewer main class
 
     Attributes:
-        data_store: a BaseDataStore implementation instance
+        store: a BaseDataStore implementation instance
         displayer: a BaseDisplayer implementation instance
         config: a Config instance
         others: any other args defined in urwid.MainLoop

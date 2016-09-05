@@ -5,10 +5,8 @@ class Context(object):
     """GViewer context
 
     Attributes:
-        store: DataStore implementation instance
-        displayer: Displayer implemntation instance
         config: Config instance
-        summary_actions: dict for key-action mapping
+        main_displayer_context: DisplayerContext instance for main view
     """
     def __init__(self, config, main_displayer_context):
         self.config = config
@@ -16,6 +14,13 @@ class Context(object):
 
 
 class DisplayerContext(object):
+    """Context defined for how ui display
+
+    Attributes:
+        store: DataStore instance
+        displayer: BaseDisplayer implementation instance
+        actions: Actions instance
+    """
     def __init__(self, store, displayer, actions=None):
         self.store = store
         self.displayer = displayer

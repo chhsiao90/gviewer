@@ -2,7 +2,7 @@ class BaseDataStore(object):
     """ Base absctract class for data store
 
     Attributes:
-        walkers
+        walkers: list of Walkers, that would listener any message received from data store
     """
     def __init__(self):
         self.walkers = []
@@ -29,8 +29,8 @@ class StaticDataStore(BaseDataStore):
     """
     Used for static unmodified data that load data at first time
 
-    :param message: the data you want to display
-    :type message: iterable for any type data
+    Attributes:
+        messages: list of any type of message
     """
     def __init__(self, messages):
         super(StaticDataStore, self).__init__()
@@ -45,8 +45,8 @@ class AsyncDataStore(BaseDataStore):
     """
     Used for async data
 
-    :param register_func: register function that would be called while setup
-    :type register_func: function accept one parameter with function(message)
+    Attributes:
+        register_func: callable that would accept a callable for on_message callback
     """
     def __init__(self, register_func):
         super(AsyncDataStore, self).__init__()
