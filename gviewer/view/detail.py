@@ -115,7 +115,7 @@ class DetailWidget(BasicWidget):
     def _export(self):  # pragma: no cover
         file_name = "export-%13d" % (time.time() * 1000)
         with open(file_name, "w") as f:
-            f.write(str(self.view).encode("utf8"))
+            f.write(str(self.view))
         self.controller.notify("Export to file {0}".format(file_name))
 
     def keypress(self, size, key):

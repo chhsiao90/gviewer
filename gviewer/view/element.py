@@ -25,13 +25,16 @@ class Text(Base):
         content: str or unicode
     """
     def __init__(self, content):
-        self.content = content
+        self.content = try_decode(content)
 
     def widget(self, message, controller=None, context=None):
         return SearchableText(self.content, attr_map="view-item")
 
+    def __unicode__(self):
+        return self.content
+
     def __str__(self):
-        return try_decode(self.content)
+        return unicode(self).encode("utf8")
 
 
 class Prop(Base):
@@ -42,26 +45,19 @@ class Prop(Base):
         value: str or unicode represent property value
     """
     def __init__(self, key, value):
-        self.kv = (key, value)
+        self.kv = (try_decode(key), try_decode(value))
         self.max_key_length = 0
 
     def widget(self, message, controller=None, context=None):
-        if self.max_key_length:
-            format_str = "{0:" + str(self.max_key_length + 1) + "}: "
-            return urwid.Text(
-                [("view-item key", format_str.format(self.kv[0])),
-                 ("view-item value", self.kv[1])])
         return urwid.Text(
-            [("view-item key", self.kv[0] + ": "),
+            [("view-item key", self.kv[0].ljust(self.max_key_length + 1) + u": "),
              ("view-item value", self.kv[1])])
 
+    def __unicode__(self):
+        return u"{0}: {1}".format(self.kv[0].ljust(self.max_key_length + 1), self.kv[1])
+
     def __str__(self):
-        if self.max_key_length:
-            format_str = "{0:" + str(self.max_key_length + 1) + "}: {1}"
-            text = format_str.format(self.kv[0], self.kv[1])
-        else:
-            text = "{0}: {1}".format(self.kv[0], self.kv[1])
-        return try_decode(text)
+        return unicode(self).encode("utf8")
 
 
 class Group(object):
@@ -72,7 +68,7 @@ class Group(object):
         items: iterable of Prop or Line
     """
     def __init__(self, title, items, show_title=True):
-        self.title = title
+        self.title = try_decode(title)
         self.items = items
         self.show_title = show_title
 
@@ -83,11 +79,14 @@ class Group(object):
         widgets += [e.widget(message, controller=controller, context=context) for e in self.items]
         return widgets
 
-    def __str__(self):
-        text = u"\n".join([str(e) for e in self.items])
+    def __unicode__(self):
+        text = u"\n".join([unicode(e) for e in self.items])
         if self.show_title:
-            text = try_decode(self.title) + u"\n" + text
+            text = self.title + u"\n" + text
         return text
+
+    def __str__(self):
+        return unicode(self).encode("utf8")
 
 
 class PropsGroup(Group):
@@ -128,8 +127,11 @@ class View(Base):
             widgets, message, self.actions, controller=controller,
             context=context)
 
+    def __unicode__(self):
+        return u"\n".join([unicode(g) + u"\n" for g in self.groups])
+
     def __str__(self):
-        return u"\n".join([str(g) + u"\n" for g in self.groups])
+        return unicode(self).encode("utf8")
 
 
 class TitleWidget(BasicWidget):

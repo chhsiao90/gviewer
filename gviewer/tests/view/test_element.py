@@ -44,20 +44,20 @@ class PropTest(unittest.TestCase):
         prop.max_key_length = 5
         self.assertEqual(
             prop.widget(None).get_text()[0],
-            "key   : value"
+            u"key   : value"
         )
 
     def test_to_text(self):
         self.assertEqual(
             str(Prop("key", "value")),
-            u"key: value")
+            "key: value")
 
     def test_to_text_with_padding(self):
         prop = Prop("key", "value")
         prop.max_key_length = 5
         self.assertEqual(
             str(prop),
-            u"key   : value")
+            "key   : value")
 
 
 class GroupTest(unittest.TestCase):
