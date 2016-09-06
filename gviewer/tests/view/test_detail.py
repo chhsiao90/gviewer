@@ -9,7 +9,7 @@ from gviewer.view.element import View, Text, Group
 from gviewer.action import Actions
 
 
-class DetailWidgetTest(unittest.TestCase):
+class TestDetailWidget(unittest.TestCase):
     def setUp(self):
         self.displayer_context = mock.Mock()
 
@@ -184,7 +184,7 @@ class DetailWidgetTest(unittest.TestCase):
         self.assertEqual(keypress_result, "q")
 
 
-class TabsTest(unittest.TestCase):
+class TestTabs(unittest.TestCase):
     def test_render(self):
         widget = Tabs(["view1", "view2", "view3"], 0)
         self.assertEqual(

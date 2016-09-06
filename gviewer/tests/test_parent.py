@@ -11,7 +11,7 @@ from gviewer.view.summary import SummaryListWidget
 from gviewer.store import StaticDataStore
 
 
-class ParentFrameTest(unittest.TestCase):
+class TestParentFrame(unittest.TestCase):
     def setUp(self):
         self.messages = [
             ["aaa1", "aaa2", "aaa3"],
@@ -143,7 +143,7 @@ class ParentFrameTest(unittest.TestCase):
         self.assertIs(self.widget.histories[0], self.widget.main)
 
 
-class FooterTest(unittest.TestCase):
+class TestFooter(unittest.TestCase):
     def test_render(self):
         widget = Footer()
         self.assertEqual(
@@ -160,7 +160,7 @@ class FooterTest(unittest.TestCase):
             ["test "])
 
 
-class NotificationTest(unittest.TestCase):
+class TestNotification(unittest.TestCase):
     def setUp(self):
         self.widget = Notification()
 

@@ -5,7 +5,7 @@ from ..util import render_to_text
 from gviewer.view.helper import HelpWidget, HelpCategory, HelpContent, TitleWidget, MappingWidget
 
 
-class HelpWidgetTest(unittest.TestCase):
+class TestHelpWidget(unittest.TestCase):
     def setUp(self):
         self.controller = mock.Mock()
         self.context = mock.Mock()
@@ -34,21 +34,21 @@ class HelpWidgetTest(unittest.TestCase):
         self.controller.back.assert_called_with()
 
 
-class HelpCategoryTest(unittest.TestCase):
+class TestHelpCategory(unittest.TestCase):
     def test_max_key_length(self):
         category = HelpCategory(
             "category", dict(a="bbb", kkkkk="ddd"))
         self.assertEqual(category.max_key_length(), 5)
 
 
-class TitleWidgetTest(unittest.TestCase):
+class TestTitleWidget(unittest.TestCase):
     def test_render(self):
         self.assertEqual(render_to_text(
             TitleWidget("title"), (5, )),
             ["title"])
 
 
-class MappingWidgetTest(unittest.TestCase):
+class TestMappingWidget(unittest.TestCase):
     def test_render(self):
         widget = MappingWidget("key", "value", 4)
         self.assertEqual(

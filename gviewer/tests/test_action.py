@@ -4,7 +4,7 @@ import mock
 from gviewer.action import Action, Actions
 
 
-class ActionTest(unittest.TestCase):
+class TestAction(unittest.TestCase):
     def test_call(self):
         function = mock.Mock()
         action = Action("desc", function)
@@ -19,7 +19,7 @@ class ActionTest(unittest.TestCase):
         function.assert_called_with(aaa="bbb")
 
 
-class ActionsTest(unittest.TestCase):
+class TestActions(unittest.TestCase):
     def setUp(self):
         self.func_a = mock.Mock()
         self.func_b = mock.Mock()

@@ -5,7 +5,7 @@ from gviewer.keys import vim
 from gviewer.styles import default
 
 
-class ConfigTest(unittest.TestCase):
+class TestConfig(unittest.TestCase):
     def test_default_value(self):
         config = Config()
 

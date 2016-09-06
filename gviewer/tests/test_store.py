@@ -4,7 +4,7 @@ import mock
 from gviewer.store import StaticDataStore, AsyncDataStore
 
 
-class StaticDataStoreTest(unittest.TestCase):
+class TestStaticDataStore(unittest.TestCase):
     def setUp(self):
         self.walker = mock.Mock()
 
@@ -36,7 +36,7 @@ class StaticDataStoreTest(unittest.TestCase):
         self.assertEqual(len(self.data_store.walkers), 0)
 
 
-class AsyncDataStoreTest(unittest.TestCase):
+class TestAsyncDataStore(unittest.TestCase):
     def setUp(self):
         self.walker = mock.Mock()
 

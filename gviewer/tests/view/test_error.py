@@ -5,7 +5,7 @@ from ..util import render_to_content
 from gviewer.view.error import ErrorWidget
 
 
-class ErrorWidgetTest(unittest.TestCase):
+class TestErrorWidget(unittest.TestCase):
     def setUp(self):
         self.controller = mock.Mock()
         self.context = mock.Mock()

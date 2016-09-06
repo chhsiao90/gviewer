@@ -15,7 +15,7 @@ from gviewer.context import DisplayerContext
 from gviewer.displayer import BaseDisplayer
 
 
-class SummaryItemWidgetTest(unittest.TestCase):
+class TestSummaryItemWidget(unittest.TestCase):
     def setUp(self):
         self.controller = mock.Mock()
         self.controller.open_view = mock.Mock(side_effect=self._open_view)
@@ -64,7 +64,7 @@ class SummaryItemWidgetTest(unittest.TestCase):
         self.assertEqual(self.widget.get_title_as_plain_text(), "hahaha")
 
 
-class SummaryListWalkerTest(unittest.TestCase):
+class TestSummaryListWalker(unittest.TestCase):
     def setUp(self):
         self.controller = mock.Mock()
         self.controller.open_error = mock.Mock(
@@ -112,7 +112,7 @@ class SummaryListWalkerTest(unittest.TestCase):
         self.assertTrue(self.error)
 
 
-class FilterSummaryListWalkerTest(unittest.TestCase):
+class TestFilterSummaryListWalker(unittest.TestCase):
     def setUp(self):
         self.controller = mock.Mock()
         self.controller.open_error = mock.Mock(
@@ -182,7 +182,7 @@ class FilterSummaryListWalkerTest(unittest.TestCase):
         self.displayer_context.store.unregister.assert_called_once_with(walker)
 
 
-class SummaryListWidgetTest(unittest.TestCase):
+class TestSummaryListWidget(unittest.TestCase):
     def setUp(self):
         self.controller = mock.Mock()
 
@@ -310,7 +310,7 @@ class SummaryListWidgetTest(unittest.TestCase):
         self.controller._update_info.assert_called_with("[1/2]")
 
 
-class SummaryTest(unittest.TestCase):
+class TestSummary(unittest.TestCase):
     def test_verify_keys(self):
         _verify_keys(Actions([("p", "pppp", None)]))
 

@@ -4,7 +4,7 @@ import mock
 from gviewer.controller import Controller
 
 
-class ControllerTest(unittest.TestCase):
+class TestController(unittest.TestCase):
     def setUp(self):
         self.parent = mock.Mock()
         self.controller = Controller(self.parent)

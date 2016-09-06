@@ -10,7 +10,7 @@ from gviewer.view.element import (
 from gviewer.view.element import try_decode
 
 
-class TextTest(unittest.TestCase):
+class TestText(unittest.TestCase):
     def test_widget(self):
         widget = Text("content").widget(None)
         self.assertTrue(isinstance(widget, SearchableText))
@@ -25,7 +25,7 @@ class TextTest(unittest.TestCase):
             str(Text(u"content")), u"content")
 
 
-class PropTest(unittest.TestCase):
+class TestProp(unittest.TestCase):
     def test_widget(self):
         widget = Prop("key", "value").widget(None)
         text, attr = widget.get_text()
@@ -60,7 +60,7 @@ class PropTest(unittest.TestCase):
             "key   : value")
 
 
-class GroupTest(unittest.TestCase):
+class TestGroup(unittest.TestCase):
     def test_widget_with_title(self):
         widgets = Group(
             "title",
@@ -98,7 +98,7 @@ class GroupTest(unittest.TestCase):
             u"first line\nsecond line")
 
 
-class PropsGroupTest(unittest.TestCase):
+class TestPropsGroup(unittest.TestCase):
     def test_calc_key_length(self):
         props_group = PropsGroup(
             "title",
@@ -112,7 +112,7 @@ class PropsGroupTest(unittest.TestCase):
         self.assertEqual(props_group.items[2].max_key_length, 7)
 
 
-class ViewTest(unittest.TestCase):
+class TestView(unittest.TestCase):
     def test_widget(self):
         view = View([
             Group("group1", [Text("content1")]),
@@ -165,7 +165,7 @@ class ViewTest(unittest.TestCase):
             u"group1\ncontent1\n\ngroup2\ncontent2\n")
 
 
-class TitleWidgetTest(unittest.TestCase):
+class TestTitleWidget(unittest.TestCase):
     def test_render(self):
         widget = TitleWidget("content")
         contents = [c for c in widget.render((7,)).content()]
@@ -174,7 +174,7 @@ class TitleWidgetTest(unittest.TestCase):
         self.assertEqual(contents[0][0], ("view-title", None, "content"))
 
 
-class ContentWidgetTest(unittest.TestCase):
+class TestContentWidget(unittest.TestCase):
     def test_search(self):
         widget = ContentWidget([
             SearchableText("this is aaa bbb"),
@@ -333,7 +333,7 @@ class ContentWidgetTest(unittest.TestCase):
         )
 
 
-class ElementTest(unittest.TestCase):
+class TestElement(unittest.TestCase):
     def test_try_decode_failed(self):
         with self.assertRaises(ValueError):
             try_decode(dict())

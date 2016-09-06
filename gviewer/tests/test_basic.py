@@ -5,7 +5,7 @@ import urwid
 from gviewer.basic_widget import BasicWidget, FocusableText, SearchWidget, SearchableText
 
 
-class BasicWidgetTest(unittest.TestCase):
+class TestBasicWidget(unittest.TestCase):
     def setUp(self):
         self.context = mock.Mock()
         self.controller = mock.Mock()
@@ -71,7 +71,7 @@ class BasicWidgetTest(unittest.TestCase):
         self.assertEqual(widget.keypress((1,), "l"), "l")
 
 
-class FocusableTextTest(unittest.TestCase):
+class TestFocusableText(unittest.TestCase):
     def test_contains_markup(self):
         text = FocusableText([("attr1", "text1"), ("attr2", "text2"), "text3"])
 
@@ -101,7 +101,7 @@ class FocusableTextTest(unittest.TestCase):
         )
 
 
-class SearchWidgetTest(unittest.TestCase):
+class TestSearchWidget(unittest.TestCase):
     def setUp(self):
         self.search_func = mock.Mock()
         self.clear_func = mock.Mock()
@@ -133,7 +133,7 @@ class SearchWidgetTest(unittest.TestCase):
         self.clear_func.assert_called_with()
 
 
-class SearchableTextTest(unittest.TestCase):
+class TestSearchableText(unittest.TestCase):
     def test_found_next_one(self):
         widget = SearchableText("aaamatchbbb")
         self.assertTrue(widget.search_next("match"))
