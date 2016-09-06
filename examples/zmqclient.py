@@ -1,7 +1,8 @@
 import zmq
 from zmq.eventloop import ioloop, zmqstream
 import urwid
-from gviewer import AsyncDataStore, GViewer, BaseDisplayer, Text, Group, View
+from gviewer import AsyncDataStore, GViewer, BaseDisplayer, DisplayerContext
+from gviewer import Text, Group, View
 
 
 ioloop.install()
@@ -32,7 +33,7 @@ def main():
     zmq_stream = zmqstream.ZMQStream(socket)
 
     data_store = AsyncDataStore(zmq_stream.on_recv)
-    viewer = GViewer(data_store, Displayer(),
+    viewer = GViewer(DisplayerContext(data_store, Displayer()),
                      event_loop=urwid.TornadoEventLoop(ioloop.IOLoop.instance()))
     viewer.start()
 

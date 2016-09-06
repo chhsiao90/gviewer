@@ -1,4 +1,4 @@
-from gviewer import StaticDataStore, GViewer, BaseDisplayer
+from gviewer import StaticDataStore, GViewer, BaseDisplayer, DisplayerContext
 from gviewer import Text, Group, View
 
 
@@ -15,7 +15,7 @@ data = [{"summary": "summary a",
 class Displayer(BaseDisplayer):
     def __init__(self, data):
         data_store = StaticDataStore(data)
-        self.viewer = GViewer(data_store, self)
+        self.viewer = GViewer(DisplayerContext(data_store, self))
 
     def summary(self, message):
         return message["summary"]
