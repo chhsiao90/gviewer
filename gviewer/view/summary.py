@@ -211,6 +211,11 @@ class SummaryListWidget(BasicWidget):
 
     def _on_receive(self):
         self._update_info()
+        if self.context.config.auto_scroll:
+            curr_index = self._w.focus_position + 1
+            total_index = len(self.current_walker)
+            if curr_index == total_index - 1:
+                self._w.set_focus(curr_index)
 
     def keypress(self, size, key):
         if key == "/":

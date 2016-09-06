@@ -1,7 +1,7 @@
 import zmq
 from zmq.eventloop import ioloop, zmqstream
 import urwid
-from gviewer import AsyncDataStore, GViewer, BaseDisplayer, DisplayerContext
+from gviewer import AsyncDataStore, GViewer, BaseDisplayer, DisplayerContext, Config
 from gviewer import Text, Group, View
 
 
@@ -34,6 +34,7 @@ def main():
 
     data_store = AsyncDataStore(zmq_stream.on_recv)
     viewer = GViewer(DisplayerContext(data_store, Displayer()),
+                     config=Config(auto_scroll=True),
                      event_loop=urwid.TornadoEventLoop(ioloop.IOLoop.instance()))
     viewer.start()
 

@@ -13,7 +13,9 @@ class Config(object):
     def __init__(self,
                  header="General Viewer",
                  keys=vim,
-                 template=default):
+                 template=default,
+                 auto_scroll=False):
         self.header = header
         self.keys = keys
         self.template = template
+        self.auto_scroll = auto_scroll

@@ -12,6 +12,7 @@ from gviewer.view.element import View
 from gviewer.action import Actions
 from gviewer.store import StaticDataStore
 from gviewer.context import DisplayerContext
+from gviewer.config import Config
 from gviewer.displayer import BaseDisplayer
 
 
@@ -191,7 +192,7 @@ class TestSummaryListWidget(unittest.TestCase):
             BaseDisplayer())
 
         self.context = mock.Mock()
-        self.context.config.keys = dict()
+        self.context.config = Config()
 
         self.widget = SummaryListWidget(
             self.displayer_context,
@@ -280,6 +281,25 @@ class TestSummaryListWidget(unittest.TestCase):
         self.widget.keypress((10, 10), "up")
         self.assertEqual(self.widget._w.focus_position, 0)
         self.controller._update_info.assert_called_with("[1/2]")
+
+    def test_auto_scroll(self):
+        displayer_context = DisplayerContext(
+            StaticDataStore(["summary 1", "summary 2"]),
+            BaseDisplayer())
+        self.context.config = Config(auto_scroll=True)
+        widget = SummaryListWidget(
+            displayer_context,
+            controller=self.controller,
+            context=self.context)
+        displayer_context.store.setup()
+
+        self.assertEqual(widget._w.focus_position, 1)
+        widget.current_walker.recv("summary 3")
+        self.assertEqual(widget._w.focus_position, 2)
+
+        widget._w.set_focus(0)
+        widget.current_walker.recv("summary 4")
+        self.assertEqual(widget._w.focus_position, 0)
 
 
 class TestSummary(unittest.TestCase):
