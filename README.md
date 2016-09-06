@@ -21,12 +21,15 @@ data_store = StaticDataStore(data)
 
 - AsyncDataStore
 ```python
+def register_func(on_message):
+    some_listener.on_message(on_message)
+
 data_store = AsyncDataStore(register_func)
 ```
 
 #### Displayer
 ```python
-from gviewer import BaseDisplayer, View, Group, PropsGroup, Line, Prop
+from gviewer import BaseDisplayer, View, Group, PropsGroup, Text, Prop
 
 class MyDisplayer(BaseDisplayer):
     def to_summary(self, message):
@@ -46,7 +49,7 @@ class MyDisplayer(BaseDisplayer):
     def view1(self, message):
         """return groups"""
         return View(
-            [Group("title", [Line(m) for m in message["view1"]])]
+            [Group("title", [Text(m) for m in message["view1"]])]
         )
 
     def view2(self, message):
@@ -58,8 +61,9 @@ class MyDisplayer(BaseDisplayer):
 
 #### GViewer
 ```python
-from gviewer import GViewer
-viewer = GViewer(data_store, displayer)
+from gviewer import GViewer, DisplayerContext
+context = DisplayerContext(data_store, displayer)
+viewer = GViewer(context)
 viewer.start()
 ```
 
@@ -67,31 +71,54 @@ viewer.start()
 #### Summary Actions
 Bind function to specific key to apply customize action, ex: export
 ```python
-from gviewer import GViewer
+from gviewer import GViewer, DisplayerContext
 
-def custom_export(parent, message):
+def custom_export(controller, message, widget, *args, **kwargs):
     with open("export", "w") as f:
         f.write(str(message))
-    parent.notify("file is export")
-viewer = GViewer(data_store, displayer, summary_actions=dict(a=custom_export))
+    controller.notify("file is export")
+
+context = DisplayerContext(data_store, displayer, actions=Actions([("a", "Custom export", custom_export)]))
+viewer = GViewer(context)
 ```
 
 #### View Actions
 Bind function to specific key to apply customize action, ex: export
 ```python
-from gviewer import View, BaseDisplayer, Groups
+from gviewer import View, BaseDisplayer
 class MyDisplayer(BaseDisplayer):
     def get_views(self):
         return [("view", self.view)]
 
     def view(self, message):
-        return View(Groups([]), actions=dict(a=self.custom_export))
+        return View([], actions=Actions([("a", "Custom export", self.custom_export)]))
 
-    def custom_export(parent, message):
+    def custom_export(controller, message, *args, **kwargs):
         with open("export", "w") as f:
             f.write(str(message))
-        parent.notify("file is export")
+        controller.notify("file is export")
 ```
+
+## Built-in actions
+#### Summary
+- /: search
+- g: top
+- G: bottom
+- x: clear current item
+- X: clear all items
+- q: quit
+- ?: help
+
+#### Detail
+- /: search
+- tab: next view
+- shift+tab: prev view
+- n: search next result 
+- N: search previous result
+- e: export current content to file
+- q: quit
+- ?: help
+
 
 ## Contribution
 Please feel free to create issue or create PR
