@@ -182,6 +182,21 @@ class TestFilterSummaryListWalker(unittest.TestCase):
         walker.close()
         self.displayer_context.store.unregister.assert_called_once_with(walker)
 
+    def test_del_one_item(self):
+        walker = FilterSummaryListWalker(
+            self.original_walker, "")
+        del walker[0]
+        self.assertEqual(len(walker), 1)
+        self.assertEqual(len(self.original_walker), 1)
+        self.assertIs(walker[0], self.original_walker[0])
+
+    def test_del_all_items(self):
+        walker = FilterSummaryListWalker(
+            self.original_walker, "summary 1")
+        del walker[:]
+        self.assertEqual(len(walker), 0)
+        self.assertEqual(len(self.original_walker), 1)
+
 
 class TestSummaryListWidget(unittest.TestCase):
     def setUp(self):

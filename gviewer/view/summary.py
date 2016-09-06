@@ -148,6 +148,16 @@ class FilterSummaryListWalker(SummaryListWalker):
         """ Unregister listener if quit search mode """
         self.displayer_context.store.unregister(self)
 
+    def __delitem__(self, index):
+        if isinstance(index, slice):
+            for i in range(index.start, min(index.stop, len(self))):
+                base_walker_index = self.base_walker.index(self[i])
+                del self.base_walker[base_walker_index]
+        else:
+            base_walker_index = self.base_walker.index(self[index])
+            del self.base_walker[base_walker_index]
+        super(FilterSummaryListWalker, self).__delitem__(index)
+
 
 class SummaryListWidget(BasicWidget):
     """ ListBox widget to contains the content of SummaryItemWidget
@@ -235,12 +245,12 @@ class SummaryListWidget(BasicWidget):
             self._w.set_focus(len(self.current_walker) - 1)
             self._update_info()
             return super(SummaryListWidget, self).keypress(size, key)
-        if key == "x" and self.current_walker is self.base_walker:
-            del self.base_walker[self._w.focus_position]
+        if key == "x":
+            del self.current_walker[self._w.focus_position]
             self._update_info()
             return super(SummaryListWidget, self).keypress(size, key)
-        if key == "X" and self.current_walker is self.base_walker:
-            del self.base_walker[:]
+        if key == "X":
+            del self.current_walker[:]
             self._update_info()
             return super(SummaryListWidget, self).keypress(size, key)
         if key == "?":
