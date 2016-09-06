@@ -8,7 +8,7 @@ from gviewer.view.summary import (
     FilterSummaryListWalker, SummaryListWidget)
 from gviewer.view.summary import _verify_keys
 from gviewer.view.detail import DetailWidget
-from gviewer.view.element import Groups
+from gviewer.view.element import View
 from gviewer.action import Actions
 from gviewer.store import StaticDataStore
 from gviewer.context import DisplayerContext
@@ -37,7 +37,7 @@ class SummaryItemWidgetTest(unittest.TestCase):
         return [("view", self.view1)]
 
     def view1(self, message):
-        return Groups([])
+        return View([])
 
     def _open_view(self, widget, **kwargs):
         self.new_widget = widget

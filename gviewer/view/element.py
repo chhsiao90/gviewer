@@ -34,16 +34,6 @@ class Text(Base):
         return try_decode(self.content)
 
 
-class Line(Text):
-    """Lagacy interface
-
-    Deprecated, for lagacy interface compatibility, would removed in the future
-    Attributes:
-        groups: iterable of Group
-    """
-    pass
-
-
 class Prop(Base):
     """ Key-value property
 
@@ -140,16 +130,6 @@ class View(Base):
 
     def __str__(self):
         return u"\n".join([str(g) + u"\n" for g in self.groups])
-
-
-class Groups(View):
-    """Lagacy interface
-
-    Deprecated, for lagacy interface compatibility, would removed in the future
-    Attributes:
-        groups: iterable of Group
-    """
-    pass
 
 
 class TitleWidget(BasicWidget):

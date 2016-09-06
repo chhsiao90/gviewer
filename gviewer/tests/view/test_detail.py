@@ -5,7 +5,7 @@ import mock
 from gviewer.tests.util import render_to_content, render_widgets_to_content
 from gviewer.view.detail import DetailWidget, Tabs
 from gviewer.view.detail import _verify_keys
-from gviewer.view.element import Text, Group, Groups
+from gviewer.view.element import View, Text, Group
 from gviewer.action import Actions
 
 
@@ -41,7 +41,7 @@ class DetailWidgetTest(unittest.TestCase):
         return self._display(message["view3"])
 
     def _display(self, message):
-        return Groups([Group("Title", [Text(message)])])
+        return View([Group("Title", [Text(message)])])
 
     def _open_view(self, widget, push_prev):
         self.new_widget = widget

@@ -6,7 +6,7 @@ from gviewer.parent import ParentFrame, Footer, Helper, Notification
 from gviewer.config import Config
 from gviewer.context import Context, DisplayerContext
 from gviewer.view.error import ErrorWidget
-from gviewer.view.element import Line, Group, Groups
+from gviewer.view.element import View, Text, Group
 from gviewer.view.summary import SummaryListWidget
 from gviewer.store import StaticDataStore
 
@@ -46,7 +46,7 @@ class ParentFrameTest(unittest.TestCase):
         ]
 
     def view(self, message):
-        return Groups([Group("foo", [Line(m) for m in message])])
+        return View([Group("foo", [Text(m) for m in message])])
 
     def test_render(self):
         self.assertEqual(
