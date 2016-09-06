@@ -14,7 +14,8 @@ class PanamaDisplayer(BaseDisplayer):
         self.viewer = GViewer(
             DisplayerContext(data_store, self, actions=Actions(
                 [("m", "notify a message", self.notify),
-                 ("L", "log view", self.log)])),
+                 ("L", "log view", self.log),
+                 ("M", "mark a message", self.mark)])),
             other_contexts=[self.child_context],
             palette=[("nodeid", "light cyan", "black")])
 
@@ -23,6 +24,7 @@ class PanamaDisplayer(BaseDisplayer):
 
     def summary(self, message):
         return [
+            "  ",
             ("nodeid", message["node_id"]),
             " ",
             message["name"]]
@@ -46,16 +48,21 @@ class PanamaDisplayer(BaseDisplayer):
             ("E", "export", self.export),
             ("m", "notify", self.notify)]))
 
-    def notify(self, controller, messag):
+    def notify(self, controller, messag, widget, *args, **kwargs):
         controller.notify("yayaya")
 
-    def export(self, controller, message):
+    def export(self, controller, message, widget, *args, **kwargs):
         with open("panama-export.json", "w") as w:
             w.write(json.dumps(message))
         controller.notify("export to file panama-export.json")
 
-    def log(self, controller, message):
+    def log(self, controller, message, widget, *args, **kwargs):
         controller.open_view_by_context(self.child_context)
+
+    def mark(self, controller, message, widget, *args, **kwargs):
+        widget.set_title([
+            "V ", ("nodeid", message["node_id"]),
+            " ", message["name"]])
 
     def run(self):
         self.viewer.start()

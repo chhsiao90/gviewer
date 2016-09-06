@@ -34,23 +34,27 @@ class SummaryItemWidget(BasicWidget):
         summary: Format message by displayer
         displayer_context: DisplayerContext instance
     """
-    def __init__(self, message, summary, displayer_context, **kwargs):
+    def __init__(self, message, title, displayer_context, **kwargs):
         super(SummaryItemWidget, self).__init__(
-            widget=FocusableText(
-                summary, attr_map="summary",
-                focus_map="summary focus"),
+            widget=self._widget(title),
             **kwargs)
 
         self.displayer_context = displayer_context
         self.message = message
 
-    def get_title(self):
-        """ Get summary in plain text
+    def _widget(self, title):
+        return FocusableText(title, attr_map="summary", focus_map="summary focus")
+
+    def get_title_as_plain_text(self):
+        """ Get title in plain text
 
         Returns:
-            summary in plain text
+            title in plain text
         """
         return self._w.get_plain_text()
+
+    def set_title(self, title):
+        self.display(self._widget(title))
 
     def keypress(self, size, key):
         if key == "enter":
@@ -61,7 +65,7 @@ class SummaryItemWidget(BasicWidget):
         if key in self.displayer_context.actions:
             try:
                 self.displayer_context.actions[key].__call__(
-                    self.controller, self.message)
+                    self.controller, self.message, self)
             except:  # pragma: no cover
                 self.controller.open_error()
             return None
@@ -115,7 +119,7 @@ class FilterSummaryListWalker(SummaryListWalker):
         keyword: Filter keyword
     """
     def __init__(self, base_walker, keyword):
-        content = [m for m in base_walker if base_walker.displayer_context.displayer.match(keyword, m.message, m.get_title())]
+        content = [m for m in base_walker if base_walker.displayer_context.displayer.match(keyword, m.message, m.get_title_as_plain_text())]
         super(FilterSummaryListWalker, self).__init__(
             content=content, base_walker=base_walker)
         self.keyword = keyword
@@ -129,7 +133,7 @@ class FilterSummaryListWalker(SummaryListWalker):
         """
         try:
             widget = self._create_widget(message)
-            if self.displayer_context.displayer.match(self.keyword, message, widget.get_title()):
+            if self.displayer_context.displayer.match(self.keyword, message, widget.get_title_as_plain_text()):
                 self.append(widget)
         except:
             self.controller.open_error()

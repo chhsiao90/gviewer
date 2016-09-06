@@ -61,7 +61,7 @@ class SummaryItemWidgetTest(unittest.TestCase):
 
     def test_keypress_custom_action(self):
         self.assertIsNone(self.widget.keypress(None, "a"))
-        self.action_a.assert_called_with(self.controller, "message")
+        self.action_a.assert_called_with(self.controller, "message", self.widget)
 
 
 class SummaryListWalkerTest(unittest.TestCase):
