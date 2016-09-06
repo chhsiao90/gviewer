@@ -84,11 +84,13 @@ class SummaryListWalker(urwid.SimpleFocusListWalker):
         displayer_context: DisplayerContext instance
     """
     def __init__(self, content=None, displayer_context=None,
-                 base_walker=None, controller=None, context=None):
+                 base_walker=None, controller=None, context=None,
+                 on_receive=None):
         super(SummaryListWalker, self).__init__(content or [])
         self.controller = controller or base_walker.controller
         self.context = context or base_walker.context
         self.displayer_context = displayer_context or base_walker.displayer_context
+        self.on_receive = on_receive or base_walker.on_receive
         self.base_walker = base_walker
         self.displayer_context.store.register(self)
 
@@ -102,6 +104,8 @@ class SummaryListWalker(urwid.SimpleFocusListWalker):
             self.append(self._create_widget(message))
         except:
             self.controller.open_error()
+        else:
+            self.on_receive()
 
     def _create_widget(self, message):
             summary = self.displayer_context.displayer.summary(message)
@@ -137,6 +141,8 @@ class FilterSummaryListWalker(SummaryListWalker):
                 self.append(widget)
         except:
             self.controller.open_error()
+        else:
+            self.on_receive()
 
     def close(self):
         """ Unregister listener if quit search mode """
@@ -154,7 +160,8 @@ class SummaryListWidget(BasicWidget):
         _verify_keys(displayer_context.actions)
 
         self.base_walker = SummaryListWalker(
-            displayer_context=displayer_context, **kwargs)
+            displayer_context=displayer_context,
+            on_receive=self._on_receive, **kwargs)
         self.current_walker = self.base_walker
         self.list_box = urwid.ListBox(self.base_walker)
 
@@ -191,6 +198,7 @@ class SummaryListWidget(BasicWidget):
         self.list_box = urwid.ListBox(walker)
         self._w.contents.pop(0)
         self._w.contents.insert(0, (self.list_box, self._w.options()))
+        self._update_info()
 
     def _open_search(self):
         self.search_widget.clear()
@@ -207,6 +215,18 @@ class SummaryListWidget(BasicWidget):
 
     def _clear_search(self):
         self._filter(None)
+
+    def _update_info(self):
+        if len(self.current_walker):
+            curr_index = self.list_box.focus_position + 1
+            total_index = len(self.current_walker)
+            self.controller._update_info("[{0}/{1}]".format(
+                curr_index, total_index))
+        else:
+            self.controller._update_info("[0/0]")
+
+    def _on_receive(self):
+        self._update_info()
 
     def is_editing(self):
         return self._w.focus is self.search_widget
@@ -225,18 +245,24 @@ class SummaryListWidget(BasicWidget):
             return None
         if key == "g":
             self.list_box.set_focus(0)
+            self._update_info()
             return super(SummaryListWidget, self).keypress(size, key)
         if key == "G":
             self.list_box.set_focus(len(self.current_walker) - 1)
+            self._update_info()
             return super(SummaryListWidget, self).keypress(size, key)
         if key == "x" and self.current_walker is self.base_walker:
             del self.base_walker[self.list_box.focus_position]
+            self._update_info()
             return super(SummaryListWidget, self).keypress(size, key)
         if key == "X" and self.current_walker is self.base_walker:
             del self.base_walker[:]
+            self._update_info()
             return super(SummaryListWidget, self).keypress(size, key)
         if key == "?":
             self.controller.open_view(self.help_widget)
             return None
 
-        return super(SummaryListWidget, self).keypress(size, key)  # pragma: no cover
+        keypress_result = super(SummaryListWidget, self).keypress(size, key)  # pragma: no cover
+        self._update_info()
+        return keypress_result

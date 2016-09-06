@@ -50,8 +50,9 @@ class GViewer(object):  # pragma: no cover
     def start(self):
         """ Start the gviewer tui
         """
-        self.context.main_context.store.setup()
         for displayer_context in self.context.other_contexts:
             displayer_context.store.setup()
+        # NOTE: main context should setup latest so that the info of curr/max number on the footer would be correct
+        self.context.main_context.store.setup()
 
         self.loop.run()

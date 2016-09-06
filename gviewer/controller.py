@@ -29,6 +29,9 @@ class Controller(object):
         """Notify a message"""
         self.parent.notify(message)
 
+    def _update_info(self, info):
+        self.parent.update_info(info)
+
     def open_error(self):
         """Open error stacktrace view"""
         self.parent.open_error()

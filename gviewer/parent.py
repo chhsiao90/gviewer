@@ -78,6 +78,9 @@ class ParentFrame(urwid.Frame):
         """Notify message"""
         self.footer.notify(message)
 
+    def update_info(self, info):
+        self.footer.update_info(info)
+
     def run_before_keypress(self):
         """Some UI cleanup actions to make sure GViewer in a consist state"""
         self.footer.notify("")
@@ -85,10 +88,11 @@ class ParentFrame(urwid.Frame):
 
 class Footer(BasicWidget):
     """Footer widget for ParentFrame"""
-    def __init__(self, **kwargs):
-        self.notification = Notification(**kwargs)
+    def __init__(self, notification=None, helper=None, **kwargs):
+        self.notification = notification or Notification(**kwargs)
+        self.helper = helper or Helper()
         widgets = [
-            ("pack", Helper()),
+            ("pack", self.helper),
             ("pack", self.notification)
         ]
         widget = urwid.Pile(widgets)
@@ -99,15 +103,23 @@ class Footer(BasicWidget):
         """Notify message"""
         self.notification.notify(message)
 
+    def update_info(self, info):
+        self.helper.update_info(info)
+
 
 class Helper(BasicWidget):
     """Helper widget contains basic help words"""
-    def __init__(self):
+    def __init__(self, info_widget=None):
+        self.info_widget = info_widget or urwid.Text("")
         widget = urwid.Text("?:help")
         widget = urwid.Padding(
             widget, "right", "pack")
+        widget = urwid.Columns([self.info_widget, widget])
         super(Helper, self).__init__(
             widget=widget, attr_map="footer helper")
+
+    def update_info(self, info):
+        self.info_widget.set_text(info)
 
 
 class Notification(BasicWidget):

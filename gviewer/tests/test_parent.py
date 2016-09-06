@@ -60,7 +60,7 @@ class ParentFrameTest(unittest.TestCase):
                 urwid.Text(""),
                 urwid.Text(""),
                 urwid.Text(""),
-                Footer()
+                Footer(helper=Helper(info_widget=urwid.Text("[1/3]")))
             ], (30, 10))
         )
 

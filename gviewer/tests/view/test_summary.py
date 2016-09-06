@@ -78,12 +78,14 @@ class SummaryListWalkerTest(unittest.TestCase):
             side_effect=lambda m: m)
         self.displayer_context.displayer.match = mock.Mock(
             side_effect=lambda k, m, s: k in s)
+        self.on_receive = mock.Mock()
 
         self.error = False
 
         self.walker = SummaryListWalker(
             controller=self.controller, context=self.context,
-            displayer_context=self.displayer_context)
+            displayer_context=self.displayer_context,
+            on_receive=self.on_receive)
 
     def _open_error(self, *args, **kwargs):
         self.error = True
@@ -120,11 +122,8 @@ class FilterSummaryListWalkerTest(unittest.TestCase):
         self.context.config.keys = dict()
 
         self.displayer_context = mock.Mock()
-        self.displayer_context.displayer.match = mock.Mock(
-            side_effect=lambda k, m, s: k in s)
-        self.displayer_context.displayer.summary = mock.Mock(
-            side_effect=lambda m: m)
-
+        self.displayer_context.displayer = BaseDisplayer()
+        self.on_receive = mock.Mock()
         self.error = False
 
         self.original_walker = SummaryListWalker(
@@ -142,7 +141,8 @@ class FilterSummaryListWalkerTest(unittest.TestCase):
             ],
             controller=self.controller,
             context=self.context,
-            displayer_context=self.displayer_context
+            displayer_context=self.displayer_context,
+            on_receive=self.on_receive
         )
 
     def _open_error(self, *args, **kwargs):
@@ -152,11 +152,6 @@ class FilterSummaryListWalkerTest(unittest.TestCase):
         walker = FilterSummaryListWalker(
             self.original_walker, "summary 1")
         self.assertEqual(len(walker), 1)
-
-        self.displayer_context.displayer.match.assert_any_call(
-            "summary 1", "message 1", "summary 1")
-        self.displayer_context.displayer.match.assert_any_call(
-            "summary 1", "message 2", "summary 2")
 
     def test_recv_with_match(self):
         walker = FilterSummaryListWalker(
@@ -171,7 +166,7 @@ class FilterSummaryListWalkerTest(unittest.TestCase):
         self.assertEqual(len(walker), 1)
 
     def test_recv_failed(self):
-        self.displayer_context.displayer.summary.side_effect = ValueError("failed")
+        self.displayer_context.displayer.summary = mock.Mock(side_effect=ValueError("failed"))
 
         walker = FilterSummaryListWalker(
             self.original_walker, "summary 1")
@@ -282,8 +277,11 @@ class SummaryListWidgetTest(unittest.TestCase):
     def test_keypress_bottom_and_top(self):
         self.widget.keypress((10, 10), "G")
         self.assertEqual(self.widget.list_box.focus_position, 1)
+        self.controller._update_info.assert_called_with("[2/2]")
+
         self.widget.keypress((10, 10), "g")
         self.assertEqual(self.widget.list_box.focus_position, 0)
+        self.controller._update_info.assert_called_with("[1/2]")
 
     def test_keypress_bottom_and_top_when_search(self):
         self.widget._filter("summary")
@@ -295,10 +293,21 @@ class SummaryListWidgetTest(unittest.TestCase):
     def test_keypress_clear_item(self):
         self.widget.keypress((10, 10), "x")
         self.assertEqual(len(self.widget.current_walker), 1)
+        self.controller._update_info.assert_called_with("[1/1]")
 
     def test_keypress_clear_items(self):
         self.widget.keypress((10, 10), "X")
         self.assertEqual(len(self.widget.current_walker), 0)
+        self.controller._update_info.assert_called_with("[0/0]")
+
+    def test_keypress_up_and_down(self):
+        self.widget.keypress((10, 10), "down")
+        self.assertEqual(self.widget.list_box.focus_position, 1)
+        self.controller._update_info.assert_called_with("[2/2]")
+
+        self.widget.keypress((10, 10), "up")
+        self.assertEqual(self.widget.list_box.focus_position, 0)
+        self.controller._update_info.assert_called_with("[1/2]")
 
 
 class SummaryTest(unittest.TestCase):
