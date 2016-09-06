@@ -115,10 +115,10 @@ class SearchWidget(BasicWidget):
         return self._w.edit_text
 
     def keypress(self, size, key):
-        if key == "enter":
+        if key == "enter" and self._w.edit_text:
             self.search_func(self._w.edit_text)
             return None
-        if key == "esc":
+        if key == "esc" or (key == "enter" and not self._w.edit_text):
             self.clear()
             self.clear_func()
             return None

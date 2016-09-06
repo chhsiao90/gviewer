@@ -24,6 +24,14 @@ class TestController(unittest.TestCase):
         self.controller.notify("message")
         self.parent.notify.assert_called_with("message")
 
+    def test_open_edit(self):
+        self.controller.open_edit("edit_widget")
+        self.parent.open_edit.assert_called_with("edit_widget")
+
+    def test_close_edit(self):
+        self.controller.close_edit()
+        self.parent.close_edit.assert_called_with()
+
     def test_open_error(self):
         self.controller.open_error()
         self.parent.open_error.assert_called_with()
@@ -31,6 +39,10 @@ class TestController(unittest.TestCase):
     def test_back(self):
         self.controller.back()
         self.parent.back.assert_called_with()
+
+    def test_focus_body(self):
+        self.controller._focus_body()
+        self.assertEqual(self.parent.focus_position, "body")
 
     def test_run_before_keypress(self):
         self.controller._run_before_keypress()

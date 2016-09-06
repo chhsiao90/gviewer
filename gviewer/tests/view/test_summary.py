@@ -211,29 +211,10 @@ class TestSummaryListWidget(unittest.TestCase):
 
     def test_open_search(self):
         self.widget._open_search()
-
-        self.assertIs(self.widget._w.focus, self.widget.search_widget)
-        self.assertTrue(self.widget.is_editing())
-
-        self.assertIs(
-            self.widget._w.contents[1][0],
-            self.widget.search_widget
-        )
-
-    def test_close_search(self):
-        self.widget._close_search()  # nothing happen
-        self.assertFalse(self.widget.is_editing())
-
-        self.widget._open_search()
-        self.assertTrue(self.widget.is_editing())
-
-        self.widget._close_search()
-        self.assertFalse(self.widget.is_editing())
-        self.assertEqual(len(self.widget._w.contents), 1)
+        self.controller.open_edit.assert_called_with(self.widget.search_widget)
 
     def test_filter(self):
         self.widget._filter("summary 1")
-        self.assertIsInstance(self.widget._w.focus, urwid.ListBox)
         self.assertIsInstance(self.widget.current_walker, FilterSummaryListWalker)
         self.assertEqual(len(self.widget.current_walker), 1)
 
@@ -243,18 +224,9 @@ class TestSummaryListWidget(unittest.TestCase):
             self.widget.current_walker,
             self.widget.base_walker)
 
-    def test_keypress_on_editing(self):
-        self.widget._open_search()
-        self.assertIsNone(self.widget.keypress((0,), "q"))
-        self.assertIsNone(self.widget.keypress((0,), "j"))
-        self.assertIsNone(self.widget.keypress((0,), "/"))
-        self.assertEqual(
-            self.widget.search_widget.get_keyword(),
-            "qj/")
-
     def test_keypress_open_search(self):
         self.widget.keypress(None, "/")
-        self.assertTrue(self.widget.is_editing())
+        self.controller.open_edit.assert_called_with(self.widget.search_widget)
 
     def test_keypress_clear_search(self):
         self.widget._filter("test")
@@ -276,19 +248,19 @@ class TestSummaryListWidget(unittest.TestCase):
 
     def test_keypress_bottom_and_top(self):
         self.widget.keypress((10, 10), "G")
-        self.assertEqual(self.widget.list_box.focus_position, 1)
+        self.assertEqual(self.widget._w.focus_position, 1)
         self.controller._update_info.assert_called_with("[2/2]")
 
         self.widget.keypress((10, 10), "g")
-        self.assertEqual(self.widget.list_box.focus_position, 0)
+        self.assertEqual(self.widget._w.focus_position, 0)
         self.controller._update_info.assert_called_with("[1/2]")
 
     def test_keypress_bottom_and_top_when_search(self):
         self.widget._filter("summary")
         self.widget.keypress((10, 10), "G")
-        self.assertEqual(self.widget.list_box.focus_position, 1)
+        self.assertEqual(self.widget._w.focus_position, 1)
         self.widget.keypress((10, 10), "g")
-        self.assertEqual(self.widget.list_box.focus_position, 0)
+        self.assertEqual(self.widget._w.focus_position, 0)
 
     def test_keypress_clear_item(self):
         self.widget.keypress((10, 10), "x")
@@ -302,11 +274,11 @@ class TestSummaryListWidget(unittest.TestCase):
 
     def test_keypress_up_and_down(self):
         self.widget.keypress((10, 10), "down")
-        self.assertEqual(self.widget.list_box.focus_position, 1)
+        self.assertEqual(self.widget._w.focus_position, 1)
         self.controller._update_info.assert_called_with("[2/2]")
 
         self.widget.keypress((10, 10), "up")
-        self.assertEqual(self.widget.list_box.focus_position, 0)
+        self.assertEqual(self.widget._w.focus_position, 0)
         self.controller._update_info.assert_called_with("[1/2]")
 
 

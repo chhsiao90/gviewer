@@ -1,5 +1,6 @@
 import unittest
 import urwid
+import mock
 
 from .util import render_to_content, render_widgets_to_content, render_to_text
 from gviewer.parent import ParentFrame, Footer, Helper, Notification
@@ -100,6 +101,18 @@ class TestParentFrame(unittest.TestCase):
             render_to_text(self.widget.footer.notification, (5,)),
             ["test "])
 
+    def test_open_edit(self):
+        self.widget.open_edit(urwid.Edit("/"))
+        self.assertEqual(self.widget.focus_position, "footer")
+        self.assertEqual(
+            render_to_text(self.widget.footer.notification, (5,)), ["/    "])
+
+    def test_close_edit(self):
+        self.widget.open_edit(urwid.Edit("/"))
+        self.widget.close_edit()
+        self.assertEqual(
+            render_to_text(self.widget.footer.notification, (5,)), ["     "])
+
     def test_run_before_keypress(self):
         self.widget.notify("test")
         self.widget.run_before_keypress()
@@ -144,6 +157,11 @@ class TestParentFrame(unittest.TestCase):
 
 
 class TestFooter(unittest.TestCase):
+    def setUp(self):
+        self.helper = mock.Mock()
+        self.notification = mock.Mock()
+        self.widget = Footer(helper=self.helper, notification=self.notification)
+
     def test_render(self):
         widget = Footer()
         self.assertEqual(
@@ -153,11 +171,21 @@ class TestFooter(unittest.TestCase):
                 (20, 2)))
 
     def test_notify(self):
-        widget = Footer()
-        widget.notify("test")
-        self.assertEqual(
-            render_to_text(widget.notification, (5,)),
-            ["test "])
+        self.widget.notify("test")
+        self.notification.notify.assert_called_with("test")
+
+    def test_clear_notify(self):
+        self.widget.clear_notify()
+        self.notification.clear.assert_called_with()
+
+    def test_open_edit(self):
+        w = urwid.Edit()
+        self.widget.open_edit(w)
+        self.notification.open_edit.assert_called_with(w)
+
+    def test_close_edit(self):
+        self.widget.close_edit()
+        self.notification.close_edit.assert_called_with()
 
 
 class TestNotification(unittest.TestCase):
@@ -169,8 +197,44 @@ class TestNotification(unittest.TestCase):
             render_to_text(self.widget, (5,)),
             ["     "])
 
-    def test_render_notify(self):
+    def test_notify(self):
         self.widget.notify("test")
         self.assertEqual(
             render_to_text(self.widget, (5,)),
             ["test "])
+
+    def test_clear_notify(self):
+        self.widget.notify("test")
+        self.widget.clear()
+        self.assertEqual(
+            render_to_text(self.widget, (5,)),
+            ["     "])
+
+    def test_open_edit(self):
+        w = urwid.Edit("/")
+        self.widget.open_edit(w)
+
+        self.assertIs(self.widget._edit_widget, w)
+        self.assertTrue(self.widget.is_editing())
+        self.assertEqual(
+            render_to_text(self.widget, (5,)),
+            ["/    "])
+
+    def test_notify_on_edit(self):
+        self.widget.open_edit(urwid.Edit("/"))
+        self.widget.notify("hahaha")
+
+        self.assertEqual(
+            render_to_text(self.widget, (6,)),
+            ["hahaha"])
+
+        self.widget.clear()
+        self.assertEqual(
+            render_to_text(self.widget, (6,)),
+            ["/     "])
+
+    def test_close_edit(self):
+        self.widget.open_edit(urwid.Edit("/"))
+        self.widget.close_edit()
+        self.assertFalse(self.widget.is_editing())
+        self.assertIsNone(self.widget._edit_widget)

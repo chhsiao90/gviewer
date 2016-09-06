@@ -78,12 +78,19 @@ class ParentFrame(urwid.Frame):
         """Notify message"""
         self.footer.notify(message)
 
+    def open_edit(self, widget):
+        self.footer.open_edit(widget)
+        self.focus_position = "footer"
+
+    def close_edit(self):
+        self.footer.close_edit()
+
     def update_info(self, info):
         self.footer.update_info(info)
 
     def run_before_keypress(self):
         """Some UI cleanup actions to make sure GViewer in a consist state"""
-        self.footer.notify("")
+        self.footer.clear_notify()
 
 
 class Footer(BasicWidget):
@@ -102,6 +109,15 @@ class Footer(BasicWidget):
     def notify(self, message):
         """Notify message"""
         self.notification.notify(message)
+
+    def clear_notify(self):
+        self.notification.clear()
+
+    def open_edit(self, widget):
+        self.notification.open_edit(widget)
+
+    def close_edit(self):
+        self.notification.close_edit()
 
     def update_info(self, info):
         self.helper.update_info(info)
@@ -124,14 +140,32 @@ class Helper(BasicWidget):
 
 class Notification(BasicWidget):
     """Notification widget"""
+    EMPTY_WIDGET = urwid.Text("")
+
     def __init__(self, **kwargs):
-        self.message = ""
+        self._edit_widget = None
         super(Notification, self).__init__(
-            widget=urwid.Text(""),
+            widget=self.EMPTY_WIDGET,
             attr_map="footer info", **kwargs)
+
+    def is_editing(self):
+        return bool(self._edit_widget)
+
+    def selectable(self):
+        return True
 
     def notify(self, message):
         """Notify message"""
-        if self.message != message:
-            self.message = message
-            self.display(urwid.Text(message))
+        self.display(urwid.Text(message))
+
+    def clear(self):
+        """Clear message"""
+        self.display(self._edit_widget or self.EMPTY_WIDGET)
+
+    def open_edit(self, widget):
+        self._edit_widget = widget
+        self.display(widget)
+
+    def close_edit(self):
+        self._edit_widget = None
+        self.display(self.EMPTY_WIDGET)

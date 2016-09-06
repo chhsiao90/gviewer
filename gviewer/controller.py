@@ -29,8 +29,13 @@ class Controller(object):
         """Notify a message"""
         self.parent.notify(message)
 
-    def _update_info(self, info):
-        self.parent.update_info(info)
+    def open_edit(self, widget):
+        """Open edit box in footer"""
+        self.parent.open_edit(widget)
+
+    def close_edit(self):
+        """Close edit box"""
+        self.parent.close_edit()
 
     def open_error(self):
         """Open error stacktrace view"""
@@ -39,6 +44,12 @@ class Controller(object):
     def back(self):
         """Back to previous view"""
         self.parent.back()
+
+    def _update_info(self, info):
+        self.parent.update_info(info)
+
+    def _focus_body(self):
+        self.parent.focus_position = "body"
 
     def _run_before_keypress(self):
         self.parent.run_before_keypress()

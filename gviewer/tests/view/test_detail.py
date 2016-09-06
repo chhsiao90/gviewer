@@ -112,26 +112,11 @@ class TestDetailWidget(unittest.TestCase):
 
     def test_open_search(self):
         self.widget.keypress((0,), "/")
-        self.assertEqual(
-            self.widget.body.contents[1][0],
-            self.widget.search_widget)
-        self.assertIs(self.widget.body.focus, self.widget.search_widget)
-
-    def test_close_search(self):
-        self.assertEqual(len(self.widget.body.contents), 1)
-        self.widget._close_search()
-        self.assertEqual(len(self.widget.body.contents), 1)
-        self.widget._open_search()
-        self.assertEqual(len(self.widget.body.contents), 2)
-        self.widget._close_search()
-        self.assertEqual(len(self.widget.body.contents), 1)
+        self.controller.open_edit.assert_called_with(self.widget.search_widget)
 
     def test_clear_search(self):
-        self.assertEqual(len(self.widget.body.contents), 1)
-        self.widget._open_search()
-        self.assertEqual(len(self.widget.body.contents), 2)
         self.widget._clear_search()
-        self.assertEqual(len(self.widget.body.contents), 1)
+        self.controller.close_edit.assert_called_with()
 
     def test_open_summary(self):
         self.widget.keypress((0,), "q")
@@ -173,15 +158,6 @@ class TestDetailWidget(unittest.TestCase):
         self.assertEqual(
             render_to_content(self.widget.content_widget, (5, 3)),
             no_match)
-
-    def test_editing(self):
-        self.widget._open_search()
-        self.assertTrue(self.widget.is_editing())
-
-        keypress_result = self.widget.keypress((0, 0), "a")
-        self.assertEqual(keypress_result, "a")
-        keypress_result = self.widget.keypress((0, 0), "q")
-        self.assertEqual(keypress_result, "q")
 
 
 class TestTabs(unittest.TestCase):

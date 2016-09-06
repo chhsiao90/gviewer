@@ -55,17 +55,16 @@ class DetailWidget(BasicWidget):
             **kwargs
         )
 
-        self.body = urwid.Pile([self.content_widget])
-
         if len(self.views) > 1:
             header = Tabs([k for k, _ in self.views], self.index)
         else:
             header = None
 
-        widget = urwid.Frame(self.body, header=header)
+        widget = urwid.Frame(self.content_widget, header=header)
         self.display(widget)
 
     def _open(self, index):
+        self._clear_search()
         self.controller.open_view(DetailWidget(
             self.message, self.displayer_context, index=index,
             controller=self.controller, context=self.context),
@@ -91,26 +90,15 @@ class DetailWidget(BasicWidget):
     def _open_search(self):
         self.search_widget.clear()
         self.content_widget.clear_prev_search()
-        if len(self.body.contents) == 1:
-            self.body.contents.append((
-                self.search_widget,
-                self.body.options(height_type="pack"))
-            )
-        self.body.focus_position = 1
-
-    def _close_search(self):
-        if len(self.body.contents) == 2:
-            del self.body.contents[1]
+        self.controller.open_edit(self.search_widget)
 
     def _search(self, keyword):
+        self.controller._focus_body()
         self.content_widget.search_next(keyword)
-        self._close_search()
+        self.controller.close_edit()
 
     def _clear_search(self):
-        self._close_search()
-
-    def is_editing(self):
-        return self.body.focus is self.search_widget
+        self.controller.close_edit()
 
     def _export(self):  # pragma: no cover
         file_name = "export-%13d" % (time.time() * 1000)
@@ -119,9 +107,8 @@ class DetailWidget(BasicWidget):
         self.controller.notify("Export to file {0}".format(file_name))
 
     def keypress(self, size, key):
-        if self.is_editing():
-            return super(DetailWidget, self).keypress(size, key)
         if key == "q":
+            self._clear_search()
             self.controller.back()
             return None
         if key == "tab":
