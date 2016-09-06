@@ -24,7 +24,7 @@ class Actions(object):
     """
     def __init__(self, actions=None):
         actions = actions or []
-        if not isinstance(actions, list):
+        if not isinstance(actions, list):  # pragma: no cover
             raise ValueError("Actions cannot accept {0}".format(type(actions)))
         self.actions = OrderedDict({
             k: Action(d, f) for (k, d, f) in actions

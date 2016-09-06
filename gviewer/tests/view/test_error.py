@@ -1,9 +1,5 @@
 import unittest
-
-try:
-    import unittest.mock as mock
-except:
-    import mock
+import mock
 
 from ..util import render_to_content
 from gviewer.view.error import ErrorWidget

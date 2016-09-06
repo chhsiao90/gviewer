@@ -1,9 +1,5 @@
 import unittest
-
-try:
-    import unittest.mock as mock
-except:
-    import mock
+import mock
 
 from ..util import render_to_text
 from gviewer.view.helper import HelpWidget, HelpCategory, HelpContent, TitleWidget, MappingWidget

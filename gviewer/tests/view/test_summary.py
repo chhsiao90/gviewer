@@ -1,10 +1,6 @@
 import unittest
 import urwid
-
-try:
-    import unittest.mock as mock
-except:
-    import mock
+import mock
 
 from ..util import render_to_content, render_widgets_to_content
 from gviewer.view.summary import (
@@ -62,6 +58,10 @@ class SummaryItemWidgetTest(unittest.TestCase):
     def test_keypress_custom_action(self):
         self.assertIsNone(self.widget.keypress(None, "a"))
         self.action_a.assert_called_with(self.controller, "message", self.widget)
+
+    def test_set_title(self):
+        self.widget.set_title("hahaha")
+        self.assertEqual(self.widget.get_title_as_plain_text(), "hahaha")
 
 
 class SummaryListWalkerTest(unittest.TestCase):
@@ -271,6 +271,10 @@ class SummaryListWidgetTest(unittest.TestCase):
             self.widget.base_walker)
         self.assertEqual(len(self.widget.current_walker), 2)
 
+    def test_keypress_back(self):
+        self.widget.keypress((0,), "q")
+        self.controller.back.assert_called_with()
+
     def test_keypress_open_help(self):
         self.assertIsNone(self.widget.keypress((0, 0), "?"))
         self.controller.open_view.assert_called_with(self.widget.help_widget)
@@ -299,7 +303,8 @@ class SummaryListWidgetTest(unittest.TestCase):
 
 class SummaryTest(unittest.TestCase):
     def test_verify_keys(self):
+        _verify_keys(Actions([("p", "pppp", None)]))
+
+    def test_verify_keys_failed(self):
         with self.assertRaises(ValueError):
             _verify_keys(Actions([("/", "search", None)]))
-
-        _verify_keys(Actions([("p", "pppp", None)]))

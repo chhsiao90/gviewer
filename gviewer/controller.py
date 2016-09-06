@@ -15,7 +15,7 @@ class Controller(object):
             push_prev: bool defined that should push previous widget
                        into history
         """
-        self.parent.open_view(widget, push_prev)
+        self.parent.open_view(widget, push_prev=push_prev)
 
     def open_view_by_context(self, context):
         """Open view by defined context

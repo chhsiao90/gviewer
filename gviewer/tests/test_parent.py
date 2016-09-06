@@ -78,6 +78,10 @@ class ParentFrameTest(unittest.TestCase):
             self.widget.main
         )
 
+    def test_back_to_exit(self):
+        with self.assertRaises(urwid.ExitMainLoop):
+            self.widget.back()
+
     def test_open_error(self):
         try:
             raise ValueError("error")
@@ -95,6 +99,30 @@ class ParentFrameTest(unittest.TestCase):
         self.assertEqual(
             render_to_text(self.widget.footer.notification, (5,)),
             ["test "])
+
+    def test_run_before_keypress(self):
+        self.widget.notify("test")
+        self.widget.run_before_keypress()
+        self.assertEqual(
+            render_to_text(self.widget.footer.notification, (5,)),
+            ["     "])
+
+    def test_open_view(self):
+        open_view = urwid.ListBox(urwid.SimpleFocusListWalker([]))
+        self.widget.open_view(open_view)
+
+        self.assertIs(self.widget.contents["body"][0], open_view)
+        self.assertEqual(len(self.widget.histories), 1)
+        self.assertIs(self.widget.histories[0], self.widget.main)
+
+    def test_open_same_view_twice(self):
+        open_view = urwid.ListBox(urwid.SimpleFocusListWalker([]))
+        self.widget.open_view(open_view)
+
+        self.assertIs(self.widget.contents["body"][0], open_view)
+
+        self.widget.open_view(open_view)
+        self.assertEqual(len(self.widget.histories), 1)
 
     def test_open_view_by_context(self):
         self.assertEqual(len(self.widget.others), 1)

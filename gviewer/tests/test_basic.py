@@ -1,10 +1,5 @@
 import unittest
-
-try:
-    import unittest.mock as mock
-except:
-    import mock
-
+import mock
 import urwid
 
 from gviewer.basic_widget import BasicWidget, FocusableText, SearchWidget, SearchableText

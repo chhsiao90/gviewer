@@ -1,9 +1,5 @@
 import unittest
-
-try:
-    import unittest.mock as mock
-except:
-    import mock
+import mock
 
 from gviewer.store import StaticDataStore, AsyncDataStore
 

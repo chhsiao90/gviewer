@@ -1,14 +1,12 @@
 import unittest
 import urwid
-
-try:
-    import unittest.mock as mock
-except:
-    import mock
+import mock
 
 from gviewer.tests.util import render_to_content, render_widgets_to_content
 from gviewer.view.detail import DetailWidget, Tabs
+from gviewer.view.detail import _verify_keys
 from gviewer.view.element import Text, Group, Groups
+from gviewer.action import Actions
 
 
 class DetailWidgetTest(unittest.TestCase):
@@ -31,6 +29,7 @@ class DetailWidgetTest(unittest.TestCase):
         self.widget = DetailWidget(
             self.test_message, self.displayer_context,
             index=0, controller=self.controller, context=self.context)
+        self.new_widget = None
 
     def _view1(self, message):
         return self._display(message["view1"])
@@ -96,6 +95,20 @@ class DetailWidgetTest(unittest.TestCase):
 
         with self.assertRaises(KeyError):
             self.widget._w.contents["header"]
+
+    def test_swtich_tab_when_no_tab(self):
+        self.displayer_context.displayer.get_views = mock.Mock(return_value=[
+            ("View 1", lambda m: self._display(m["view1"]))
+        ])
+        self.widget = DetailWidget(
+            self.test_message, self.displayer_context,
+            index=0, controller=self.controller, context=self.context)
+
+        self.widget.keypress((0,), "tab")
+        self.assertIsNone(self.new_widget)
+
+        self.widget.keypress((0,), "shift tab")
+        self.assertIsNone(self.new_widget)
 
     def test_open_search(self):
         self.widget.keypress((0,), "/")
@@ -182,3 +195,12 @@ class TabsTest(unittest.TestCase):
                 urwid.AttrMap(urwid.Text("view3"), "tabs")
             ], (15,), inline=True)
         )
+
+
+class TestDetail(unittest.TestCase):
+    def test_verify_keys(self):
+        _verify_keys(Actions([("p", "pppp", None)]))
+
+    def test_verify_keys_failed(self):
+        with self.assertRaises(ValueError):
+            _verify_keys(Actions([("/", "search", None)]))
