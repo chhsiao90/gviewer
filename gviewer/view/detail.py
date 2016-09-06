@@ -11,7 +11,7 @@ from .helper import (
 _ADVANCED_KEYS = OrderedDict([
     ("/", "search"),
     ("tab", "next view"),
-    ("shift+tab", "prev view"),
+    ("shift tab", "prev view"),
     ("n", "search next result"),
     ("N", "search prev result"),
     ("e", "export content to file"),
