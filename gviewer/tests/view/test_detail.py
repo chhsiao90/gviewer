@@ -159,6 +159,10 @@ class TestDetailWidget(unittest.TestCase):
             render_to_content(self.widget.content_widget, (5, 3)),
             no_match)
 
+    def test_open_failed(self):
+        self.widget._open(10)
+        self.controller.open_error.assert_called_with()
+
 
 class TestTabs(unittest.TestCase):
     def test_render(self):

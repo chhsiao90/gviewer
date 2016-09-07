@@ -45,8 +45,8 @@ class Controller(object):
         """Back to previous view"""
         self.parent.back()
 
-    def _update_info(self, info):
-        self.parent.update_info(info)
+    def _update_info(self, widget, info):
+        self.parent.update_info(widget, info)
 
     def _focus_body(self):
         self.parent.focus_position = "body"

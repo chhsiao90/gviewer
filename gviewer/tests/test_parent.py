@@ -6,6 +6,7 @@ from .util import render_to_content, render_widgets_to_content, render_to_text
 from gviewer.parent import ParentFrame, Footer, Helper, Notification
 from gviewer.config import Config
 from gviewer.context import Context, DisplayerContext
+from gviewer.basic_widget import BasicWidget
 from gviewer.view.error import ErrorWidget
 from gviewer.view.element import View, Text, Group
 from gviewer.view.summary import SummaryListWidget
@@ -72,7 +73,7 @@ class TestParentFrame(unittest.TestCase):
         )
 
     def test_back(self):
-        self.widget.open_view(urwid.Text(""))
+        self.widget.open_view(BasicWidget(widget=urwid.Text("")))
         self.widget.back()
         self.assertIs(
             self.widget.contents["body"][0],
@@ -122,6 +123,7 @@ class TestParentFrame(unittest.TestCase):
 
     def test_open_view(self):
         open_view = urwid.ListBox(urwid.SimpleFocusListWalker([]))
+        open_view = BasicWidget(widget=open_view)
         self.widget.open_view(open_view)
 
         self.assertIs(self.widget.contents["body"][0], open_view)
@@ -130,6 +132,7 @@ class TestParentFrame(unittest.TestCase):
 
     def test_open_same_view_twice(self):
         open_view = urwid.ListBox(urwid.SimpleFocusListWalker([]))
+        open_view = BasicWidget(widget=open_view)
         self.widget.open_view(open_view)
 
         self.assertIs(self.widget.contents["body"][0], open_view)
@@ -154,6 +157,19 @@ class TestParentFrame(unittest.TestCase):
             self.widget.contents["body"][0], ErrorWidget)
         self.assertEqual(len(self.widget.histories), 1)
         self.assertIs(self.widget.histories[0], self.widget.main)
+
+    def test_update_info(self):
+        self.widget.update_info(
+            self.widget.contents["body"][0], "test")
+        self.assertEqual(
+            self.widget.contents["footer"][0].helper.info_widget.text,
+            "test")
+
+        self.widget.update_info(
+            urwid.Text("test"), "not update")
+        self.assertEqual(
+            self.widget.contents["footer"][0].helper.info_widget.text,
+            "test")
 
 
 class TestFooter(unittest.TestCase):

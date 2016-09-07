@@ -50,6 +50,7 @@ class ParentFrame(urwid.Frame):
             self.histories.append(curr_widget)
 
         self.set_body(widget)
+        widget.update_info()
 
     def open_view_by_context(self, context):
         """Open view by defined context
@@ -65,7 +66,7 @@ class ParentFrame(urwid.Frame):
     def back(self):
         """Back to previous view"""
         if self.histories:
-            self.set_body(self.histories.pop())
+            self.open_view(self.histories.pop(), push_prev=False)
         else:
             raise urwid.ExitMainLoop()
 
@@ -85,8 +86,9 @@ class ParentFrame(urwid.Frame):
     def close_edit(self):
         self.footer.close_edit()
 
-    def update_info(self, info):
-        self.footer.update_info(info)
+    def update_info(self, widget, info):
+        if widget is self.contents["body"][0]:
+            self.footer.update_info(info)
 
     def run_before_keypress(self):
         """Some UI cleanup actions to make sure GViewer in a consist state"""

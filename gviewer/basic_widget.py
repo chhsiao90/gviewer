@@ -48,7 +48,7 @@ class BasicWidget(urwid.WidgetWrap):
             return key
 
     def is_editing(self):
-        """ Check that current state is editing or not
+        """Check that current state is editing or not
 
         Override this method if that widget had Edit widget in its content
         and return True if the focus widget is the Edit widget
@@ -57,6 +57,10 @@ class BasicWidget(urwid.WidgetWrap):
             True if in editing, False if not in editing
         """
         return False
+
+    def update_info(self):
+        """Callback when view is being displayed"""
+        pass
 
 
 class FocusableText(BasicWidget):
