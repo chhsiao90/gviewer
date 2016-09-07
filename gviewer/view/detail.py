@@ -65,10 +65,13 @@ class DetailWidget(BasicWidget):
 
     def _open(self, index):
         self._clear_search()
-        self.controller.open_view(DetailWidget(
-            self.message, self.displayer_context, index=index,
-            controller=self.controller, context=self.context),
-            push_prev=False)
+        try:
+            self.controller.open_view(DetailWidget(
+                self.message, self.displayer_context, index=index,
+                controller=self.controller, context=self.context),
+                push_prev=False)
+        except:
+            self.controller.open_error()
 
     def _next_view(self):
         if len(self.views) == 1:
