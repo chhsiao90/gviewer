@@ -58,9 +58,12 @@ class SummaryItemWidget(BasicWidget):
 
     def keypress(self, size, key):
         if key == "enter":
-            self.controller.open_view(DetailWidget(
-                self.message, self.displayer_context, controller=self.controller,
-                context=self.context))
+            try:
+                self.controller.open_view(DetailWidget(
+                    self.message, self.displayer_context, controller=self.controller,
+                    context=self.context))
+            except:  # pragma: no cover
+                self.controller.open_error()
             return None
         if key in self.displayer_context.actions:
             try:
