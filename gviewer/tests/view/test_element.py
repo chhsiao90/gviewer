@@ -109,6 +109,10 @@ class TestPropsGroup(unittest.TestCase):
         self.assertEqual(props_group.items[1].max_key_length, 7)
         self.assertEqual(props_group.items[2].max_key_length, 7)
 
+    def test_empty_items(self):
+        props_group = PropsGroup("title", items=[])
+        self.assertEqual(len(props_group.items), 0)
+
 
 class TestView(unittest.TestCase):
     def test_widget(self):

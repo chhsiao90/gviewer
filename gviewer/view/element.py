@@ -94,7 +94,10 @@ class PropsGroup(Group):
         items: iterable of Prop
     """
     def __init__(self, title, items, *args, **kwargs):
-        max_key_length = max(map(lambda p: len(p.kv[0]), items))
+        if items:
+            max_key_length = max(map(lambda p: len(p.kv[0]), items))
+        else:
+            max_key_length = 0
         for p in items:
             p.max_key_length = max_key_length
         super(PropsGroup, self).__init__(title, items, *args, **kwargs)
