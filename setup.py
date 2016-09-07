@@ -35,5 +35,11 @@ setup(
     test_suite="gviewer.tests",
     install_requires=[
         "urwid==1.3.1"
-    ]
+    ],
+    extras_require={
+        "dev": [
+            "Pygments==2.1.3",
+            "mock==2.0.0"
+        ]
+    }
 )

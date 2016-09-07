@@ -7,7 +7,6 @@ from gviewer.basic_widget import SearchableText
 from gviewer.view.element import (
     Text, Prop, Group, PropsGroup, View,
     TitleWidget, ContentWidget, EmptyLine)
-from gviewer.view.element import try_decode
 
 
 class TestText(unittest.TestCase):
@@ -15,37 +14,36 @@ class TestText(unittest.TestCase):
         widget = Text("content").widget(None)
         self.assertTrue(isinstance(widget, SearchableText))
         self.assertEqual(
-            widget.plain_text,
+            widget.get_plain_text(),
             u"content")
 
     def test_to_text(self):
         self.assertEqual(
-            str(Text(b"content")), u"content")
+            str(Text(b"content")), "content")
         self.assertEqual(
-            str(Text(u"content")), u"content")
+            str(Text(u"content")), "content")
+
+    def test_markup_to_text(self):
+        self.assertEqual(
+            str(Text([("aaa", "bbb"), "ccc"])), "bbbccc")
 
 
 class TestProp(unittest.TestCase):
     def test_widget(self):
         widget = Prop("key", "value").widget(None)
-        text, attr = widget.get_text()
+        self.assertIsInstance(widget, SearchableText)
         self.assertEqual(
-            text,
-            "key: value"
-        )
-        self.assertEqual(
-            attr,
-            [("view-item key", 5),
-             ("view-item value", 5)]
-        )
+            widget.text,
+            [('view-item key', u'key: '),
+             ('view-item value', u'value')])
 
     def test_widget_with_padding(self):
         prop = Prop("key", "value")
         prop.max_key_length = 5
         self.assertEqual(
-            prop.widget(None).get_text()[0],
-            u"key   : value"
-        )
+            prop.widget(None).text,
+            [('view-item key', u'key   : '),
+             ('view-item value', u'value')])
 
     def test_to_text(self):
         self.assertEqual(
@@ -331,12 +329,3 @@ class TestContentWidget(unittest.TestCase):
             render_to_content(widget, (15, 3)),
             second_match
         )
-
-
-class TestElement(unittest.TestCase):
-    def test_try_decode_failed(self):
-        with self.assertRaises(ValueError):
-            try_decode(dict())
-
-    def test_try_decode_bytes_to_utf8(self):
-        self.assertEqual(try_decode(b"aaa"), u"aaa")

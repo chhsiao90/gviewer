@@ -129,56 +129,82 @@ class SearchableText(BasicWidget):
     """ Searchable text let its content could be search and hightlight
 
     Attributes:
-        plain_text: str or unicode
+        text: str or unicode or text_markup
     """
-    def __init__(self, plain_text, **kwargs):
-        self.plain_text = plain_text or u""
-        if isinstance(plain_text, str):
-            plain_text = plain_text.decode("utf8")
+    def __init__(self, text, **kwargs):
+        if isinstance(text, tuple):  # NOTE: not accept tuple type markup
+            raise NotImplementedError("not accept tuple type markup")
 
-        widget = urwid.Text(plain_text)
         super(SearchableText, self).__init__(
-            widget=widget, **kwargs)
+            widget=urwid.Text(text), **kwargs)
 
-        self.plain_text = plain_text
-        self.prev_index = (0, len(plain_text))
+        self.text = text
+        self.prev_index = (0, len(text))
 
     def search_next(self, keyword):
         prev_index = self.prev_index[0]
         if isinstance(keyword, str):
             keyword = keyword.decode("utf8")
-        if keyword in self.plain_text[prev_index:]:
-            start_index = self.plain_text[prev_index:].index(keyword) + prev_index
-            end_index = start_index + len(keyword)
-            self.display(urwid.Text([
-                self.plain_text[:start_index],
-                ("match", keyword),
-                self.plain_text[end_index:]
-            ]))
 
-            self.prev_index = (end_index, start_index)
-            return True
+        if isinstance(self.text, (str, unicode)):
+            if keyword in self.text[prev_index:]:
+                start_index = self.text[prev_index:].index(keyword) + prev_index
+                self._handle_match_plain_text(keyword, start_index)
+                return True
         else:
-            self.clear()
-            return False
+            for index in range(prev_index, len(self.text)):
+                plain_text, _ = decompose_tagmarkup(self.text[index])
+                plain_text = plain_text.decode("utf8")
+                if keyword in plain_text:
+                    self._handle_match_markup(keyword, plain_text, index)
+                    return True
+
+        self.clear()
+        return False
 
     def search_prev(self, keyword):
         prev_index = self.prev_index[1]
-        if keyword in self.plain_text[:prev_index]:
-            start_index = self.plain_text[:prev_index].rindex(keyword)
-            end_index = start_index + len(keyword)
-            self.display(urwid.Text([
-                self.plain_text[:start_index],
-                ("match", keyword),
-                self.plain_text[end_index:]
-            ]))
+        if isinstance(keyword, str):
+            keyword = keyword.decode("utf8")
 
-            self.prev_index = (end_index, start_index)
-            return True
+        if isinstance(self.text, (str, unicode)):
+            if keyword in self.text[:prev_index]:
+                start_index = self.text[:prev_index].rindex(keyword)
+                self._handle_match_plain_text(keyword, start_index)
+                return True
         else:
-            self.clear()
-            return False
+            for index in reversed(range(0, prev_index)):
+                plain_text, _ = decompose_tagmarkup(self.text[index])
+                plain_text = plain_text.decode("utf8")
+                if keyword in plain_text:
+                    self._handle_match_markup(keyword, plain_text, index)
+                    return True
+
+        self.clear()
+        return False
+
+    def _handle_match_plain_text(self, keyword, start_index):
+        end_index = start_index + len(keyword)
+        self.display(urwid.Text([
+            self.text[:start_index], ("match", keyword), self.text[end_index:]]))
+        self.prev_index = (end_index, start_index)
+
+    def _handle_match_markup(self, keyword, plain_text, index):
+            match_index = plain_text.index(keyword)
+            match_end_index = match_index + len(keyword)
+            match_markup = []
+            if plain_text[:match_index]:
+                match_markup.append(plain_text[:match_index])
+            match_markup.append(("match", keyword))
+            if plain_text[match_end_index:]:
+                match_markup.append(plain_text[match_end_index:])
+            new_markup = self.text[:index] + match_markup + self.text[index + 1:]
+            self.display(urwid.Text(new_markup))
+            self.prev_index = (index + 1, index)
+
+    def get_plain_text(self):
+        return decompose_tagmarkup(self.text)[0].decode("utf8")
 
     def clear(self):
-        self.prev_index = (0, len(self.plain_text))
-        self.display(urwid.Text(self.plain_text))
+        self.prev_index = (0, len(self.text))
+        self.display(urwid.Text(self.text))

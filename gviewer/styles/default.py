@@ -1,3 +1,6 @@
+from pygments import pygments_style
+
+
 palette = [
     ("header", "white", "dark green", "bold"),
     ("footer helper", "white", "dark blue", "bold"),
@@ -14,4 +17,4 @@ palette = [
     ("help title", "white", "black", "bold"),
     ("help key", "light cyan", "black"),
     ("help value", "white", "black")
-]
+] + pygments_style

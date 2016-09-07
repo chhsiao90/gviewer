@@ -1,15 +1,8 @@
 import urwid
+from urwid.util import decompose_tagmarkup
 
 from ..basic_widget import BasicWidget, SearchableText
 from ..action import Actions
-
-
-def try_decode(text):
-    if isinstance(text, str):
-        return text.decode("utf8")
-    if not isinstance(text, unicode):
-        raise ValueError("not legal str: {0}".format(text))
-    return text
 
 
 class Base(object):  # pragma: no cover
@@ -25,13 +18,17 @@ class Text(Base):
         content: str or unicode
     """
     def __init__(self, content):
-        self.content = try_decode(content)
+        self.content = content
 
     def widget(self, message, controller=None, context=None):
         return SearchableText(self.content, attr_map="view-item")
 
     def __unicode__(self):
-        return self.content
+        if isinstance(self.content, (str, unicode)):
+            return self.content.decode("utf8")
+        else:
+            text, _ = decompose_tagmarkup(self.content)
+            return text.decode("utf8")
 
     def __str__(self):
         return unicode(self).encode("utf8")
@@ -45,11 +42,11 @@ class Prop(Base):
         value: str or unicode represent property value
     """
     def __init__(self, key, value):
-        self.kv = (try_decode(key), try_decode(value))
+        self.kv = (key.decode("utf8"), value.decode("utf8"))
         self.max_key_length = 0
 
     def widget(self, message, controller=None, context=None):
-        return urwid.Text(
+        return SearchableText(
             [("view-item key", self.kv[0].ljust(self.max_key_length + 1) + u": "),
              ("view-item value", self.kv[1])])
 
@@ -68,7 +65,7 @@ class Group(object):
         items: iterable of Prop or Line
     """
     def __init__(self, title, items, show_title=True):
-        self.title = try_decode(title)
+        self.title = title.decode("utf8")
         self.items = items
         self.show_title = show_title
 

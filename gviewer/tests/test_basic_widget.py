@@ -154,3 +154,40 @@ class TestSearchableText(unittest.TestCase):
         self.assertEqual(widget.prev_index, (16, 11))
         self.assertTrue(widget.search_prev("match"))
         self.assertEqual(widget.prev_index, (8, 3))
+
+    def test_search_in_markup(self):
+        widget = SearchableText([("no-match", "aaa"), " xxx ", ("yaya", "match"), " match ", ("end", "end")])
+
+        self.assertTrue(widget.search_next("match"))
+        self.assertEqual(widget.prev_index, (3, 2))
+        self.assertEqual(
+            widget._w.get_text(),
+            (u"aaa xxx match match end", [("no-match", 3), (None, 5), ("match", 5), (None, 7), ("end", 3)]))
+
+        self.assertTrue(widget.search_next("match"))
+        self.assertEqual(widget.prev_index, (4, 3))
+        self.assertEqual(
+            widget._w.get_text(),
+            (u"aaa xxx match match end", [("no-match", 3), (None, 5), ("yaya", 5), (None, 1), ("match", 5), (None, 1), ("end", 3)]))
+
+        self.assertFalse(widget.search_next("match"))
+        self.assertEqual(
+            widget._w.get_text(),
+            urwid.Text(widget.text).get_text())
+
+        self.assertTrue(widget.search_prev("match"))
+        self.assertEqual(widget.prev_index, (4, 3))
+        self.assertEqual(
+            widget._w.get_text(),
+            (u"aaa xxx match match end", [("no-match", 3), (None, 5), ("yaya", 5), (None, 1), ("match", 5), (None, 1), ("end", 3)]))
+
+        self.assertTrue(widget.search_prev("match"))
+        self.assertEqual(widget.prev_index, (3, 2))
+        self.assertEqual(
+            widget._w.get_text(),
+            (u"aaa xxx match match end", [("no-match", 3), (None, 5), ("match", 5), (None, 7), ("end", 3)]))
+
+        self.assertFalse(widget.search_prev("match"))
+        self.assertEqual(
+            widget._w.get_text(),
+            urwid.Text(widget.text).get_text())
