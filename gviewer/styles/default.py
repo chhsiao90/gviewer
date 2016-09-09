@@ -1,43 +1,26 @@
+from .util import palette_from_pygments
+
 try:
-    from pygments import token
+    from pygments.styles import get_style_by_name
 except:  # pragma: no cover
     pygments_style = []
 else:
-    pygments_style = [
-        (token.Token.Text, "white", "black"),
-        (token.Token.Name, "white", "black"),
-        (token.Token.Name.Builtin, "light magenta", "black"),
-        (token.Token.Name.Function, "light magenta", "black"),
-        (token.Token.Name.Class, "light magenta", "black"),
-        (token.Token.Comment, "dark gray", "black"),
-        (token.Token.Literal, "brown", "black"),
-        (token.Token.Literal.String, "brown", "black"),
-        (token.Token.Literal.String.Number, "light cyan", "black"),
-        (token.Token.Literal.String.Double, "light cyan", "black"),
-        (token.Token.Literal.String.Escape, "light cyan", "black"),
-        (token.Token.Literal.Number.Integer, "brown", "black"),
-        (token.Token.Operator, "white", "black"),
-        (token.Token.Error, "white", "black"),
-        (token.Token.Other, "white", "black"),
-        (token.Token.Keyword, "dark cyan", "black"),
-        (token.Token.Keyword.Namespace, "light green", "black"),
-        (token.Token.Generic, "white", "black")
-    ]
+    pygments_style = palette_from_pygments(get_style_by_name("default").styles)
 
 palette = [
-    ("header", "white", "dark green", "bold"),
-    ("footer helper", "white", "dark blue", "bold"),
+    ("header", "white,bold", "dark green"),
+    ("footer helper", "white,bold", "dark blue"),
     ("footer info", "white", "black"),
     ("summary", "white", "black"),
     ("summary focus", "black", "light gray"),
     ("view-item", "white", "black"),
     ("view-item key", "light cyan", "black"),
     ("view-item value", "white", "black"),
-    ("view-title", "yellow", "black", "bold"),
-    ("tabs", "white", "black", "bold"),
-    ("tabs focus", "white", "dark blue", "bold"),
+    ("view-title", "yellow,bold", "black"),
+    ("tabs", "white,bold", "black"),
+    ("tabs focus", "white,bold", "dark blue"),
     ("match", "black", "light gray"),
-    ("help title", "white", "black", "bold"),
+    ("help title", "white,bold", "black"),
     ("help key", "light cyan", "black"),
     ("help value", "white", "black")
 ] + pygments_style
