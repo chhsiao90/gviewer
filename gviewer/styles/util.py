@@ -29,9 +29,25 @@ COLOR256_TO_BASIC = dict([
 ])
 
 
+def palette_from_pygments(style):
+    palettes = dict()
+    for k, v in style.styles.iteritems():
+        if v:
+            palettes[k] = _parse_pygments_style(v)
+
+    for token, style in palettes.items():
+        _enrich_pygments_style_subtypes(palettes, token, style)
+
+    palettes_list = []
+    for k, v in palettes.iteritems():
+        palette = [k]
+        palette.extend(v)
+        palettes_list.append(palette)
+    return palettes_list
+
+
 class _PygmentsStyle(object):
-    def __init__(self, name):
-        self.name = name
+    def __init__(self):
         self.text_color = "default"
         self.bg_color = "default"
         self.styles = []
@@ -54,10 +70,10 @@ class _PygmentsStyle(object):
 
     def palette(self):
         if self.high_text_color:
-            return (self.name, ",".join(self.styles + [self.text_color]),
+            return (",".join(self.styles + [self.text_color]),
                     self.bg_color, None, self.high_text_color, self.high_bg_color)
         else:
-            return (self.name, ",".join(self.styles + [self.text_color]),
+            return (",".join(self.styles + [self.text_color]),
                     self.bg_color)
 
 
@@ -82,15 +98,15 @@ def _parse_pygments_color(value):
         raise ValueError("not legal color code: {0}".format(value))
 
 
-def palette_from_pygments(styles):
-    palettes = []
-    for k, v in styles.iteritems():
-        palettes.append(_parse_pygments_style(k, v))
-    return palettes
-
-
-def _parse_pygments_style(style_name, style_value):
-    style = _PygmentsStyle(style_name)
+def _parse_pygments_style(style_value):
+    style = _PygmentsStyle()
     for style_item in style_value.split(" "):
         style.update(style_item)
     return style.palette()
+
+
+def _enrich_pygments_style_subtypes(palettes, token, style):
+    if token not in palettes:
+        palettes[token] = style
+    for child_token in token.subtypes:
+        _enrich_pygments_style_subtypes(palettes, child_token, style)

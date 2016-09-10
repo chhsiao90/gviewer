@@ -5,7 +5,7 @@ try:
 except:  # pragma: no cover
     pygments_style = []
 else:
-    pygments_style = palette_from_pygments(get_style_by_name("default").styles)
+    pygments_style = palette_from_pygments(get_style_by_name("default"))
 
 palette = [
     ("header", "white,bold", "dark green"),
