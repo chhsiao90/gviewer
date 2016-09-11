@@ -1,18 +1,18 @@
 import glob
-from pygments import lexers
+from pygments.lexers import get_lexer_by_name
 
 from gviewer.util import pygmentize
 from gviewer import StaticDataStore, GViewer, BaseDisplayer, DisplayerContext
 from gviewer import Text, Group, View
 
 
-def _get_py_list():
-    return glob.glob("./**/*.py")
+def _get_list():
+    return glob.glob("./**/*.py") + glob.glob("./**/*.json")
 
 
 class Displayer(BaseDisplayer):
     def __init__(self):
-        store = StaticDataStore(_get_py_list())
+        store = StaticDataStore(_get_list())
         context = DisplayerContext(store, self)
         self.viewer = GViewer(context)
 
@@ -23,7 +23,11 @@ class Displayer(BaseDisplayer):
         with open(message, "r") as f:
             file_content = f.read()
 
-        pygmentize_list = pygmentize(file_content, lexers.PythonLexer())
+        if message.endswith(".py"):
+            pygmentize_list = pygmentize(file_content, get_lexer_by_name("python"))
+        else:
+            pygmentize_list = pygmentize(file_content, get_lexer_by_name("json"))
+
         widgets = map(lambda l: Text(l), pygmentize_list)
 
         return View([Group("", widgets)])

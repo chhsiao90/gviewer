@@ -40,9 +40,17 @@ class PanamaDisplayer(BaseDisplayer):
         detail_groups.append(PropsGroup("Summary", summary_group_content))
 
         for shareholder in message.get("officers").get("shareholder of"):
+            props = [
+                Prop(k, shareholder[k]) for k in [
+                    "name", "icij_id", "valid_until", "country_codes",
+                    "countries", "node_id", "sourceID"]
+            ]
+            for index, address in enumerate(shareholder["registered_address"]):
+                props.extend(
+                    [Prop("address[{0}].{1}".format(index, k), v) for k, v in address.iteritems()])
+
             detail_groups.append(PropsGroup(
-                shareholder.get("name"),
-                [Prop(k, v) for k, v in shareholder.iteritems() if isinstance(v, str) or isinstance(v, unicode)]))
+                shareholder.get("name"), props))
 
         return View(detail_groups, actions=Actions([
             ("E", "export", self.export),
