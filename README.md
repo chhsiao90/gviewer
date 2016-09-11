@@ -2,24 +2,40 @@
 [![Build Status](https://travis-ci.org/chhsiao90/gviewer.svg?branch=master)](https://travis-ci.org/chhsiao90/gviewer)
 [![Coverage Status](https://coveralls.io/repos/github/chhsiao90/gviewer/badge.svg?branch=master)](https://coveralls.io/github/chhsiao90/gviewer?branch=master)
 
-##### Simple, Light Weight, but Powerful 
-GViewer is a terminal UI library that depends on [urwid](https://github.com/urwid/urwid) simplified writing a tui based reporting system.
-You could just write less code, and the library could help you display the data.
+**Simple, Light Weight, Powerful**  
+GViewer is a terminal UI library that depends on [urwid](https://github.com/urwid/urwid) simplified writing a tui based reporting system.  
+You could write a powerful terminal UI that display and operate with data as you want with just less and less code.
 
 ## Installation
-```
+```shell
 pip install gviewer
 ```
 
+## Run Example
+There are some example in examples that provide some use cases.  
+You could see and run the examples.
+
+```shell
+python examples/panama.py
+```
+
 ## Usage
-#### Data Store
-- StaticDataStore
+
+### Data Store
+
+####StaticDataStore
+Used for static data list, like log file
+Initiate with a list of eny type of content
+The content will transfer to the your defined displayer later for display 
+
 ```python
 from gviewer import StaticDataStore
 data_store = StaticDataStore(data)
 ```
 
-- AsyncDataStore
+#### AsyncDataStore
+Used for asynchronous data list, like subscribe an [zeromq](http://zeromq.org/) publisher
+
 ```python
 def register_func(on_message):
     some_listener.on_message(on_message)
@@ -27,7 +43,9 @@ def register_func(on_message):
 data_store = AsyncDataStore(register_func)
 ```
 
-#### Displayer
+### Displayer
+Defined how you display your data from Data Store to summary/details
+
 ```python
 from gviewer import BaseDisplayer, View, Group, PropsGroup, Text, Prop
 
@@ -59,7 +77,10 @@ class MyDisplayer(BaseDisplayer):
         )
 ```
 
-#### GViewer
+### GViewer
+Main class to start the tui
+The constructor accept any of urwid.MainLoop arguments to intiate with custom config
+
 ```python
 from gviewer import GViewer, DisplayerContext
 context = DisplayerContext(data_store, displayer)
@@ -68,7 +89,7 @@ viewer.start()
 ```
 
 ## Advanced Usage
-#### Summary Actions
+### Summary Actions
 Bind function to specific key to apply customize action, ex: export
 ```python
 from gviewer import GViewer, DisplayerContext
@@ -82,7 +103,7 @@ context = DisplayerContext(data_store, displayer, actions=Actions([("a", "Custom
 viewer = GViewer(context)
 ```
 
-#### View Actions
+### View Actions
 Bind function to specific key to apply customize action, ex: export
 ```python
 from gviewer import View, BaseDisplayer
@@ -100,7 +121,7 @@ class MyDisplayer(BaseDisplayer):
 ```
 
 ## Built-in actions
-#### Summary
+### Summary
 - /: search
 - g: top
 - G: bottom
@@ -109,7 +130,7 @@ class MyDisplayer(BaseDisplayer):
 - q: quit
 - ?: help
 
-#### Detail
+### Detail
 - /: search
 - tab: next view
 - shift+tab: prev view
