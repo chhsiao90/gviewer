@@ -1,4 +1,4 @@
-from view.element import View
+from gviewer.view.element import View
 
 
 class BaseDisplayer(object):  # pragma: no cover

@@ -1,5 +1,6 @@
 import unittest
 import mock
+from collections import OrderedDict
 
 from ..util import render_to_text
 from gviewer.view.helper import HelpWidget, HelpCategory, HelpContent, TitleWidget, MappingWidget
@@ -11,23 +12,23 @@ class TestHelpWidget(unittest.TestCase):
         self.context = mock.Mock()
         self.widget = HelpWidget(
             HelpContent([
-                HelpCategory("category1", dict(a="aaa", b="bbb")),
-                HelpCategory("category2", dict(c="ccc", d="ddd"))]),
+                HelpCategory("category1", OrderedDict([("a", "aaa"), ("b", "bbb")])),
+                HelpCategory("category2", OrderedDict([("c", "ccc"), ("d", "ddd")]))]),
             controller=self.controller, context=self.context,)
 
     def test_render(self):
         self.assertEqual(
             render_to_text(self.widget, (20, 10)),
-            ["category1           ",
-             "                    ",
-             "     a   aaa        ",
-             "     b   bbb        ",
-             "                    ",
-             "category2           ",
-             "                    ",
-             "     c   ccc        ",
-             "     d   ddd        ",
-             "                    "])
+            [u"category1           ",
+             u"                    ",
+             u"     a   aaa        ",
+             u"     b   bbb        ",
+             u"                    ",
+             u"category2           ",
+             u"                    ",
+             u"     c   ccc        ",
+             u"     d   ddd        ",
+             u"                    "])
 
     def test_quit(self):
         self.widget.keypress((0, ), "q")
@@ -45,7 +46,7 @@ class TestTitleWidget(unittest.TestCase):
     def test_render(self):
         self.assertEqual(render_to_text(
             TitleWidget("title"), (5, )),
-            ["title"])
+            [u"title"])
 
 
 class TestMappingWidget(unittest.TestCase):
@@ -53,4 +54,4 @@ class TestMappingWidget(unittest.TestCase):
         widget = MappingWidget("key", "value", 4)
         self.assertEqual(
             render_to_text(widget, (14, )),
-            ["     key value"])
+            [u"     key value"])

@@ -89,9 +89,6 @@ class FocusableText(BasicWidget):
 
     def get_plain_text(self):
         """ Retrieve the plain text from text_markup """
-        if isinstance(self.text_markup, str) or \
-           isinstance(self.text_markup, unicode):
-            return self.text_markup
         text, _ = decompose_tagmarkup(self.text_markup)
         return text
 
@@ -147,10 +144,10 @@ class SearchableText(BasicWidget):
 
     def search_next(self, keyword):
         prev_index = self.prev_index[0]
-        if isinstance(keyword, str):
+        if isinstance(keyword, bytes):
             keyword = keyword.decode("utf8")
 
-        if isinstance(self.text, (str, unicode)):
+        if isinstance(self.text, str):
             if keyword in self.text[prev_index:]:
                 start_index = self.text[prev_index:].index(keyword) + prev_index
                 self._handle_match_plain_text(keyword, start_index)
@@ -158,7 +155,6 @@ class SearchableText(BasicWidget):
         else:
             for index in range(prev_index, len(self.text)):
                 plain_text, _ = decompose_tagmarkup(self.text[index])
-                plain_text = plain_text.decode("utf8")
                 if keyword in plain_text:
                     self._handle_match_markup(keyword, plain_text, index)
                     return True
@@ -168,10 +164,10 @@ class SearchableText(BasicWidget):
 
     def search_prev(self, keyword):
         prev_index = self.prev_index[1]
-        if isinstance(keyword, str):
+        if isinstance(keyword, bytes):
             keyword = keyword.decode("utf8")
 
-        if isinstance(self.text, (str, unicode)):
+        if isinstance(self.text, str):
             if keyword in self.text[:prev_index]:
                 start_index = self.text[:prev_index].rindex(keyword)
                 self._handle_match_plain_text(keyword, start_index)
@@ -179,7 +175,6 @@ class SearchableText(BasicWidget):
         else:
             for index in reversed(range(0, prev_index)):
                 plain_text, _ = decompose_tagmarkup(self.text[index])
-                plain_text = plain_text.decode("utf8")
                 if keyword in plain_text:
                     self._handle_match_markup(keyword, plain_text, index)
                     return True
@@ -207,7 +202,11 @@ class SearchableText(BasicWidget):
             self.prev_index = (index + 1, index)
 
     def get_plain_text(self):
-        return decompose_tagmarkup(self.text)[0].decode("utf8")
+        text, _ = decompose_tagmarkup(self.text)
+        if isinstance(text, bytes):
+            return text.decode("utf8")
+        else:
+            return text
 
     def clear(self):
         self.prev_index = (0, len(self.text))

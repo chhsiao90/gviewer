@@ -14,4 +14,4 @@ def render_widgets_to_content(widgets, size, focus=False, inline=False):
 
 
 def render_to_text(widget, size, focus=False):
-    return widget.render(size, focus).text
+    return list(map(lambda t: t.decode("utf8"), widget.render(size, focus).text))

@@ -77,14 +77,14 @@ class TestFocusableText(unittest.TestCase):
 
         self.assertEqual(
             [w for w in text.render((15,), False).content()],
-            [[('attr1', None, 'text1'),
-              ('attr2', None, 'text2'),
-              (None, None, 'text3')]]
+            [[("attr1", None, b"text1"),
+              ("attr2", None, b"text2"),
+              (None, None, b"text3")]]
         )
 
         self.assertEqual(
             [w for w in text.render((15,), True).content()],
-            [[(None, None, 'text1text2text3')]]
+            [[(None, None, b"text1text2text3")]]
         )
 
     def test_plain_text(self):
@@ -92,12 +92,12 @@ class TestFocusableText(unittest.TestCase):
 
         self.assertEqual(
             [w for w in text.render((9,), False).content()],
-            [[(None, None, 'plaintext')]]
+            [[(None, None, b"plaintext")]]
         )
 
         self.assertEqual(
             [w for w in text.render((9,), True).content()],
-            [[(None, None, 'plaintext')]]
+            [[(None, None, b"plaintext")]]
         )
 
 

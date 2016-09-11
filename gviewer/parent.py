@@ -1,9 +1,9 @@
 import urwid
 
-from .basic_widget import BasicWidget
-from .controller import Controller
-from .view.summary import SummaryListWidget
-from .view.error import ErrorWidget
+from gviewer.basic_widget import BasicWidget
+from gviewer.controller import Controller
+from gviewer.view.summary import SummaryListWidget
+from gviewer.view.error import ErrorWidget
 
 
 class ParentFrame(urwid.Frame):

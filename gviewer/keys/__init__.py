@@ -1,1 +1,1 @@
-from vim import keys as vim
+from gviewer.keys.vim import keys as vim

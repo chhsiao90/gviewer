@@ -30,16 +30,17 @@ COLOR256_TO_BASIC = dict([
 
 
 def palette_from_pygments(style):
-    palettes = dict()
-    for k, v in style.styles.iteritems():
+    original_palettes = dict()
+    for k, v in style.styles.items():
         if v:
-            palettes[k] = _parse_pygments_style(v)
+            original_palettes[k] = _parse_pygments_style(v)
 
-    for token, style in palettes.items():
+    palettes = original_palettes.copy()
+    for token, style in original_palettes.items():
         _enrich_pygments_style_subtypes(palettes, token, style)
 
     palettes_list = []
-    for k, v in palettes.iteritems():
+    for k, v in palettes.items():
         palette = [k]
         palette.extend(v)
         palettes_list.append(palette)
@@ -83,16 +84,16 @@ def _parse_pygments_color(value):
         g = int(value[2], base=16)
         b = int(value[3], base=16)
         low_color = COLOR256_TO_BASIC.get((
-            r * 3 / 16, g * 3 / 16, b * 3 / 16))
+            int(r * 3 / 16), int(g * 3 / 16), int(b * 3 / 16)))
         return low_color, value
     elif len(value) == 7:
         r = int(value[1:3], base=16)
         g = int(value[3:5], base=16)
         b = int(value[5:7], base=16)
         low_color = COLOR256_TO_BASIC.get((
-            r * 3 / 256, g * 3 / 256, b * 3 / 256))
+            int(r * 3 / 256), int(g * 3 / 256), int(b * 3 / 256)))
         high_color = "#{0}{1}{2}".format(
-            hex(r / 16)[2], hex(g / 16)[2], hex(b / 16)[2])
+            hex(int(r / 16))[2], hex(int(g / 16))[2], hex(int(b / 16))[2])
         return low_color, high_color
     else:  # pragma: no cover
         raise ValueError("not legal color code: {0}".format(value))

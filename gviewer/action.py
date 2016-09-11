@@ -26,9 +26,9 @@ class Actions(object):
         actions = actions or []
         if not isinstance(actions, list):  # pragma: no cover
             raise ValueError("Actions cannot accept {0}".format(type(actions)))
-        self.actions = OrderedDict({
-            k: Action(d, f) for (k, d, f) in actions
-        })
+        self.actions = OrderedDict([
+            (k, Action(d, f)) for (k, d, f) in actions
+        ])
 
     def __contains__(self, key):
         return key in self.actions
@@ -37,4 +37,4 @@ class Actions(object):
         return self.actions[key]
 
     def __iter__(self):
-        return iter([(k, a.desc, a.function) for k, a in self.actions.iteritems()])
+        return iter([(k, a.desc, a.function) for k, a in self.actions.items()])

@@ -173,7 +173,7 @@ class TestTitleWidget(unittest.TestCase):
         contents = [c for c in widget.render((7,)).content()]
         self.assertEqual(len(contents), 1)
         self.assertEqual(len(contents[0]), 1)
-        self.assertEqual(contents[0][0], ("view-title", None, "content"))
+        self.assertEqual(contents[0][0], ("view-title", None, b"content"))
 
 
 class TestContentWidget(unittest.TestCase):

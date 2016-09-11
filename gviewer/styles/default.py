@@ -1,4 +1,4 @@
-from .util import palette_from_pygments
+from gviewer.styles.util import palette_from_pygments
 
 try:
     from pygments.styles import get_style_by_name

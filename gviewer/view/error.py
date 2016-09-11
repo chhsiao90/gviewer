@@ -2,7 +2,7 @@ import traceback
 import urwid
 import sys
 
-from ..basic_widget import BasicWidget
+from gviewer.basic_widget import BasicWidget
 
 
 class ErrorWidget(BasicWidget):

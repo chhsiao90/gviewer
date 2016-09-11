@@ -1,5 +1,5 @@
-from .keys import vim
-from .styles import default
+from gviewer.keys import vim
+from gviewer.styles import default
 
 
 class Config(object):

@@ -1,11 +1,11 @@
 import urwid
 from collections import OrderedDict
 
-from ..basic_widget import BasicWidget, FocusableText, SearchWidget
-from .helper import (
+from gviewer.basic_widget import BasicWidget, FocusableText, SearchWidget
+from gviewer.view.helper import (
     HelpWidget, HelpContent, HelpCategory,
     make_category_with_actions)
-from .detail import DetailWidget
+from gviewer.view.detail import DetailWidget
 
 
 _ADVANCED_KEYS = OrderedDict([
@@ -153,7 +153,9 @@ class FilterSummaryListWalker(SummaryListWalker):
 
     def __delitem__(self, index):
         if isinstance(index, slice):
-            for i in range(index.start, min(index.stop, len(self))):
+            start_index = index.start or 0
+            end_index = min(index.stop or len(self), len(self))
+            for i in range(start_index, end_index):
                 base_walker_index = self.base_walker.index(self[i])
                 del self.base_walker[base_walker_index]
         else:

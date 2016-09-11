@@ -23,17 +23,17 @@ class TestErrorWidget(unittest.TestCase):
         self.assertEqual(len(contents), 4)
 
         self.assertEqual(contents[0][0][0], "error")
-        self.assertEqual(contents[0][0][2].rstrip(), "Traceback (most recent call last):")
+        self.assertEqual(contents[0][0][2].rstrip(), b"Traceback (most recent call last):")
 
         self.assertEqual(contents[1][0][0], "error")
-        self.assertTrue("test_error.py" in contents[1][0][2])
-        self.assertTrue("test_render" in contents[1][0][2])
+        self.assertTrue(b"test_error.py" in contents[1][0][2])
+        self.assertTrue(b"test_render" in contents[1][0][2])
 
         self.assertEqual(contents[2][0][0], "error")
-        self.assertEqual(contents[2][0][2].strip(), "raise ValueError(\"wrong value\")")
+        self.assertEqual(contents[2][0][2].strip(), b"raise ValueError(\"wrong value\")")
 
         self.assertEqual(contents[3][0][0], "error")
-        self.assertEqual(contents[3][0][2].strip(), "ValueError: wrong value")
+        self.assertEqual(contents[3][0][2].strip(), b"ValueError: wrong value")
 
     def test_keypress_q(self):
         try:

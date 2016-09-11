@@ -1,4 +1,4 @@
-from .action import Actions
+from gviewer.action import Actions
 
 
 class Context(object):

@@ -1,6 +1,6 @@
 import urwid
 
-from ..basic_widget import BasicWidget
+from gviewer.basic_widget import BasicWidget
 
 
 def make_category_with_actions(category_name, actions):
@@ -30,7 +30,7 @@ class HelpWidget(BasicWidget):
             widgets.append(urwid.Text(""))
 
             padding = category.max_key_length() + 3
-            mapping_widgets = [MappingWidget(k, v, padding) for k, v in category.mappings.iteritems()]
+            mapping_widgets = [MappingWidget(k, v, padding) for k, v in category.mappings.items()]
             widgets = widgets + mapping_widgets
             widgets.append(urwid.Text(""))
 
@@ -58,7 +58,7 @@ class HelpCategory(object):
 
     def max_key_length(self):
         try:
-            return max([len(k) for k in self.mappings.iterkeys()])
+            return max([len(k) for k in self.mappings.keys()])
         except:  # pragma: no cover
             return 0
 

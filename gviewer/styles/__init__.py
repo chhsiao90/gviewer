@@ -1,1 +1,1 @@
-from default import palette as default
+from gviewer.styles.default import palette as default

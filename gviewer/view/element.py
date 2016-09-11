@@ -1,14 +1,27 @@
+import sys
 import urwid
 from urwid.util import decompose_tagmarkup
 
-from ..basic_widget import BasicWidget, SearchableText
-from ..action import Actions
+from gviewer.basic_widget import BasicWidget, SearchableText
+from gviewer.action import Actions
 
 
 class Base(object):  # pragma: no cover
     """Abstract class for view displayer eleemnt"""
     def widget(self, message, controller=None, context=None):
         raise NotImplementedError
+
+    def __unicode__(self):
+        raise NotImplementedError
+
+    def __str__(self):
+        if sys.version_info >= (3,):
+            return self.__unicode__()
+        else:
+            return self.__unicode__().encode("utf8")
+
+    def __bytes__(self):
+        return self.__unicode__().encode("utf8")
 
 
 class Text(Base):
@@ -24,14 +37,16 @@ class Text(Base):
         return SearchableText(self.content, attr_map="view-item")
 
     def __unicode__(self):
-        if isinstance(self.content, (str, unicode)):
+        if isinstance(self.content, bytes):
             return self.content.decode("utf8")
+        elif isinstance(self.content, str):
+            return self.content
         else:
             text, _ = decompose_tagmarkup(self.content)
-            return text.decode("utf8")
-
-    def __str__(self):
-        return unicode(self).encode("utf8")
+            if isinstance(text, bytes):
+                return text.decode("utf8")
+            else:
+                return text
 
 
 class Prop(Base):
@@ -42,19 +57,16 @@ class Prop(Base):
         value: str or unicode represent property value
     """
     def __init__(self, key, value):
-        self.kv = (key.decode("utf8"), value.decode("utf8"))
+        self.kv = (key, value)
         self.max_key_length = 0
 
     def widget(self, message, controller=None, context=None):
         return SearchableText(
-            [("view-item key", self.kv[0].ljust(self.max_key_length + 1) + u": "),
+            [("view-item key", self.kv[0].ljust(self.max_key_length + 1) + ": "),
              ("view-item value", self.kv[1])])
 
     def __unicode__(self):
         return u"{0}: {1}".format(self.kv[0].ljust(self.max_key_length + 1), self.kv[1])
-
-    def __str__(self):
-        return unicode(self).encode("utf8")
 
 
 class Group(object):
@@ -65,7 +77,7 @@ class Group(object):
         items: iterable of Prop or Line
     """
     def __init__(self, title, items, show_title=True):
-        self.title = title.decode("utf8")
+        self.title = title
         self.items = items
         self.show_title = show_title
 
@@ -77,13 +89,19 @@ class Group(object):
         return widgets
 
     def __unicode__(self):
-        text = u"\n".join([unicode(e) for e in self.items])
+        text = u"\n".join([str(e) for e in self.items])
         if self.show_title:
             text = self.title + u"\n" + text
         return text
 
     def __str__(self):
-        return unicode(self).encode("utf8")
+        if sys.version_info >= (3,):
+            return self.__unicode__()
+        else:
+            return self.__unicode__().encode("utf8")
+
+    def __bytes__(self):
+        return self.__unicode__().encode("utf8")
 
 
 class PropsGroup(Group):
@@ -128,10 +146,7 @@ class View(Base):
             context=context)
 
     def __unicode__(self):
-        return u"\n".join([unicode(g) + u"\n" for g in self.groups])
-
-    def __str__(self):
-        return unicode(self).encode("utf8")
+        return u"\n".join([str(g) + u"\n" for g in self.groups])
 
 
 class TitleWidget(BasicWidget):
