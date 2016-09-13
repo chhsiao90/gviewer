@@ -174,6 +174,7 @@ class SummaryListWidget(BasicWidget):
         super(SummaryListWidget, self).__init__(**kwargs)
         _verify_keys(displayer_context.actions)
 
+        self.name = displayer_context.displayer.get_name()
         self.base_walker = SummaryListWalker(
             displayer_context=displayer_context,
             on_receive=self._on_receive, **kwargs)
@@ -220,9 +221,9 @@ class SummaryListWidget(BasicWidget):
             curr_index = self._w.focus_position + 1
             total_index = len(self.current_walker)
             self.controller._update_info(
-                self, "[{0}/{1}]".format(curr_index, total_index))
+                self, "{0}[{1}/{2}]".format(self.name, curr_index, total_index))
         else:
-            self.controller._update_info(self, "[0/0]")
+            self.controller._update_info(self, "{0}[0/0]".format(self.name))
 
     def _on_receive(self):
         if self.context.config.auto_scroll:

@@ -2,9 +2,9 @@ from gviewer.view.element import View
 
 
 class BaseDisplayer(object):  # pragma: no cover
-    """ Absctract class for displayer """
+    """Absctract class for displayer"""
     def summary(self, message):
-        """ Define how message display in summary widget
+        """Define how message display in summary widget
 
         Args:
             message: message that defined at DataStore implementation
@@ -15,7 +15,7 @@ class BaseDisplayer(object):  # pragma: no cover
         return message
 
     def match(self, keyword, message, summary):
-        """ Define is that the message match the keyword
+        """Define is that the message match the keyword
 
         Default implementation is to check that keyword is contain in summary or not
 
@@ -29,9 +29,13 @@ class BaseDisplayer(object):  # pragma: no cover
         return keyword in summary
 
     def get_views(self):
-        """ Define how display message into different views
+        """Define how display message into different views
 
         Returns:
             list of tuple contans ("view_name", View)
         """
         return [("Undefined", lambda m: View([]))]
+
+    def get_name(self):
+        """The name of displayer"""
+        return "GViewer"

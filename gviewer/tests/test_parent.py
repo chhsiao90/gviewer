@@ -41,6 +41,9 @@ class TestParentFrame(unittest.TestCase):
     def summary(self, message):
         return ";".join(message)
 
+    def get_name(self):
+        return "GViewer"
+
     def get_views(self):
         return [
             ("view1", self.view),
@@ -62,7 +65,7 @@ class TestParentFrame(unittest.TestCase):
                 urwid.Text(""),
                 urwid.Text(""),
                 urwid.Text(""),
-                Footer(helper=Helper(info_widget=urwid.Text("[1/3]")))
+                Footer(helper=Helper(info_widget=urwid.Text("GViewer[1/3]")))
             ], (30, 10))
         )
 

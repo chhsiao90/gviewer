@@ -40,7 +40,8 @@ class DetailWidget(BasicWidget):
         self.displayer_context = displayer_context
 
         self.views = self.displayer_context.displayer.get_views()
-        self.view = self.views[index][1].__call__(self.message)
+        self.name, view_callable = self.views[index]
+        self.view = view_callable.__call__(self.message)
 
         self.content_widget = self.view.widget(
             self.message, **kwargs)
@@ -108,6 +109,9 @@ class DetailWidget(BasicWidget):
         with open(file_name, "w") as f:
             f.write(str(self.view))
         self.controller.notify("Export to file {0}".format(file_name))
+
+    def update_info(self):
+        return self.controller._update_info(self, self.name)
 
     def keypress(self, size, key):
         if key == "q":

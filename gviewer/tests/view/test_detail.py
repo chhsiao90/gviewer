@@ -163,6 +163,10 @@ class TestDetailWidget(unittest.TestCase):
         self.widget._open(10)
         self.controller.open_error.assert_called_with()
 
+    def test_update_info(self):
+        self.widget.update_info()
+        self.controller._update_info.assert_called_with(self.widget, "View 1")
+
 
 class TestTabs(unittest.TestCase):
     def test_render(self):

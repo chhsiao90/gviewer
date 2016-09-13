@@ -35,7 +35,7 @@ class PanamaDisplayer(BaseDisplayer):
     def detail(self, message):
         detail_groups = []
         summary_group_content = \
-            [Prop(k, v) for k, v in message.items() if isinstance(v, str) or isinstance(v, unicode)]
+            [Prop(k, v) for k, v in message.items() if isinstance(v, str)]
 
         detail_groups.append(PropsGroup("Summary", summary_group_content))
 

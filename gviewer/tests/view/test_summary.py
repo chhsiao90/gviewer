@@ -266,12 +266,12 @@ class TestSummaryListWidget(unittest.TestCase):
         self.widget.keypress((10, 10), "G")
         self.assertEqual(self.widget._w.focus_position, 1)
         self.controller._update_info.assert_called_with(
-            self.widget, "[2/2]")
+            self.widget, "GViewer[2/2]")
 
         self.widget.keypress((10, 10), "g")
         self.assertEqual(self.widget._w.focus_position, 0)
         self.controller._update_info.assert_called_with(
-            self.widget, "[1/2]")
+            self.widget, "GViewer[1/2]")
 
     def test_keypress_bottom_and_top_when_search(self):
         self.widget._filter("summary")
@@ -284,24 +284,24 @@ class TestSummaryListWidget(unittest.TestCase):
         self.widget.keypress((10, 10), "x")
         self.assertEqual(len(self.widget.current_walker), 1)
         self.controller._update_info.assert_called_with(
-            self.widget, "[1/1]")
+            self.widget, "GViewer[1/1]")
 
     def test_keypress_clear_items(self):
         self.widget.keypress((10, 10), "X")
         self.assertEqual(len(self.widget.current_walker), 0)
         self.controller._update_info.assert_called_with(
-            self.widget, "[0/0]")
+            self.widget, "GViewer[0/0]")
 
     def test_keypress_up_and_down(self):
         self.widget.keypress((10, 10), "down")
         self.assertEqual(self.widget._w.focus_position, 1)
         self.controller._update_info.assert_called_with(
-            self.widget, "[2/2]")
+            self.widget, "GViewer[2/2]")
 
         self.widget.keypress((10, 10), "up")
         self.assertEqual(self.widget._w.focus_position, 0)
         self.controller._update_info.assert_called_with(
-            self.widget, "[1/2]")
+            self.widget, "GViewer[1/2]")
 
     def test_auto_scroll(self):
         displayer_context = DisplayerContext(
