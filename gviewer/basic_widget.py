@@ -145,7 +145,7 @@ class SearchableText(BasicWidget):
     def search_next(self, keyword):
         prev_index = self.prev_index[0]
         if isinstance(keyword, bytes):
-            keyword = keyword.decode("utf8")
+            keyword = keyword.decode("utf8")  # pragma: no cover, py3 would not cover here
 
         if isinstance(self.text, str):
             if keyword in self.text[prev_index:]:
@@ -165,7 +165,7 @@ class SearchableText(BasicWidget):
     def search_prev(self, keyword):
         prev_index = self.prev_index[1]
         if isinstance(keyword, bytes):
-            keyword = keyword.decode("utf8")
+            keyword = keyword.decode("utf8")  # pragma: no cover, py3 would not cover here
 
         if isinstance(self.text, str):
             if keyword in self.text[:prev_index]:
@@ -211,3 +211,28 @@ class SearchableText(BasicWidget):
     def clear(self):
         self.prev_index = (0, len(self.text))
         self.display(urwid.Text(self.text))
+
+
+class ReadonlyConfirmWidget(BasicWidget):
+    """Readonly confirm widget
+
+    Use it with controller.open_edit that will open a notification
+    with binding callback actions
+    Attributes:
+        msg: display message
+        actions: Actions instance
+    """
+    def __init__(self, msg, actions, controller=None, **kwargs):
+        super(ReadonlyConfirmWidget, self).__init__(
+            widget=urwid.Text(msg), controller=controller, **kwargs)
+        self.actions = actions
+
+    def selectable(self):
+        return True
+
+    def keypress(self, size, key):
+        self.controller.close_edit()
+        if key in self.actions:
+            self.actions[key].__call__()
+            return None
+        return super(ReadonlyConfirmWidget, self).keypress(size, key)

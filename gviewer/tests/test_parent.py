@@ -3,14 +3,14 @@ import urwid
 import mock
 
 from .util import render_to_content, render_widgets_to_content, render_to_text
-from gviewer.parent import ParentFrame, Footer, Helper, Notification
+from gviewer.basic_widget import BasicWidget, ReadonlyConfirmWidget
 from gviewer.config import Config
 from gviewer.context import Context, DisplayerContext
-from gviewer.basic_widget import BasicWidget
+from gviewer.parent import ParentFrame, Footer, Helper, Notification
+from gviewer.store import StaticDataStore
 from gviewer.view.error import ErrorWidget
 from gviewer.view.element import View, Text, Group
 from gviewer.view.summary import SummaryListWidget
-from gviewer.store import StaticDataStore
 
 
 class TestParentFrame(unittest.TestCase):
@@ -81,8 +81,16 @@ class TestParentFrame(unittest.TestCase):
         )
 
     def test_back_to_exit(self):
+        self.widget.back()
+
+        self.assertEqual(self.widget.focus_position, "footer")
+        self.assertIsNotNone(self.widget.footer.notification._edit_widget)
+        self.assertIsInstance(
+            self.widget.footer.notification._edit_widget,
+            ReadonlyConfirmWidget)
+
         with self.assertRaises(urwid.ExitMainLoop):
-            self.widget.back()
+            self.widget.keypress((0, 0), "q")
 
     def test_open_error(self):
         try:

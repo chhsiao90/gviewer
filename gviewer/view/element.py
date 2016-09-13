@@ -3,7 +3,7 @@ from urwid.util import decompose_tagmarkup
 
 from gviewer.action import Actions
 from gviewer.basic_widget import BasicWidget, SearchableText
-from gviewer.util import stringfy
+from gviewer.util import stringfy, unicode_it
 
 
 class Base(object):  # pragma: no cover
@@ -17,7 +17,7 @@ class Base(object):  # pragma: no cover
     def __str__(self):
         return stringfy(self.__unicode__())
 
-    def __bytes__(self):
+    def __bytes__(self):  # pragma: no cover
         return self.__unicode__().encode("utf8")
 
 
@@ -34,16 +34,8 @@ class Text(Base):
         return SearchableText(self.content, attr_map="view-item")
 
     def __unicode__(self):
-        if isinstance(self.content, bytes):
-            return self.content.decode("utf8")
-        elif isinstance(self.content, str):
-            return self.content
-        else:
-            text, _ = decompose_tagmarkup(self.content)
-            if isinstance(text, bytes):
-                return text.decode("utf8")
-            else:
-                return text
+        text, _ = decompose_tagmarkup(self.content)
+        return unicode_it(text)
 
 
 class Prop(Base):
@@ -85,7 +77,7 @@ class Group(object):
         widgets += [e.widget(message, controller=controller, context=context) for e in self.items]
         return widgets
 
-    def __unicode__(self):
+    def __unicode__(self):  # pragma: no cover
         text = u"\n".join([str(e) for e in self.items])
         if self.show_title:
             text = self.title + u"\n" + text
@@ -94,7 +86,7 @@ class Group(object):
     def __str__(self):
         return stringfy(self.__unicode__())
 
-    def __bytes__(self):
+    def __bytes__(self):  # pragma: no cover
         return self.__unicode__().encode("utf8")
 
 

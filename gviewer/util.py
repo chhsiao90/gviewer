@@ -34,3 +34,9 @@ def stringfy(unicode_str):  # pragma: no cover
         return unicode_str
     else:
         return unicode_str.encode("utf8")
+
+
+def unicode_it(any_str):  # pragma: no cover
+    if isinstance(any_str, bytes):
+        return any_str.decode("utf8")
+    return any_str

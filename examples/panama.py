@@ -35,7 +35,7 @@ class PanamaDisplayer(BaseDisplayer):
     def detail(self, message):
         detail_groups = []
         summary_group_content = \
-            [Prop(k, v) for k, v in message.iteritems() if isinstance(v, str) or isinstance(v, unicode)]
+            [Prop(k, v) for k, v in message.items() if isinstance(v, str) or isinstance(v, unicode)]
 
         detail_groups.append(PropsGroup("Summary", summary_group_content))
 
@@ -47,7 +47,7 @@ class PanamaDisplayer(BaseDisplayer):
             ]
             for index, address in enumerate(shareholder["registered_address"]):
                 props.extend(
-                    [Prop("address[{0}].{1}".format(index, k), v) for k, v in address.iteritems()])
+                    [Prop("address[{0}].{1}".format(index, k), v) for k, v in address.items()])
 
             detail_groups.append(PropsGroup(
                 shareholder.get("name"), props))

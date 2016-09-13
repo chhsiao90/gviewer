@@ -44,8 +44,8 @@ class GViewer(object):  # pragma: no cover
             kwargs["palette"] = self.context.config.template
 
     def _default_unhandled_input(self, key):
-        if key in ("q", "Q"):
-            raise urwid.ExitMainLoop()
+        if key == "q":
+            self.view.back()
 
     def start(self):
         """ Start the gviewer tui

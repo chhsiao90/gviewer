@@ -2,7 +2,11 @@ import unittest
 import mock
 import urwid
 
-from gviewer.basic_widget import BasicWidget, FocusableText, SearchWidget, SearchableText
+from .util import render_to_text
+from gviewer.action import Actions
+from gviewer.basic_widget import (
+    BasicWidget, FocusableText, ReadonlyConfirmWidget,
+    SearchWidget, SearchableText)
 
 
 class TestBasicWidget(unittest.TestCase):
@@ -191,3 +195,46 @@ class TestSearchableText(unittest.TestCase):
         self.assertEqual(
             widget._w.get_text(),
             urwid.Text(widget.text).get_text())
+
+    def test_get_plain_text(self):
+        self.assertEqual(SearchableText(u"\u54c8").get_plain_text(), u"\u54c8")
+        self.assertEqual(SearchableText(b"haha").get_plain_text(), u"haha")
+
+
+class TestReadonlyConfirmWidget(unittest.TestCase):
+    def setUp(self):
+        self.actions = mock.Mock()
+        self.controller = mock.Mock()
+        self.widget = ReadonlyConfirmWidget(
+            "yoyo: (y/n)", Actions([
+                ("y", "yyy", self.actions.called_y),
+                ("n", "nnn", self.actions.called_n)]),
+            controller=self.controller)
+
+    def test_render(self):
+        content = render_to_text(self.widget, (11,))[0]
+        self.assertEqual(content, "yoyo: (y/n)")
+
+    def test_action_y(self):
+        key = self.widget.keypress((0, ), "y")
+        self.assertIsNone(key)
+        self.controller.close_edit.assert_called_with()
+        self.actions.called_y.assert_called_with()
+        self.actions.called_n.assert_not_called()
+
+    def test_action_n(self):
+        key = self.widget.keypress((0, ), "n")
+        self.assertIsNone(key)
+        self.controller.close_edit.assert_called_with()
+        self.actions.called_n.assert_called_with()
+        self.actions.called_y.assert_not_called()
+
+    def test_other_action(self):
+        key = self.widget.keypress((0, ), "x")
+        self.assertEqual(key, "x")
+        self.controller.close_edit.assert_called_with()
+        self.actions.called_n.assert_not_called()
+        self.actions.called_y.assert_not_called()
+
+    def test_selectable(self):
+        self.assertTrue(self.widget.selectable())

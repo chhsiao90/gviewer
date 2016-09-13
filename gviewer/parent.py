@@ -1,6 +1,7 @@
 import urwid
 
-from gviewer.basic_widget import BasicWidget
+from gviewer.action import Actions
+from gviewer.basic_widget import BasicWidget, ReadonlyConfirmWidget
 from gviewer.controller import Controller
 from gviewer.view.summary import SummaryListWidget
 from gviewer.view.error import ErrorWidget
@@ -68,7 +69,13 @@ class ParentFrame(urwid.Frame):
         if self.histories:
             self.open_view(self.histories.pop(), push_prev=False)
         else:
-            raise urwid.ExitMainLoop()
+            self.open_edit(ReadonlyConfirmWidget(
+                ["press ", ("red", "q"), " to quit"],
+                Actions([("q", "", self.exit)]),
+                controller=self.controller))
+
+    def exit(self):
+        raise urwid.ExitMainLoop()
 
     def open_error(self):
         """Open ErrorWidget"""
@@ -85,6 +92,7 @@ class ParentFrame(urwid.Frame):
 
     def close_edit(self):
         self.footer.close_edit()
+        self.focus_position = "body"
 
     def update_info(self, widget, info):
         if widget is self.contents["body"][0]:

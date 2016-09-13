@@ -11,7 +11,7 @@ from gviewer.view.element import (
 
 class TestText(unittest.TestCase):
     def test_widget(self):
-        widget = Text("content").widget(None)
+        widget = Text(u"content").widget(None)
         self.assertTrue(isinstance(widget, SearchableText))
         self.assertEqual(
             widget.get_plain_text(),
@@ -25,12 +25,12 @@ class TestText(unittest.TestCase):
 
     def test_markup_to_text(self):
         self.assertEqual(
-            str(Text([("aaa", "bbb"), "ccc"])), "bbbccc")
+            str(Text([("aaa", u"bbb"), u"ccc"])), "bbbccc")
 
 
 class TestProp(unittest.TestCase):
     def test_widget(self):
-        widget = Prop("key", "value").widget(None)
+        widget = Prop(u"key", u"value").widget(None)
         self.assertIsInstance(widget, SearchableText)
         self.assertEqual(
             widget.text,
@@ -38,7 +38,7 @@ class TestProp(unittest.TestCase):
              ('view-item value', u'value')])
 
     def test_widget_with_padding(self):
-        prop = Prop("key", "value")
+        prop = Prop(u"key", u"value")
         prop.max_key_length = 5
         self.assertEqual(
             prop.widget(None).text,
@@ -47,11 +47,11 @@ class TestProp(unittest.TestCase):
 
     def test_to_text(self):
         self.assertEqual(
-            str(Prop("key", "value")),
+            str(Prop(u"key", u"value")),
             "key: value")
 
     def test_to_text_with_padding(self):
-        prop = Prop("key", "value")
+        prop = Prop(u"key", u"value")
         prop.max_key_length = 5
         self.assertEqual(
             str(prop),
@@ -86,12 +86,12 @@ class TestGroup(unittest.TestCase):
 
     def test_to_text(self):
         self.assertEqual(
-            str(Group("title", items=[Text("first line"), Text("second line")],
+            str(Group(u"title", items=[Text(u"first line"), Text(u"second line")],
                 show_title=True)),
             u"title\nfirst line\nsecond line")
 
         self.assertEqual(
-            str(Group("title", items=[Text("first line"), Text("second line")],
+            str(Group(u"title", items=[Text(u"first line"), Text(u"second line")],
                 show_title=False)),
             u"first line\nsecond line")
 

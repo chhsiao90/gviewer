@@ -8,19 +8,22 @@ else:
     pygments_style = palette_from_pygments(get_style_by_name("default"))
 
 palette = [
+    ("normal", "white", "black"),
+    ("em", "white,bold", "black"),
     ("header", "white,bold", "dark green"),
     ("footer helper", "white,bold", "dark blue"),
     ("footer info", "white", "black"),
-    ("summary", "white", "black"),
+    ("summary", "normal"),
     ("summary focus", "black", "light gray"),
-    ("view-item", "white", "black"),
+    ("view-item", "normal"),
     ("view-item key", "light cyan", "black"),
-    ("view-item value", "white", "black"),
+    ("view-item value", "normal"),
     ("view-title", "yellow,bold", "black"),
-    ("tabs", "white,bold", "black"),
+    ("tabs", "em"),
     ("tabs focus", "white,bold", "dark blue"),
     ("match", "black", "light gray"),
-    ("help title", "white,bold", "black"),
+    ("help title", "em"),
     ("help key", "light cyan", "black"),
-    ("help value", "white", "black")
+    ("help value", "normal"),
+    ("red", "light red", "black")
 ] + pygments_style
