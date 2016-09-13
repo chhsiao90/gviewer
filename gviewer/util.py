@@ -1,3 +1,5 @@
+import sys
+
 try:
     import pygments
 except:  # pragma: no cover
@@ -24,3 +26,11 @@ def _join(markup_list, join_tag):
             combined_list.append("")
         markup_list = markup_list[index + 1:]
     return combined_list
+
+
+def stringfy(unicode_str):  # pragma: no cover
+    """Use to support py27 py35 __str__"""
+    if sys.version_info >= (3,):
+        return unicode_str
+    else:
+        return unicode_str.encode("utf8")

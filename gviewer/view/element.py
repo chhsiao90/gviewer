@@ -1,9 +1,9 @@
-import sys
 import urwid
 from urwid.util import decompose_tagmarkup
 
-from gviewer.basic_widget import BasicWidget, SearchableText
 from gviewer.action import Actions
+from gviewer.basic_widget import BasicWidget, SearchableText
+from gviewer.util import stringfy
 
 
 class Base(object):  # pragma: no cover
@@ -15,10 +15,7 @@ class Base(object):  # pragma: no cover
         raise NotImplementedError
 
     def __str__(self):
-        if sys.version_info >= (3,):
-            return self.__unicode__()
-        else:
-            return self.__unicode__().encode("utf8")
+        return stringfy(self.__unicode__())
 
     def __bytes__(self):
         return self.__unicode__().encode("utf8")
@@ -95,10 +92,7 @@ class Group(object):
         return text
 
     def __str__(self):
-        if sys.version_info >= (3,):
-            return self.__unicode__()
-        else:
-            return self.__unicode__().encode("utf8")
+        return stringfy(self.__unicode__())
 
     def __bytes__(self):
         return self.__unicode__().encode("utf8")
