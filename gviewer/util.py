@@ -7,9 +7,16 @@ except:  # pragma: no cover
 
 
 def pygmentize(content, lexer):
+    def trim(pygment_entry):
+        token, value = pygment_entry
+        if token is pygments.token.Token.Text and value.strip(u" ") == u"\n":
+            return (token, value.strip(u" "))
+        return pygment_entry
+
     if not pygments:  # pragma: no cover
         raise ImportError("no pygments")
     pygments_list = list(pygments.lex(content, lexer))
+    pygments_list = list(map(trim, pygments_list))
     return _join(pygments_list, (pygments.token.Token.Text, u"\n"))
 
 
