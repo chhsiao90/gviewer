@@ -2,17 +2,17 @@ from setuptools import setup, find_packages
 from codecs import open
 import os
 
-from gviewer import version
-
 
 here = os.path.abspath(os.path.dirname(__file__))
+
+exec(open(os.path.join(here, "gviewer", "version.py")).read())
 
 with open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
     name="gviewer",
-    version=version.VERSION,
+    version=globals()["VERSION"],
     description="General Viewer",
     long_description=long_description,
     author="chhsiao90",
