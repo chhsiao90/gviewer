@@ -2,6 +2,8 @@ from setuptools import setup, find_packages
 from codecs import open
 import os
 
+from gviewer import version
+
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -10,7 +12,7 @@ with open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name="gviewer",
-    version="3.0.5",
+    version=version.VERSION,
     description="General Viewer",
     long_description=long_description,
     author="chhsiao90",
