@@ -36,7 +36,7 @@ setup(
     packages=find_packages(include=["gviewer", "gviewer.*"]),
     test_suite="gviewer.tests",
     install_requires=[
-        "urwid==1.3.1"
+        "urwid==4.0.7"
     ],
     extras_require={
         "dev": [
